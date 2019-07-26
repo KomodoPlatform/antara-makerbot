@@ -24,6 +24,18 @@ matrix:
           packages: [g++-8, jq]
       env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Release, DEFAULT_COMPILER=gcc, DEPLOY=ON, PIP=pip]
 
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages: [g++-8]
+      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, ASAN=ON, PIP=pip]
+
 install:
   - |
     source ${TRAVIS_BUILD_DIR}/scripts/travis_install.sh
