@@ -1,18 +1,5 @@
 matrix:
   include:
-
-    - os: linux
-      language: python
-      python: 3.7
-      sudo: true
-      dist: xenial
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages: [g++-8, binutils]
-      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, UBSAN=ON, PIP=pip]
-
     - os: linux
       language: python
       python: 3.7
@@ -24,19 +11,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: [g++-8]
       env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, PIP=pip, WILL_COMPILE_CODE=ON]
-
-    - os: linux
-      language: python
-      python: 3.7
-      sudo: true
-      dist: xenial
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages: [g++-8, jq]
-      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Release, DEFAULT_COMPILER=gcc, DEPLOY=ON, PIP=pip]
-
     - os: linux
       language: python
       python: 3.7
@@ -47,20 +21,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages: [g++-8]
-      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, ASAN=ON, PIP=pip]
-
-    - os: linux
-    language: python
-    python: 3.7
-    sudo: true
-    dist: xenial
-    addons:
-      apt:
-        sources:
-          - ubuntu-toolchain-r-test
-        packages: [g++-8]
-    env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, TSAN=ON, PIP=pip]
-
+      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Release, DEFAULT_COMPILER=gcc, PIP=pip, WILL_COMPILE_CODE=ON]
 
 install:
   - |
