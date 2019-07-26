@@ -12,10 +12,6 @@ environment:
       GENERATOR: Visual Studio 15 2017
       BUILD_TYPE: Release
 
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      platform: x64
-      GENERATOR: Visual Studio 16 2019
-      BUILD_TYPE: Release
 init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   - where cmake
