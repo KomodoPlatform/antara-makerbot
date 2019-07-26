@@ -45,7 +45,7 @@ build_script:
         $var = $file.name
         & cmd /c "$var --reporters=xml --out=$var-result.xml -s 2>&1"
       }
-      cat *.xml
+      ls
 
 on_failure:
   - curl -s https://report.ci/annotate.py | python - --tool msvc --input build.log
@@ -59,4 +59,4 @@ on_finish:
       $string = $string -replace ' ', '-'
       echo $string
       Invoke-WebRequest -Uri https://report.ci/upload.py -OutFile upload.py
-      python upload.py -n "Doctest [appveyor $($string)]"
+      python upload.py -n "Doctest [appveyor $($string)]" --include='*.xml' --framework=doctest
