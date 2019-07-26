@@ -4,12 +4,12 @@ environment:
   matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       platform: x64
-      GENERATOR: Visual Studio 15 2017 Win64
+      GENERATOR: Visual Studio 15 2017
       BUILD_TYPE: Debug
 
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       platform: x64
-      GENERATOR: Visual Studio 15 2017 Win64
+      GENERATOR: Visual Studio 15 2017
       BUILD_TYPE: Release
 
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019 Preview
