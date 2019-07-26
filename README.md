@@ -38,3 +38,33 @@ cmake --build . --config Release
 ## Built With
 
 -   [doctest](https://github.com/onqtam/doctest) - Testing framework used
+
+## Code of Conduct
+
+Before any contribution please read our [CODE OF CONDUCT](./CODE-OF-CONDUCT.md).
+
+## Contributing
+
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md), contain the process for submitting pull requests to us.
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/KomodoPlatform/antara-makerbot/tags).
+
+## Authors
+
+-   **Roman Sztergbaum** - _Co-Creator_ - [Milerius](https://github.com/Milerius)
+
+See also the list of [contributors](./CONTRIBUTORS.md) who participated in this project.
+
+## License
+
+All information about the legal part of the project is available in the `LEGAL` folder at the root of the repository.
+
+- COPYING: GPL V2.0: see the [COPYING](LEGAL/COPYING) file for details about copying the software.
+- DEVELOPER-AGREEMENT: see the [DEVELOPER-AGREEMENT](LEGAL/DEVELOPER-AGREEMENT) file for details about authors.
+- LICENSE: GPL V2.0: see the [LICENSE](LEGAL/LICENSE) file for details about the license.
+
+## Acknowledgments
+
+-  Viktor Kirilov [onqtam](https://github.com/onqtam) for the awesome `doctest` framework.
