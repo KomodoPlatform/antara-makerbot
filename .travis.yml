@@ -53,9 +53,30 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-          packages: [g++-8]
+          packages: [g++-8, binutils]
       env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, UBSAN=ON, DEFAULT_COMPILER=gcc, PIP=pip, WILL_COMPILE_CODE=ON]
-
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages: [g++-8, ninja-build]
+      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, PIP=pip, WILL_COMPILE_CODE=ON, NINJA=ON]
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages: [g++-8, ninja-build]
+      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Release, DEFAULT_COMPILER=gcc, PIP=pip, WILL_COMPILE_CODE=ON, NINJA=ON]
 install:
   - |
     source ${TRAVIS_BUILD_DIR}/scripts/travis_install.sh
