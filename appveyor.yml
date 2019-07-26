@@ -45,6 +45,7 @@ build_script:
         $var = $file.name
         & cmd /c "$var --reporters=xml --out=$var-result.xml -s 2>&1"
       }
+      cat *.xml
 
 on_failure:
   - curl -s https://report.ci/annotate.py | python - --tool msvc --input build.log
