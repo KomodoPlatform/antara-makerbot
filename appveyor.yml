@@ -37,7 +37,7 @@ before_build:
 
 build_script:
   - cmake --build . --config %BUILD_TYPE% -- /verbosity:minimal /maxcpucount:3
-  - cd bin && ls
+  - cd bin && cd %BUILD_TYPE% && ls
   - ps: |
       $filePattern = '*-test.exe'
       foreach ($file in get-ChildItem $filePattern)
