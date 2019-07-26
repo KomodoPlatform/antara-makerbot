@@ -9,6 +9,18 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
+          packages: [g++-8, binutils]
+      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, UBSAN=ON, PIP=pip]
+
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
           packages: [g++-8]
       env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, PIP=pip, WILL_COMPILE_CODE=ON]
 
@@ -36,6 +48,17 @@ matrix:
           packages: [g++-8]
       env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, ASAN=ON, PIP=pip]
 
+    - os: linux
+    language: python
+    python: 3.7
+    sudo: true
+    dist: xenial
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages: [g++-8]
+    env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, DEFAULT_COMPILER=gcc, TSAN=ON, PIP=pip]
 install:
   - |
     source ${TRAVIS_BUILD_DIR}/scripts/travis_install.sh
