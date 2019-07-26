@@ -16,3 +16,9 @@ target_sources(mmbot-tests PUBLIC mmbot.tests.cpp)
 target_link_libraries(mmbot-tests PRIVATE doctest PUBLIC mmbot_shared_deps)
 target_enable_coverage(mmbot-tests)
 
+set_target_properties(mmbot-tests mmbot
+        PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        )
