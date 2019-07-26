@@ -53,6 +53,7 @@ on_failure:
 on_finish:
   # Framework with autodetection
   - ps: |
+      ls
       $string = "$env:GENERATOR-$env:BUILD_TYPE"
       echo $string
       $string = $string -replace ' ', '-'
