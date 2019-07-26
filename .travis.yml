@@ -33,6 +33,28 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: [g++-8]
       env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, ASAN=ON, DEFAULT_COMPILER=gcc, PIP=pip, WILL_COMPILE_CODE=ON]
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages: [g++-8]
+      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, TSAN=ON, DEFAULT_COMPILER=gcc, PIP=pip, WILL_COMPILE_CODE=ON]
+    - os: linux
+      language: python
+      python: 3.7
+      sudo: true
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages: [g++-8]
+      env: [CXX=g++-8, CC=gcc-8, WILL_COMPILE_CODE=ON, BUILD_TYPE=Debug, UBSAN=ON, DEFAULT_COMPILER=gcc, PIP=pip, WILL_COMPILE_CODE=ON]
 
 install:
   - |
