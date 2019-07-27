@@ -49,4 +49,16 @@ FetchContent_Declare(
         URL https://github.com/onqtam/doctest/archive/2.3.3.tar.gz
 )
 
-FetchContent_MakeAvailable(doctest)
+FetchContent_Declare(
+        doom_st
+        URL https://github.com/doom/strong_type/archive/1.0.1.tar.gz
+)
+
+set(JSON_MultipleHeaders ON)
+
+FetchContent_Declare(
+        nlohmann_json
+        URL https://github.com/nlohmann/json/archive/v3.6.1.tar.gz
+)
+
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json)
