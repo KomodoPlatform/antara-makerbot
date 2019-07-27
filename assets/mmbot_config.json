@@ -13,7 +13,7 @@
   },
   "price_infos": {
     "coinpaprika": {
-      "endpoint": "https://api.coinpaprika.com/v1"
+      "price_endpoint": "https://api.coinpaprika.com/v1"
     }
   }
 }

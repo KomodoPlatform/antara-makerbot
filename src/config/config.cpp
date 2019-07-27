@@ -27,7 +27,7 @@ namespace antara::mmbot
 
     void from_json(const nlohmann::json &j, prices_cfg &cfg)
     {
-        cfg.api_endpoint = st_endpoint{j.at("endpoint").get<std::string>()};
+        cfg.api_endpoint = st_endpoint{j.at("price_endpoint").get<std::string>()};
     }
 
     void from_json(const nlohmann::json &j, config &cfg)
@@ -45,7 +45,7 @@ namespace antara::mmbot
 
     void to_json(nlohmann::json &j, const prices_cfg &cfg)
     {
-        j["endpoint"] = cfg.api_endpoint.value();
+        j["price_endpoint"] = cfg.api_endpoint.value();
     }
 
     void to_json(nlohmann::json &j, const config &cfg)

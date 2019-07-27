@@ -36,7 +36,7 @@ namespace antara::mmbot::tests
   },
   "price_infos": {
     "coinpaprika": {
-      "endpoint": "https://api.coinpaprika.com/v1"
+      "price_endpoint": "https://api.coinpaprika.com/v1"
     }
   }
 })"_json;
@@ -97,7 +97,7 @@ namespace antara::mmbot::tests
   },
   "price_infos": {
     "coinpaprika": {
-      "endpoint": "https://api.coinpaprika.com/v1"
+      "price_endpoint": "https://api.coinpaprika.com/v1"
     }
   }
 })"_json;
