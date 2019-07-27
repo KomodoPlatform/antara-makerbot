@@ -1,0 +1,91 @@
+* MMBot
+
+** Components
+
+*** Price service
+
+Tracks the price of assets
+Based on price strategies defined in config
+Prices come from APIs, and CEXs
+
+*** Strategy manager
+
+What spread should be maintained?
+Buy and sell, or only one?
+
+It interprets the strategy, and tells the order manager where orders should be placed on the DEX
+Uses the price service to decide order prices
+
+*** Order manager
+
+Places orders on DEX
+Tracks placed order on DEX
+When an order completes(*) it places a corresponding order on the CEX
+
+*** CEX adapter
+
+Allows orders to be placed on the CEX
+1st iteration doesn't track executions, deposits/withdrawals
+
+** API
+
+*** Prices
+
+Return the price of an Asset, Pair, or ExchangePair
+
+*** Place MM strategy
+
+Create or change the MM strategy for a pair
+
+*** Current MM strategy
+
+Find the current strategy for a pair
+
+*** CEX orders
+
+Find what orders have been posted to CEXs
+
+** Objects
+
+*** Asset
+
+*** Pair
+
+Props:
+- base : Asset
+- quote : Asset
+
+*** ExchangePair
+
+Props:
+- pair : Pair
+- exchange : Exchange
+
+*** Side
+
+Enum: 
+- BUY
+- SELL
+- BOTH
+
+*** MMStrategy
+
+Props:
+- pair : Pair
+- margin : Percentage
+- side : Side
+
+*** OrderLevel
+
+Props:
+- price : Float
+- quantity : Float
+- side : Side
+
+*** OrderSet
+
+Generated from an MM strategy
+
+Props:
+- pair : Pair
+- levels : [OrderLevel]
