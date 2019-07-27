@@ -32,8 +32,8 @@ namespace antara::mmbot
 
     void from_json(const nlohmann::json &j, config &cfg)
     {
-        j.at("cex_infos").get_to(cfg.cex_registry);
-        j.at("price_infos").get_to(cfg.prices_registry);
+        j.at("cex_infos_registry").get_to(cfg.cex_registry);
+        j.at("price_infos_registry").get_to(cfg.prices_registry);
     }
 
     void to_json(nlohmann::json &j, const cex_config &cfg)
@@ -50,11 +50,11 @@ namespace antara::mmbot
 
     void to_json(nlohmann::json &j, const config &cfg)
     {
-        j["cex_infos"] = nlohmann::json::object();
+        j["cex_infos_registry"] = nlohmann::json::object();
         for (auto&&[key, value] : cfg.cex_registry) {
             j["cex_infos"][key] = value;
         }
-        j["price_infos"] = nlohmann::json::object();
+        j["price_infos_registry"] = nlohmann::json::object();
         for (auto&&[key, value] : cfg.prices_registry) {
             j["price_infos"][key] = value;
         }

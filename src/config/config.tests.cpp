@@ -22,7 +22,7 @@ namespace antara::mmbot::tests
     TEST_CASE ("mmbot cfg from json")
     {
         auto json_mmbot_cfg = R"({
-  "cex_infos": {
+  "cex_infos_registry": {
     "binance": {
       "cex_endpoint": "https://api.binance.com",
       "cex_api_public_key": "<your public key here>",
@@ -34,7 +34,7 @@ namespace antara::mmbot::tests
       "cex_api_private_key": ""
     }
   },
-  "price_infos": {
+  "price_infos_registry": {
     "coinpaprika": {
       "price_endpoint": "https://api.coinpaprika.com/v1"
     }
@@ -83,7 +83,7 @@ namespace antara::mmbot::tests
             auto path = std::filesystem::current_path() / "assets";
             THEN("we create the configuration and the directories") {
                 auto json_mmbot_cfg = R"({
-  "cex_infos": {
+  "cex_infos_registry": {
     "binance": {
       "cex_endpoint": "https://api.binance.com",
       "cex_api_public_key": "<your public key here>",
@@ -95,7 +95,7 @@ namespace antara::mmbot::tests
       "cex_api_private_key": ""
     }
   },
-  "price_infos": {
+  "price_infos_registry": {
     "coinpaprika": {
       "price_endpoint": "https://api.coinpaprika.com/v1"
     }
@@ -119,7 +119,7 @@ namespace antara::mmbot::tests
                             {
                                 "coinbase", cex_config{st_endpoint{"https://api.pro.coinbase.com"}, st_key{"<your public key here>"}, st_key{""}}
                             }
-                    }, config::prices_infos_registry{{"coinpaprika", price_config{st_endpoint{"https://api.coinpaprika.com/v1"}}}}};
+                    }, config::price_infos_registry{{"coinpaprika", price_config{st_endpoint{"https://api.coinpaprika.com/v1"}}}}};
                     REQUIRE_EQ(load_configuration<config>(std::move(path), "mmbot_example_config.json"), mmbot_cfg);
                 }
                 AND_THEN("We clear the directory that we create for this test") {
