@@ -44,6 +44,7 @@ namespace antara::mmbot
     };
 
     void from_json(const nlohmann::json &j, cex_cfg &cfg);
+    void from_json(const nlohmann::json &j, api_prices_cfg &cfg);
 
     void from_json(const nlohmann::json &j, config &cfg);
 }
