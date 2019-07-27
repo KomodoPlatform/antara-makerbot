@@ -45,8 +45,8 @@ namespace antara::mmbot::tests
         CHECK_NOTHROW(from_json(json_mmbot_cfg, cfg));
         CHECK_EQ(2, cfg.cex_registry.size());
         CHECK_EQ("https://api.binance.com", cfg.cex_registry["binance"].cex_endpoint.value());
-        CHECK_EQ("https://api.coinpaprika.com/v1", cfg.api_prices_reigstry["coinpaprika"].api_endpoint.value());
-        CHECK_THROWS(cfg.api_prices_reigstry.at("nonexistent").api_endpoint.value());
+        CHECK_EQ("https://api.coinpaprika.com/v1", cfg.prices_registry["coinpaprika"].api_endpoint.value());
+        CHECK_THROWS(cfg.prices_registry.at("nonexistent").api_endpoint.value());
         CHECK_THROWS(cfg.cex_registry.at("nonexistent").cex_endpoint.value());
     }
 }

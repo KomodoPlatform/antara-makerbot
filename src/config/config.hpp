@@ -19,6 +19,7 @@
 #include <vector>
 #include <unordered_map>
 #include <nlohmann/json.hpp>
+#include <filesystem>
 #include "utils/mmbot_strong_types.hpp"
 
 namespace antara::mmbot
@@ -30,7 +31,7 @@ namespace antara::mmbot
         antara::st_key cex_private_key;
     };
 
-    struct api_prices_cfg
+    struct prices_cfg
     {
         antara::st_endpoint api_endpoint;
     };
@@ -38,13 +39,12 @@ namespace antara::mmbot
     struct config
     {
         using cex_infos_registry = std::unordered_map<std::string, cex_cfg>;
-        using api_prices_infos_registry = std::unordered_map<std::string, api_prices_cfg>;
+        using prices_infos_registry = std::unordered_map<std::string, prices_cfg>;
         cex_infos_registry cex_registry;
-        api_prices_infos_registry api_prices_reigstry;
+        prices_infos_registry prices_registry;
     };
 
     void from_json(const nlohmann::json &j, cex_cfg &cfg);
-    void from_json(const nlohmann::json &j, api_prices_cfg &cfg);
-
+    void from_json(const nlohmann::json &j, prices_cfg &cfg);
     void from_json(const nlohmann::json &j, config &cfg);
 }

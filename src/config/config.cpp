@@ -25,7 +25,7 @@ namespace antara::mmbot
         cfg.cex_private_key = st_endpoint{j.at("cex_api_private_key").get<std::string>()};
     }
 
-    void from_json(const nlohmann::json &j, api_prices_cfg &cfg)
+    void from_json(const nlohmann::json &j, prices_cfg &cfg)
     {
         cfg.api_endpoint = st_endpoint{j.at("endpoint").get<std::string>()};
     }
@@ -33,6 +33,6 @@ namespace antara::mmbot
     void from_json(const nlohmann::json &j, config &cfg)
     {
         j.at("cex_infos").get_to(cfg.cex_registry);
-        j.at("price_infos").get_to(cfg.api_prices_reigstry);
+        j.at("price_infos").get_to(cfg.prices_registry);
     }
 }
