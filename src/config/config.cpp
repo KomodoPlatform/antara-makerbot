@@ -54,7 +54,7 @@ namespace antara::mmbot
         for (auto&&[key, value] : cfg.cex_registry) {
             j["cex_infos"][key] = value;
         }
-        j["price_infos"] =  nlohmann::json::object();
+        j["price_infos"] = nlohmann::json::object();
         for (auto&&[key, value] : cfg.prices_registry) {
             j["price_infos"][key] = value;
         }
@@ -73,7 +73,7 @@ namespace antara::mmbot
 
     bool prices_cfg::operator==(const prices_cfg &rhs) const
     {
-        return api_endpoint == rhs.api_endpoint;
+        return api_endpoint.value() == rhs.api_endpoint.value();
     }
 
     bool prices_cfg::operator!=(const prices_cfg &rhs) const
@@ -83,9 +83,9 @@ namespace antara::mmbot
 
     bool cex_cfg::operator==(const cex_cfg &rhs) const
     {
-        return cex_endpoint == rhs.cex_endpoint &&
-               cex_public_key == rhs.cex_public_key &&
-               cex_private_key == rhs.cex_private_key;
+        return cex_endpoint.value() == rhs.cex_endpoint.value() &&
+               cex_public_key.value() == rhs.cex_public_key.value() &&
+               cex_private_key.value() == rhs.cex_private_key.value();
     }
 
     bool cex_cfg::operator!=(const cex_cfg &rhs) const
