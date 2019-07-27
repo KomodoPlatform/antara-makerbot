@@ -68,7 +68,9 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru)
+find_package(Threads)
 add_library(logurulog INTERFACE)
 target_sources(logurulog INTERFACE ${loguru_SOURCE_DIR}/loguru.cpp)
 target_include_directories(logurulog INTERFACE ${loguru_SOURCE_DIR})
+target_link_libraries(logurulog INTERFACE Threads::Threads)
 add_library(mmbot::log ALIAS logurulog)

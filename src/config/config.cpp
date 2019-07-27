@@ -35,4 +35,61 @@ namespace antara::mmbot
         j.at("cex_infos").get_to(cfg.cex_registry);
         j.at("price_infos").get_to(cfg.prices_registry);
     }
+
+    void to_json(nlohmann::json &j, const cex_cfg &cfg)
+    {
+        j["cex_endpoint"] = cfg.cex_endpoint.value();
+        j["cex_api_public_key"] = cfg.cex_public_key.value();
+        j["cex_api_private_key"] = cfg.cex_private_key.value();
+    }
+
+    void to_json(nlohmann::json &j, const prices_cfg &cfg)
+    {
+        j["endpoint"] = cfg.api_endpoint.value();
+    }
+
+    void to_json(nlohmann::json &j, const config &cfg)
+    {
+        j["cex_infos"] = nlohmann::json::object();
+        for (auto&&[key, value] : cfg.cex_registry) {
+            j["cex_infos"][key] = value;
+        }
+        j["price_infos"] =  nlohmann::json::object();
+        for (auto&&[key, value] : cfg.prices_registry) {
+            j["price_infos"][key] = value;
+        }
+    }
+
+    bool config::operator==(const config &rhs) const
+    {
+        return cex_registry == rhs.cex_registry &&
+               prices_registry == rhs.prices_registry;
+    }
+
+    bool config::operator!=(const config &rhs) const
+    {
+        return !(rhs == *this);
+    }
+
+    bool prices_cfg::operator==(const prices_cfg &rhs) const
+    {
+        return api_endpoint == rhs.api_endpoint;
+    }
+
+    bool prices_cfg::operator!=(const prices_cfg &rhs) const
+    {
+        return !(rhs == *this);
+    }
+
+    bool cex_cfg::operator==(const cex_cfg &rhs) const
+    {
+        return cex_endpoint == rhs.cex_endpoint &&
+               cex_public_key == rhs.cex_public_key &&
+               cex_private_key == rhs.cex_private_key;
+    }
+
+    bool cex_cfg::operator!=(const cex_cfg &rhs) const
+    {
+        return !(rhs == *this);
+    }
 }

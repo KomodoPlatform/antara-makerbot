@@ -49,4 +49,84 @@ namespace antara::mmbot::tests
         CHECK_THROWS(cfg.prices_registry.at("nonexistent").api_endpoint.value());
         CHECK_THROWS(cfg.cex_registry.at("nonexistent").cex_endpoint.value());
     }
+
+    SCENARIO ("loading configuration")
+    {
+        GIVEN("a configuration doesn't exist in the given path") {
+            AND_WHEN("we load the configuration from a root directory") {
+                THEN("we got a default configuration") {
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+                    REQUIRE_EQ(load_configuration<config>("/foo", "mmbot_config.json"), config{});
+                    REQUIRE_FALSE(std::filesystem::exists("/foo"));
+
+#else
+                    auto res = utils::load_configuration<client::config>(std::filesystem::path("G:\\foo"), "mmbot_config.json");
+                    REQUIRE_EQ(res, config{});
+                    auto path_exist = std::filesystem::exists("G:\\foo");
+                    REQUIRE_FALSE(path_exist);
+#endif
+                }
+            }
+            AND_WHEN ("we load the configuration from a non root directory") {
+                THEN("we create a default configuration in the given path and we got a default configuration") {
+                    REQUIRE_EQ(load_configuration<config>(std::filesystem::current_path() / "my_assets/config", "mmbot_config.json"), config{});
+                    REQUIRE(std::filesystem::exists(std::filesystem::current_path() / "my_assets/config/mmbot_config.json"));
+                }
+                AND_THEN("We clear the directory that we create for this test") {
+                    std::filesystem::remove_all(std::filesystem::current_path() / "my_assets");
+                    REQUIRE_FALSE(std::filesystem::exists(std::filesystem::current_path() / "my_assets"));
+                }
+            }
+        }
+
+        GIVEN ("a configuration exist in the given path") {
+            auto path = std::filesystem::current_path() / "assets";
+            THEN("we create the configuration and the directories") {
+                auto json_mmbot_cfg = R"({
+  "cex_infos": {
+    "binance": {
+      "cex_endpoint": "https://api.binance.com",
+      "cex_api_public_key": "<your public key here>",
+      "cex_api_private_key": "<your private key here>"
+    },
+    "coinbase": {
+      "cex_endpoint": "https://api.pro.coinbase.com",
+      "cex_api_public_key": "<your public key here>",
+      "cex_api_private_key": ""
+    }
+  },
+  "price_infos": {
+    "coinpaprika": {
+      "endpoint": "https://api.coinpaprika.com/v1"
+    }
+  }
+})"_json;
+                std::filesystem::create_directories(path);
+                REQUIRE(std::filesystem::exists(path));
+                std::ofstream ofs(path / "mmbot_example_config.json");
+                REQUIRE(ofs.is_open());
+                ofs << json_mmbot_cfg;
+                REQUIRE(std::filesystem::exists(path / "mmbot_example_config.json"));
+            }
+            AND_WHEN("We load the configuration from this fresh directories") {
+                THEN("We got this config") {
+                    using namespace antara;
+                    config mmbot_cfg{
+                        config::cex_infos_registry{
+                            {
+                            "binance",cex_cfg{st_endpoint{"https://api.binance.com"},st_key{"<your public key here>"}, st_key{"<your private key here>"}}
+                            },
+                            {
+                                "coinbase", cex_cfg{st_endpoint{"https://api.pro.coinbase.com"},st_key{"<your public key here>"}, st_key{""}}
+                            }
+                    }, config::prices_infos_registry{{"coinpaprika", prices_cfg{st_endpoint{"https://api.coinpaprika.com/v1"}}}}};
+                    REQUIRE_EQ(load_configuration<config>(std::move(path), "mmbot_example_config.json"), mmbot_cfg);
+                }
+                AND_THEN("We clear the directory that we create for this test") {
+                    std::filesystem::remove_all(std::filesystem::current_path() / "assets");
+                    REQUIRE_FALSE(std::filesystem::exists(std::filesystem::current_path() / "assets"));
+                }
+            }
+        }
+    }
 }
