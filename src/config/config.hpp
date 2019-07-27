@@ -27,11 +27,11 @@
 
 namespace antara::mmbot
 {
-    struct cex_cfg
+    struct cex_config
     {
-        bool operator==(const cex_cfg &rhs) const;
+        bool operator==(const cex_config &rhs) const;
 
-        bool operator!=(const cex_cfg &rhs) const;
+        bool operator!=(const cex_config &rhs) const;
 
         antara::st_endpoint cex_endpoint;
         antara::st_key cex_public_key;
@@ -53,14 +53,14 @@ namespace antara::mmbot
 
         bool operator!=(const config &rhs) const;
 
-        using cex_infos_registry = std::unordered_map<std::string, cex_cfg>;
+        using cex_infos_registry = std::unordered_map<std::string, cex_config>;
         using prices_infos_registry = std::unordered_map<std::string, price_config>;
         cex_infos_registry cex_registry;
         prices_infos_registry prices_registry;
     };
 
-    void from_json(const nlohmann::json &j, cex_cfg &cfg);
-    void to_json(nlohmann::json &j, const cex_cfg &cfg);
+    void from_json(const nlohmann::json &j, cex_config &cfg);
+    void to_json(nlohmann::json &j, const cex_config &cfg);
 
     void to_json(nlohmann::json &j, const price_config &cfg);
     void from_json(const nlohmann::json &j, price_config &cfg);

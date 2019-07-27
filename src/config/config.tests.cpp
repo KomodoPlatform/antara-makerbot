@@ -114,10 +114,10 @@ namespace antara::mmbot::tests
                     config mmbot_cfg{
                         config::cex_infos_registry{
                             {
-                            "binance",cex_cfg{st_endpoint{"https://api.binance.com"},st_key{"<your public key here>"}, st_key{"<your private key here>"}}
+                            "binance",      cex_config{st_endpoint{"https://api.binance.com"}, st_key{"<your public key here>"}, st_key{"<your private key here>"}}
                             },
                             {
-                                "coinbase", cex_cfg{st_endpoint{"https://api.pro.coinbase.com"},st_key{"<your public key here>"}, st_key{""}}
+                                "coinbase", cex_config{st_endpoint{"https://api.pro.coinbase.com"}, st_key{"<your public key here>"}, st_key{""}}
                             }
                     }, config::prices_infos_registry{{"coinpaprika", price_config{st_endpoint{"https://api.coinpaprika.com/v1"}}}}};
                     REQUIRE_EQ(load_configuration<config>(std::move(path), "mmbot_example_config.json"), mmbot_cfg);
