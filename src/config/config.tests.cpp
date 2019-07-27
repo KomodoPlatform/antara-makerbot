@@ -45,8 +45,8 @@ namespace antara::mmbot::tests
         CHECK_NOTHROW(from_json(json_mmbot_cfg, cfg));
         CHECK_EQ(2, cfg.cex_registry.size());
         CHECK_EQ("https://api.binance.com", cfg.cex_registry["binance"].cex_endpoint.value());
-        CHECK_EQ("https://api.coinpaprika.com/v1", cfg.prices_registry["coinpaprika"].api_endpoint.value());
-        CHECK_THROWS(cfg.prices_registry.at("nonexistent").api_endpoint.value());
+        CHECK_EQ("https://api.coinpaprika.com/v1", cfg.prices_registry["coinpaprika"].price_endpoint.value());
+        CHECK_THROWS(cfg.prices_registry.at("nonexistent").price_endpoint.value());
         CHECK_THROWS(cfg.cex_registry.at("nonexistent").cex_endpoint.value());
     }
 
@@ -119,7 +119,7 @@ namespace antara::mmbot::tests
                             {
                                 "coinbase", cex_cfg{st_endpoint{"https://api.pro.coinbase.com"},st_key{"<your public key here>"}, st_key{""}}
                             }
-                    }, config::prices_infos_registry{{"coinpaprika", prices_cfg{st_endpoint{"https://api.coinpaprika.com/v1"}}}}};
+                    }, config::prices_infos_registry{{"coinpaprika", price_config{st_endpoint{"https://api.coinpaprika.com/v1"}}}}};
                     REQUIRE_EQ(load_configuration<config>(std::move(path), "mmbot_example_config.json"), mmbot_cfg);
                 }
                 AND_THEN("We clear the directory that we create for this test") {
