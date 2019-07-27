@@ -54,7 +54,8 @@ FetchContent_Declare(
         URL https://github.com/doom/strong_type/archive/1.0.1.tar.gz
 )
 
-set(JSON_MultipleHeaders ON)
+SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
+SET(JSON_BuildTests OFF CACHE BOOL "Override option" FORCE)
 
 FetchContent_Declare(
         nlohmann_json
