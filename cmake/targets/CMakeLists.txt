@@ -69,8 +69,12 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru)
 find_package(Threads)
-add_library(logurulog INTERFACE)
-target_sources(logurulog INTERFACE ${loguru_SOURCE_DIR}/loguru.cpp)
-target_include_directories(logurulog INTERFACE ${loguru_SOURCE_DIR})
-target_link_libraries(logurulog INTERFACE Threads::Threads $<$<PLATFORM_ID:Linux>:${CMAKE_DL_LIBS}>)
+add_library(logurulog OBJECT)
+target_sources(logurulog PUBLIC ${loguru_SOURCE_DIR}/loguru.cpp)
+target_include_directories(logurulog PUBLIC ${loguru_SOURCE_DIR})
+if (UNIX)
+    target_link_libraries(logurulog PUBLIC Threads::Threads $<$<PLATFORM_ID:Linux>:${CMAKE_DL_LIBS}>)
+endif ()
+target_compile_definitions(logurulog PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)
+
 add_library(mmbot::log ALIAS logurulog)
