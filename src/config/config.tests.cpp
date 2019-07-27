@@ -60,7 +60,7 @@ namespace antara::mmbot::tests
                     REQUIRE_FALSE(std::filesystem::exists("/foo"));
 
 #else
-                    auto res = utils::load_configuration<client::config>(std::filesystem::path("G:\\foo"), "mmbot_config.json");
+                    auto res = load_configuration<config>(std::filesystem::path("G:\\foo"), "mmbot_config.json");
                     REQUIRE_EQ(res, config{});
                     auto path_exist = std::filesystem::exists("G:\\foo");
                     REQUIRE_FALSE(path_exist);
