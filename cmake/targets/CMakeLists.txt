@@ -62,4 +62,13 @@ FetchContent_Declare(
         URL https://github.com/nlohmann/json/archive/v3.6.1.tar.gz
 )
 
-FetchContent_MakeAvailable(doctest doom_st nlohmann_json)
+FetchContent_Declare(
+        loguru
+        URL https://github.com/emilk/loguru/archive/master.zip
+)
+
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru)
+add_library(logurulog INTERFACE)
+target_sources(logurulog INTERFACE ${loguru_SOURCE_DIR}/loguru.cpp)
+target_include_directories(logurulog INTERFACE ${loguru_SOURCE_DIR})
+add_library(mmbot::log ALIAS logurulog)

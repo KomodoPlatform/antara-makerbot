@@ -6,6 +6,7 @@ function build() {
     cmd="${DEPS_DIR}/cmake/bin/cmake"
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then cmd="cmake"; fi
     options="-DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_C_COMPILER=${CC}"
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then options="-DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/${CXX} -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/${CC}"; fi
     if [[ "${CODE_COVERAGE}" == "ON" ]] && [[ "${BUILD_TYPE}" == "Debug" ]]; then
         options+=' -DENABLE_COVERAGE=ON'
     elif [[ "${ASAN}" == "ON" ]] && [[ "${BUILD_TYPE}" == "Debug" ]]; then
