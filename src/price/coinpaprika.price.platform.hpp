@@ -16,43 +16,25 @@
 
 #pragma once
 
-#include <string>
-#include <st/type.hpp>
-#include <st/traits.hpp>
+#include <unordered_map>
+#include "abstract.price.platform.hpp"
 
-namespace antara
+namespace antara::mmbot
 {
-    using st_endpoint = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_key = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_quote = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_base = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    struct pair
+    class coinpaprika_price_platform : public abstract_price_platform
     {
-        st_quote quote;
-        st_base base;
+    public:
+        explicit coinpaprika_price_platform(const config &cfg) : abstract_price_platform(cfg)
+        {
+
+        }
+
+        double get_price(antara::pair currency_pair) final;
+
+        ~coinpaprika_price_platform() override = default;
+
+    private:
+        using coinpaprika_coin_id_translation_registry = std::unordered_map<std::string, std::string>;
+        coinpaprika_coin_id_translation_registry coin_id_translation_{{"KMD", "kmd-komodo"}};
     };
 }

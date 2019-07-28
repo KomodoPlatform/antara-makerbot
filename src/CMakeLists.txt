@@ -1,8 +1,8 @@
 add_library(mmbot_shared_deps INTERFACE)
-target_sources(mmbot_shared_deps INTERFACE config/config.cpp)
+target_sources(mmbot_shared_deps INTERFACE config/config.cpp price/coinpaprika.price.platform.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)
 target_include_directories(mmbot_shared_deps INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(mmbot_shared_deps INTERFACE mmbot::log mmbot::default_settings nlohmann_json::nlohmann_json strong_type
+target_link_libraries(mmbot_shared_deps INTERFACE mmbot::log restclient-cpp mmbot::default_settings nlohmann_json::nlohmann_json strong_type
         $<$<AND:$<PLATFORM_ID:Linux>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
         $<$<PLATFORM_ID:Darwin>:c++fs>)
 
@@ -15,7 +15,7 @@ target_sources(mmbot PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 target_link_libraries(mmbot PUBLIC mmbot_shared_deps)
 
 add_executable(mmbot-test)
-target_sources(mmbot-test PUBLIC mmbot.tests.cpp cex/cex.tests.cpp config/config.tests.cpp)
+target_sources(mmbot-test PUBLIC mmbot.tests.cpp cex/cex.tests.cpp config/config.tests.cpp price/coinpaprika.price.platform.tests.cpp)
 target_link_libraries(mmbot-test PRIVATE doctest PUBLIC mmbot_shared_deps)
 target_enable_coverage(mmbot-test)
 

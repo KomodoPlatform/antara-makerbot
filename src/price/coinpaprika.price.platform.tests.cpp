@@ -14,45 +14,17 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <memory>
+#include <doctest/doctest.h>
+#include "coinpaprika.price.platform.hpp"
 
-#include <string>
-#include <st/type.hpp>
-#include <st/traits.hpp>
-
-namespace antara
+namespace antara::mmbot::tests
 {
-    using st_endpoint = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_key = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_quote = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_base = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    struct pair
+    TEST_CASE ("simple get price coinpaprika")
     {
-        st_quote quote;
-        st_base base;
-    };
+        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        std::unique_ptr<abstract_price_platform> price_platform = std::make_unique<coinpaprika_price_platform>(cfg);
+        antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
+        CHECK_GT(price_platform->get_price(currency_pair), 0);
+    }
 }
