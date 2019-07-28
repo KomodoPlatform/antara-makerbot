@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <exception>
 #include <nlohmann/json.hpp>
 #include <restclient-cpp/restclient.h>
 #include "coinpaprika.price.platform.hpp"
@@ -36,7 +37,11 @@ namespace antara::mmbot
                 auto resp_json = nlohmann::json::parse(response.body);
                 auto price = resp_json["quotes"][currency_pair.quote.value()]["price"].get<double>();
                 return price;
+            } else {
+                throw std::runtime_error("http error: " + std::to_string(response.code));
             }
+        } else {
+            throw std::runtime_error("base: " + currency_pair.base.value() + " not found");
         }
         return 0;
     }
