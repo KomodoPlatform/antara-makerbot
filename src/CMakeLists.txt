@@ -24,4 +24,8 @@ set_target_properties(mmbot-test mmbot
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
         )
 
-configure_file(${PROJECT_SOURCE_DIR}/assets/mmbot_config.json ${CMAKE_BINARY_DIR}/bin/assets/mmbot_config.json COPYONLY)
+if (UNIX)
+    configure_file(${PROJECT_SOURCE_DIR}/assets/mmbot_config.json ${CMAKE_BINARY_DIR}/bin/assets/mmbot_config.json COPYONLY)
+else()
+    configure_file(${PROJECT_SOURCE_DIR}/assets/mmbot_config.json ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/assets/mmbot_config.json COPYONLY)
+endif ()
