@@ -83,7 +83,15 @@ endif ()
 target_compile_definitions(logurulog PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)
 
 add_library(mmbot::log ALIAS logurulog)
-add_library(restclient_headers INTERFACE)
-target_link_libraries(restclient_headers INTERFACE restclient-cpp)
-target_include_directories(restclient_headers INTERFACE ${restclient-cpp_SOURCE_DIR}/include ${restclient-cpp_BINARY_DIR}/include)
-add_library(mmbot::http ALIAS restclient_headers)
+
+find_package(CURL REQUIRED)
+add_library(restclient_obj STATIC)
+target_sources(restclient_obj PRIVATE
+        ${restclient-cpp_SOURCE_DIR}/source/connection.cc
+        ${restclient-cpp_SOURCE_DIR}/source/helpers.cc
+        ${restclient-cpp_SOURCE_DIR}/source/restclient.cc)
+target_compile_features(restclient_obj PRIVATE cxx_std_11)
+
+target_link_libraries(restclient_obj PUBLIC CURL::libcurl Threads::Threads)
+target_include_directories(restclient_obj PUBLIC ${restclient-cpp_SOURCE_DIR}/include ${restclient-cpp_BINARY_DIR}/include)
+add_library(mmbot::http ALIAS restclient_obj)
