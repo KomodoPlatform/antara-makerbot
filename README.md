@@ -20,6 +20,7 @@ To build the project please follow the instructions below:
 ```bash
 mkdir build ## bash or powershell
 cd build ## bash or powershell
+cmake ../
 cmake --build . --config Release
 ```
 
