@@ -85,5 +85,5 @@ target_compile_definitions(logurulog PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECUR
 add_library(mmbot::log ALIAS logurulog)
 add_library(restclient_headers INTERFACE)
 target_link_libraries(restclient_headers INTERFACE restclient-cpp)
-target_include_directories(restclient_headers INTERFACE ${restclient-cpp_SOURCE_DIR}/include)
+target_include_directories(restclient_headers INTERFACE ${restclient-cpp_SOURCE_DIR}/include ${restclient-cpp_BINARY_DIR}/include)
 add_library(mmbot::http ALIAS restclient_headers)
