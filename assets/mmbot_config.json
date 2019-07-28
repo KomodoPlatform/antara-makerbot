@@ -1,0 +1,19 @@
+{
+  "cex_infos_registry": {
+    "binance": {
+      "cex_endpoint": "https://api.binance.com",
+      "cex_api_public_key": "<your public key here>",
+      "cex_api_private_key": "<your private key here>"
+    },
+    "coinbase": {
+      "cex_endpoint": "https://api.pro.coinbase.com",
+      "cex_api_public_key": "<your public key here>",
+      "cex_api_private_key": ""
+    }
+  },
+  "price_infos_registry": {
+    "coinpaprika": {
+      "price_endpoint": "https://api.coinpaprika.com/v1"
+    }
+  }
+}

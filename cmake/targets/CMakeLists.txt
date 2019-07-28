@@ -49,4 +49,32 @@ FetchContent_Declare(
         URL https://github.com/onqtam/doctest/archive/2.3.3.tar.gz
 )
 
-FetchContent_MakeAvailable(doctest)
+FetchContent_Declare(
+        doom_st
+        URL https://github.com/doom/strong_type/archive/1.0.1.tar.gz
+)
+
+SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
+SET(JSON_BuildTests OFF CACHE BOOL "Override option" FORCE)
+
+FetchContent_Declare(
+        nlohmann_json
+        URL https://github.com/nlohmann/json/archive/v3.6.1.tar.gz
+)
+
+FetchContent_Declare(
+        loguru
+        URL https://github.com/emilk/loguru/archive/master.zip
+)
+
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru)
+find_package(Threads)
+add_library(logurulog OBJECT)
+target_sources(logurulog PUBLIC ${loguru_SOURCE_DIR}/loguru.cpp)
+target_include_directories(logurulog PUBLIC ${loguru_SOURCE_DIR})
+if (UNIX)
+    target_link_libraries(logurulog PUBLIC Threads::Threads $<$<PLATFORM_ID:Linux>:${CMAKE_DL_LIBS}>)
+endif ()
+target_compile_definitions(logurulog PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)
+
+add_library(mmbot::log ALIAS logurulog)
