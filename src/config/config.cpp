@@ -21,8 +21,8 @@ namespace antara::mmbot
     void from_json(const nlohmann::json &j, cex_config &cfg)
     {
         cfg.cex_endpoint = st_endpoint{j.at("cex_endpoint").get<std::string>()};
-        cfg.cex_public_key = st_endpoint{j.at("cex_api_public_key").get<std::string>()};
-        cfg.cex_private_key = st_endpoint{j.at("cex_api_private_key").get<std::string>()};
+        cfg.cex_public_key = st_key{j.at("cex_api_public_key").get<std::string>()};
+        cfg.cex_private_key = st_key{j.at("cex_api_private_key").get<std::string>()};
     }
 
     void from_json(const nlohmann::json &j, price_config &cfg)
@@ -73,7 +73,7 @@ namespace antara::mmbot
 
     bool price_config::operator==(const price_config &rhs) const
     {
-        return price_endpoint.value() == rhs.price_endpoint.value();
+        return price_endpoint == rhs.price_endpoint;
     }
 
     bool price_config::operator!=(const price_config &rhs) const
@@ -83,9 +83,9 @@ namespace antara::mmbot
 
     bool cex_config::operator==(const cex_config &rhs) const
     {
-        return cex_endpoint.value() == rhs.cex_endpoint.value() &&
-               cex_public_key.value() == rhs.cex_public_key.value() &&
-               cex_private_key.value() == rhs.cex_private_key.value();
+        return cex_endpoint == rhs.cex_endpoint &&
+               cex_public_key == rhs.cex_public_key &&
+               cex_private_key == rhs.cex_private_key;
     }
 
     bool cex_config::operator!=(const cex_config &rhs) const

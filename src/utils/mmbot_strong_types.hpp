@@ -31,24 +31,29 @@ namespace antara
 
     using st_key = st::type<
             std::string,
-            struct endpoint_tag,
+            struct key_tag,
             st::equality_comparable,
             st::addable_with<char *>,
             st::addable_with<const char *>>;
 
     using st_quote = st::type<
             std::string,
-            struct endpoint_tag,
+            struct quote_tag,
             st::equality_comparable,
             st::addable_with<char *>,
             st::addable_with<const char *>>;
 
     using st_base = st::type<
             std::string,
-            struct endpoint_tag,
+            struct base_tag,
             st::equality_comparable,
             st::addable_with<char *>,
             st::addable_with<const char *>>;
+
+    using st_price = st::type<
+            double,
+            struct price_tag,
+            st::arithmetic>;
 
     struct pair
     {
