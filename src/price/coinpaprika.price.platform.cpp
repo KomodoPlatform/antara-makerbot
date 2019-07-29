@@ -23,26 +23,21 @@ namespace antara::mmbot
     st_price coinpaprika_price_platform::get_price(antara::pair currency_pair)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        if (this->coin_id_translation_.find(currency_pair.base.value()) != this->coin_id_translation_.end()) {
-            std::string path = "/tickers/" + this->coin_id_translation_.at(currency_pair.base.value());
-            if (!currency_pair.quote.value().empty()) {
-                path += "?quotes=" + currency_pair.quote.value();
-            }
+        if (this->coin_id_translation_.find(currency_pair.base.value()) != this->coin_id_translation_.end() &&
+            this->coin_id_translation_.find(currency_pair.quote.value()) != this->coin_id_translation_.end()) {
+            std::string path =
+                    "/price-converter?base_currency_id=" + this->coin_id_translation_.at(currency_pair.base.value()) +
+                    "&quote_currency_id=" + this->coin_id_translation_.at(currency_pair.quote.value()) + "&amount=1";
             auto final_uri = mmbot_config_.prices_registry.at("coinpaprika").price_endpoint.value() + path;
             DVLOG_F(loguru::Verbosity_INFO, "request: %s", final_uri.c_str());
             auto response = RestClient::get(final_uri);
             DVLOG_F(loguru::Verbosity_INFO, "response: %s\nstatus: %d", response.body.c_str(), response.code);
             if (response.code == 200) {
                 auto resp_json = nlohmann::json::parse(response.body);
-                auto price = st_price{resp_json["quotes"][currency_pair.quote.value()]["price"].get<double>()};
+                auto price = st_price{resp_json["price"].get<double>()};
                 return price;
             } else {
                 DVLOG_F(loguru::Verbosity_ERROR, "http error: %d", response.code);
-                auto base_btc_price = get_price(antara::pair{st_quote{"BTC"}, currency_pair.base});
-                auto quote_btc_price = get_price(antara::pair{st_quote{"BTC"}, st_base{currency_pair.quote.value()}});
-                if (base_btc_price.value() != 0.0 && quote_btc_price.value() != 0.0) {
-                    return st_price{base_btc_price.value() / quote_btc_price.value()};
-                }
             }
         } else {
             DVLOG_F(loguru::Verbosity_ERROR, "base: %s not found", currency_pair.base.value().c_str());
