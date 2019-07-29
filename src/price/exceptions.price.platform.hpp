@@ -16,48 +16,22 @@
 
 #pragma once
 
-#include <string>
-#include <st/type.hpp>
-#include <st/traits.hpp>
+#include <stdexcept>
 
-namespace antara
+namespace antara::mmbot::errors
 {
-    using st_endpoint = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_key = st::type<
-            std::string,
-            struct key_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_quote = st::type<
-            std::string,
-            struct quote_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_base = st::type<
-            std::string,
-            struct base_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_price = st::type<
-            double,
-            struct price_tag,
-            st::arithmetic, st::addable_with<double>>;
-
-    struct pair
+    class pair_not_available : public std::runtime_error
     {
-        st_quote quote;
-        st_base base;
+    public:
+        pair_not_available() noexcept : std::runtime_error("pair not available")
+        {
+
+        }
+
+        ~pair_not_available() noexcept final = default;
+        [[nodiscard]] const char *what() const noexcept final
+        {
+            return runtime_error::what();
+        }
     };
 }

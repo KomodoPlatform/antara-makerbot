@@ -16,48 +16,24 @@
 
 #pragma once
 
-#include <string>
-#include <st/type.hpp>
-#include <st/traits.hpp>
+#include <algorithm>
+#include <memory>
+#include <unordered_map>
+#include "factory.price.platform.hpp"
+#include "abstract.price.platform.hpp"
 
-namespace antara
+namespace antara::mmbot
 {
-    using st_endpoint = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_key = st::type<
-            std::string,
-            struct key_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_quote = st::type<
-            std::string,
-            struct quote_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_base = st::type<
-            std::string,
-            struct base_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_price = st::type<
-            double,
-            struct price_tag,
-            st::arithmetic, st::addable_with<double>>;
-
-    struct pair
+    class price_service_platform
     {
-        st_quote quote;
-        st_base base;
+    public:
+        explicit price_service_platform(const config &cfg) noexcept;
+
+        st_price get_price(antara::pair currency_pair);
+
+    private:
+        using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
+        [[maybe_unused]] const config &mmbot_config_;
+        registry_platform_price registry_platform_price_{};
     };
 }

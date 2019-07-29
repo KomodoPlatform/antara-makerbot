@@ -17,47 +17,26 @@
 #pragma once
 
 #include <string>
-#include <st/type.hpp>
-#include <st/traits.hpp>
+#include <memory>
+#include "abstract.price.platform.hpp"
+#include "coinpaprika.price.platform.hpp"
 
-namespace antara
+namespace antara::mmbot
 {
-    using st_endpoint = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
+    using price_platform_name = std::string;
+    using price_platform_ptr = std::unique_ptr<abstract_price_platform>;
 
-    using st_key = st::type<
-            std::string,
-            struct key_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_quote = st::type<
-            std::string,
-            struct quote_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_base = st::type<
-            std::string,
-            struct base_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_price = st::type<
-            double,
-            struct price_tag,
-            st::arithmetic, st::addable_with<double>>;
-
-    struct pair
+    class factory_price_platform
     {
-        st_quote quote;
-        st_base base;
+    public:
+        template <typename ... Args>
+        static price_platform_ptr create(const price_platform_name& price_platform_name, Args&&... args) noexcept
+        {
+            VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+            if (price_platform_name == "coinpaprika") {
+                return std::make_unique<coinpaprika_price_platform>(std::forward<Args>(args)...);
+            }
+            return nullptr;
+        }
     };
 }

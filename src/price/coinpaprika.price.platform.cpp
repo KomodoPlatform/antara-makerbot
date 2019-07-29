@@ -22,8 +22,8 @@ namespace antara::mmbot
 {
     st_price coinpaprika_price_platform::get_price(antara::pair currency_pair)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         if (this->coin_id_translation_.find(currency_pair.base.value()) != this->coin_id_translation_.end()) {
-            VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
             std::string path = "/tickers/" + this->coin_id_translation_.at(currency_pair.base.value());
             if (!currency_pair.quote.value().empty()) {
                 path += "?quotes=" + currency_pair.quote.value();
