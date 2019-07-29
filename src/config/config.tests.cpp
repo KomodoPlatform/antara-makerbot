@@ -80,7 +80,7 @@ namespace antara::mmbot::tests
         }
 
         GIVEN ("a configuration exist in the given path") {
-            auto path = std::filesystem::current_path() / "assets";
+            auto path = std::filesystem::current_path() / "example_assets";
             THEN("we create the configuration and the directories") {
                 auto json_mmbot_cfg = R"({
   "cex_infos_registry": {
@@ -123,8 +123,8 @@ namespace antara::mmbot::tests
                     REQUIRE_EQ(load_configuration<config>(std::move(path), "mmbot_example_config.json"), mmbot_cfg);
                 }
                 AND_THEN("We clear the directory that we create for this test") {
-                    std::filesystem::remove_all(std::filesystem::current_path() / "assets");
-                    REQUIRE_FALSE(std::filesystem::exists(std::filesystem::current_path() / "assets"));
+                    std::filesystem::remove_all(std::filesystem::current_path() / "example_assets");
+                    REQUIRE_FALSE(std::filesystem::exists(std::filesystem::current_path() / "example_assets"));
                 }
             }
         }

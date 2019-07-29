@@ -67,7 +67,12 @@ FetchContent_Declare(
         URL https://github.com/emilk/loguru/archive/master.zip
 )
 
-FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru)
+FetchContent_Declare(
+        restclient-cpp
+        URL https://github.com/mrtazz/restclient-cpp/archive/master.zip
+)
+
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp)
 find_package(Threads)
 add_library(logurulog OBJECT)
 target_sources(logurulog PUBLIC ${loguru_SOURCE_DIR}/loguru.cpp)
@@ -78,3 +83,15 @@ endif ()
 target_compile_definitions(logurulog PUBLIC $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)
 
 add_library(mmbot::log ALIAS logurulog)
+
+find_package(CURL REQUIRED)
+add_library(restclient_obj STATIC)
+target_sources(restclient_obj PRIVATE
+        ${restclient-cpp_SOURCE_DIR}/source/connection.cc
+        ${restclient-cpp_SOURCE_DIR}/source/helpers.cc
+        ${restclient-cpp_SOURCE_DIR}/source/restclient.cc)
+target_compile_features(restclient_obj PRIVATE cxx_std_11)
+
+target_link_libraries(restclient_obj PUBLIC CURL::libcurl Threads::Threads)
+target_include_directories(restclient_obj PUBLIC ${restclient-cpp_SOURCE_DIR}/include ${restclient-cpp_BINARY_DIR}/include)
+add_library(mmbot::http ALIAS restclient_obj)

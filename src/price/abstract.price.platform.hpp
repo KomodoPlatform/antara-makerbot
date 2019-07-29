@@ -16,48 +16,23 @@
 
 #pragma once
 
-#include <string>
-#include <st/type.hpp>
-#include <st/traits.hpp>
+#include <utils/mmbot_strong_types.hpp>
+#include <config/config.hpp>
 
-namespace antara
+namespace antara::mmbot
 {
-    using st_endpoint = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_key = st::type<
-            std::string,
-            struct key_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_quote = st::type<
-            std::string,
-            struct quote_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_base = st::type<
-            std::string,
-            struct base_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_price = st::type<
-            double,
-            struct price_tag,
-            st::arithmetic>;
-
-    struct pair
+    class abstract_price_platform
     {
-        st_quote quote;
-        st_base base;
+    public:
+        explicit abstract_price_platform(const config &cfg) noexcept : mmbot_config_(cfg)
+        {
+
+        }
+
+        virtual st_price get_price(antara::pair currency_pair) = 0;
+        virtual ~abstract_price_platform() = default;
+
+    protected:
+        const config &mmbot_config_;
     };
 }

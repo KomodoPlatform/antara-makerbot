@@ -21,8 +21,8 @@ namespace antara::mmbot
     void from_json(const nlohmann::json &j, cex_config &cfg)
     {
         cfg.cex_endpoint = st_endpoint{j.at("cex_endpoint").get<std::string>()};
-        cfg.cex_public_key = st_endpoint{j.at("cex_api_public_key").get<std::string>()};
-        cfg.cex_private_key = st_endpoint{j.at("cex_api_private_key").get<std::string>()};
+        cfg.cex_public_key = st_key{j.at("cex_api_public_key").get<std::string>()};
+        cfg.cex_private_key = st_key{j.at("cex_api_private_key").get<std::string>()};
     }
 
     void from_json(const nlohmann::json &j, price_config &cfg)
