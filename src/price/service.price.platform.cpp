@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <numeric>
 #include "exceptions.price.platform.hpp"
 #include "service.price.platform.hpp"
 
@@ -22,7 +23,7 @@ namespace antara::mmbot
     price_service_platform::price_service_platform(const config &cfg) noexcept : mmbot_config_(cfg)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        for (auto [platform_name, platform_cfg]: cfg.prices_registry) {
+        for (auto[platform_name, platform_cfg]: cfg.prices_registry) {
             auto current_price_platform_ptr = factory_price_platform::create(platform_name, cfg);
             if (current_price_platform_ptr != nullptr) {
                 registry_platform_price_.emplace(platform_name, std::move(current_price_platform_ptr));
@@ -35,13 +36,13 @@ namespace antara::mmbot
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         st_price asset_price{0.0};
         std::size_t nb_calls_succeed = 0u;
-        for (auto &&[current_platform_name, current_price_platform_ptr] : registry_platform_price_) {
-            auto current_price = current_price_platform_ptr->get_price(currency_pair);
-            if (current_price.value() != 0.0) {
-                asset_price = asset_price + current_price;
-                nb_calls_succeed += 1;
-            }
-        }
+        asset_price = std::accumulate(begin(registry_platform_price_),
+                        end(registry_platform_price_), asset_price,
+                        [&currency_pair, &nb_calls_succeed](auto result, auto &&pair) {
+                            auto current_price = pair.second->get_price(currency_pair);
+                            nb_calls_succeed += current_price.value() != 0.0;
+                            return result + current_price;
+                        });
         if (nb_calls_succeed == 0) {
             throw errors::pair_not_available();
         }
