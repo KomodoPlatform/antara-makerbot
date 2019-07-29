@@ -73,7 +73,7 @@ namespace antara::mmbot
 
     bool price_config::operator==(const price_config &rhs) const
     {
-        return price_endpoint == rhs.price_endpoint;
+        return price_endpoint.value() == rhs.price_endpoint.value();
     }
 
     bool price_config::operator!=(const price_config &rhs) const
@@ -83,9 +83,9 @@ namespace antara::mmbot
 
     bool cex_config::operator==(const cex_config &rhs) const
     {
-        return cex_endpoint == rhs.cex_endpoint &&
-               cex_public_key == rhs.cex_public_key &&
-               cex_private_key == rhs.cex_private_key;
+        return cex_endpoint.value() == rhs.cex_endpoint.value() &&
+               cex_public_key.value() == rhs.cex_public_key.value() &&
+               cex_private_key.value() == rhs.cex_private_key.value();
     }
 
     bool cex_config::operator!=(const cex_config &rhs) const
