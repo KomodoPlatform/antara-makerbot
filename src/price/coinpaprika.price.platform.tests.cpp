@@ -28,6 +28,15 @@ namespace antara::mmbot::tests
         CHECK_GT(price_platform->get_price(currency_pair).value(), 0.0);
     }
 
+    TEST_CASE ("simple get price coinpaprika working with unknown pair")
+    {
+        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        std::unique_ptr<abstract_price_platform> price_platform = std::make_unique<coinpaprika_price_platform>(cfg);
+        antara::pair currency_pair{st_quote{"DOGE"}, st_base{"KMD"}};
+        auto res = price_platform->get_price(currency_pair).value();
+        CHECK_GT(res, 0.0);
+    }
+
     TEST_CASE ("simple get price coinpaprika wrong base")
     {
         auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");

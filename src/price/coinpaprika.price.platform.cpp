@@ -38,6 +38,11 @@ namespace antara::mmbot
                 return price;
             } else {
                 DVLOG_F(loguru::Verbosity_ERROR, "http error: %d", response.code);
+                auto base_btc_price = get_price(antara::pair{st_quote{"BTC"}, currency_pair.base});
+                auto quote_btc_price = get_price(antara::pair{st_quote{"BTC"}, st_base{currency_pair.quote.value()}});
+                if (base_btc_price.value() != 0.0 && quote_btc_price.value() != 0.0) {
+                    return st_price{base_btc_price.value() / quote_btc_price.value()};
+                }
             }
         } else {
             DVLOG_F(loguru::Verbosity_ERROR, "base: %s not found", currency_pair.base.value().c_str());
