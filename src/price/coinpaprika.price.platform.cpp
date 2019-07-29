@@ -14,7 +14,6 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <exception>
 #include <nlohmann/json.hpp>
 #include <restclient-cpp/restclient.h>
 #include "coinpaprika.price.platform.hpp"

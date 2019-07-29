@@ -29,7 +29,7 @@ namespace antara::mmbot
 
         }
 
-        virtual st_price get_price(antara::pair currencyPair) = 0;
+        virtual st_price get_price(antara::pair currency_pair) = 0;
         virtual ~abstract_price_platform() = default;
 
     protected:
