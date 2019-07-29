@@ -34,15 +34,15 @@ namespace antara::mmbot
     st_price price_service_platform::get_price(antara::pair currency_pair)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        st_price asset_price{0.0};
         std::size_t nb_calls_succeed = 0u;
-        asset_price = std::accumulate(begin(registry_platform_price_),
-                        end(registry_platform_price_), asset_price,
-                        [&currency_pair, &nb_calls_succeed](auto result, auto &&pair) {
-                            auto current_price = pair.second->get_price(currency_pair);
-                            nb_calls_succeed += current_price.value() != 0.0;
-                            return result + current_price;
-                        });
+        auto price_functor = [&](auto result, auto &&pair) {
+            auto&&[current_platform_name, current_price_platform_ptr] = pair;
+            auto current_price = current_price_platform_ptr->get_price(currency_pair);
+            nb_calls_succeed += current_price.value() != 0.0;
+            return result + current_price;
+        };
+        auto asset_price = std::accumulate(begin(registry_platform_price_), end(registry_platform_price_),
+                                           st_price{0.0}, price_functor);
         if (nb_calls_succeed == 0) {
             throw errors::pair_not_available();
         }
