@@ -17,6 +17,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include <utils/mmbot_strong_types.hpp>
+
 namespace antara {
   struct asset {
     std::string symbol;
@@ -24,13 +26,13 @@ namespace antara {
     bool operator==(const asset &other) const;
   };
 
-  struct pair {
-    antara::asset base;
-    antara::asset quote;
+  // struct pair {
+  //   antara::asset base;
+  //   antara::asset quote;
 
-    std::pair<antara::asset, antara::asset> to_std_pair();
+  //   std::pair<antara::asset, antara::asset> to_std_pair();
 
-    bool operator==(const pair &rhs) const;
-  };
+  //   bool operator==(const pair &rhs) const;
+  // };
 }
 

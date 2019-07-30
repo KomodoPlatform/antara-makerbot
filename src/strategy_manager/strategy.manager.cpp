@@ -24,8 +24,8 @@ namespace antara {
     return symbol == other.symbol;
   };
 
-  std::pair<antara::asset, antara::asset> pair::to_std_pair() {
-    return std::pair<antara::asset, antara::asset>(base, quote);
+  std::pair<st_quote, st_base> pair::to_std_pair() {
+    return std::pair<st_quote, st_base>(quote, base);
   };
 
   bool pair::operator==(const pair &rhs) const {
@@ -40,10 +40,9 @@ namespace std {
     std::size_t operator()(const antara::pair& p) const {
       using std::size_t;
       using std::hash;
-      using std::string;
 
-      std::size_t h1 = std::hash<std::string>{}(p.base.symbol);
-      std::size_t h2 = std::hash<std::string>{}(p.quote.symbol);
+      std::size_t h1 = std::hash<std::string>{}(p.base.value());
+      std::size_t h2 = std::hash<std::string>{}(p.quote.value());
 
       return h1 ^ (h2 << 1);
     }
@@ -52,21 +51,21 @@ namespace std {
 
 enum class Side { BUY, SELL, BOTH };
 
-class MMStrategy {
+class market_making_strategy {
 public:
   antara::pair pair;
-  float spread;
-  float quantity;
+  antara::st_spread spread;
+  antara::st_quantity quantity;
   Side side;
 };
 
 class OrderLevel {
 public:
-  float price;
-  float quantity;
+  antara::st_price price;
+  antara::st_quantity quantity;
   Side side;
 
-  OrderLevel(float price, float quantity, Side side) {
+  OrderLevel(antara::st_price price, antara::st_quantity quantity, Side side) {
     this->price = price;
     this->quantity = quantity;
     this->side = side;
@@ -91,35 +90,37 @@ class StrategyManager {
 public:
   StrategyManager() {}
 
-  void add_strategy(antara::pair pair, MMStrategy strat) {
-    strategies.insert(std::pair<antara::pair, MMStrategy>(pair, strat));
+  void add_strategy(antara::pair pair, market_making_strategy strat) {
+    strategies.insert(std::pair<antara::pair, market_making_strategy>(pair, strat));
   }
 
-  MMStrategy get_strategy(antara::pair pair) {
+  market_making_strategy get_strategy(antara::pair pair) {
     return strategies.at(pair);
   }
 
 private:
-  std::unordered_map<antara::pair, MMStrategy> strategies;
+  std::unordered_map<antara::pair, market_making_strategy> strategies;
 
-  OrderLevel make_bid(float mid, float spread, float quantity) {
-    float price = mid * (1.0 - spread);
+  OrderLevel make_bid(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) {
+    antara::st_spread mod = antara::st_spread{1.0} - spread;
+    antara::st_price price = antara::st_price{mid.value() * mod.value()};
     Side side = Side::BUY;
-    OrderLevel ol(price, quantity, side);
+    OrderLevel ol(antara::st_price{price}, quantity, side);
     return ol;
   }
 
-  OrderLevel make_ask(float mid, float spread, float quantity) {
-    float price = mid * (1.0 + spread);
+  OrderLevel make_ask(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) {
+    antara::st_spread mod = antara::st_spread{1.0} + spread;
+    antara::st_price price = antara::st_price{mid.value() * mod.value()};
     Side side = Side::SELL;
     OrderLevel ol(price, quantity, side);
     return ol;
   }
 
-  OrderSet create_order_level(antara::pair pair, MMStrategy strat, float mid) {
+  OrderSet create_order_level(antara::pair pair, market_making_strategy strat, antara::st_price mid) {
     Side side = strat.side;
-    float spread = strat.spread;
-    float quantity = strat.quantity;
+    antara::st_spread spread = strat.spread;
+    antara::st_quantity quantity = strat.quantity;
 
     OrderSet os;
 

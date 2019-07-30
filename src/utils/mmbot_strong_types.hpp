@@ -50,14 +50,33 @@ namespace antara
             st::addable_with<char *>,
             st::addable_with<const char *>>;
 
+    using st_spread = st::type<
+            double,
+            struct spread_tab,
+            st::arithmetic
+            >;
+
     using st_price = st::type<
             double,
             struct price_tag,
-            st::arithmetic, st::addable_with<double>>;
+            st::arithmetic,
+            st::addable_with<double>,
+            st::multiplicable_with<double>
+            >;
+
+    using st_quantity = st::type<
+            double,
+            struct quantity_tab,
+            st::arithmetic,
+            st::addable_with<double>
+            >;
 
     struct pair
     {
         st_quote quote;
         st_base base;
+
+        std::pair<st_quote, st_base> to_std_pair();
+        bool operator==(const pair &rhs) const;
     };
 }
