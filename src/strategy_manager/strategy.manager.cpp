@@ -91,7 +91,7 @@ public:
   StrategyManager() {}
 
   void add_strategy(antara::pair pair, market_making_strategy strat) {
-    strategies.insert(std::pair<antara::pair, market_making_strategy>(pair, strat));
+    strategies.emplace(pair, strat);
   }
 
   market_making_strategy get_strategy(antara::pair pair) {
