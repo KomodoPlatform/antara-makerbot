@@ -26,7 +26,7 @@ namespace antara
         tf::Executor executor;
         tf::Taskflow taskflow;
         for (; first != last; ++first) {
-            taskflow.emplace([&f, first]() { f(*first); });
+            taskflow.emplace([f, first]() { f(*first); });
         }
         executor.run(taskflow);
         executor.wait_for_all();
