@@ -24,7 +24,7 @@ target_sources(mmbot-test PUBLIC
         price/service.price.platform.tests.cpp)
 target_link_libraries(mmbot-test PRIVATE doctest PUBLIC mmbot_shared_deps)
 target_enable_coverage(mmbot-test)
-
+target_enable_tsan(mmbot-test)
 set_target_properties(mmbot-test mmbot
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

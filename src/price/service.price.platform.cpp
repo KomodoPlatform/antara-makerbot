@@ -39,10 +39,16 @@ namespace antara::mmbot
         tf::Executor executor;
         tf::Taskflow taskflow;
         std::atomic<double> price;
+        std::mutex mutex;
         auto price_functor = [&](const auto &current_price_platform_ptr) {
             auto current_price = current_price_platform_ptr->get_price(currency_pair).value();
-            nb_calls_succeed += (current_price != 0.0);
-            price = price + current_price;
+            if( current_price != 0.0 ) {
+                ++nb_calls_succeed;
+            }
+            {
+                auto const lck = std::lock_guard(mutex);
+                price = price + current_price;
+            }
         };
         for (auto &&current_platform_price : registry_platform_price_) {
             const auto &current_price_platform_ptr = current_platform_price.second;
