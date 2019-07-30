@@ -14,50 +14,20 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <doctest/doctest.h>
+#include "factory.price.platform.hpp"
 
-#include <string>
-#include <st/type.hpp>
-#include <st/traits.hpp>
-
-namespace antara
+namespace antara::mmbot::tests
 {
-    using st_endpoint = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_key = st::type<
-            std::string,
-            struct key_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_quote = st::type<
-            std::string,
-            struct quote_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_base = st::type<
-            std::string,
-            struct base_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_price = st::type<
-            double,
-            struct price_tag,
-            st::arithmetic, st::addable_with<double>>;
-
-    struct pair
+    TEST_CASE ("factory price platform good parameters")
     {
-        st_quote quote;
-        st_base base;
-    };
+        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        CHECK_NOTNULL_F(factory_price_platform::create("coinpaprika", cfg), "should not be nullptr");
+    }
+
+    TEST_CASE ("factory price platform wrong parameters")
+    {
+        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        CHECK_EQ_F(factory_price_platform::create("nonexistent", cfg), nullptr, "should be nullptr");
+    }
 }

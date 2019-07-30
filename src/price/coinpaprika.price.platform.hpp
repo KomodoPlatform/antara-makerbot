@@ -35,6 +35,10 @@ namespace antara::mmbot
 
     private:
         using coinpaprika_coin_id_translation_registry = std::unordered_map<std::string, std::string>;
-        coinpaprika_coin_id_translation_registry coin_id_translation_{{"KMD", "kmd-komodo"}};
+        coinpaprika_coin_id_translation_registry coin_id_translation_{{"KMD",  "kmd-komodo"},
+                                                                      {"BTC",  "btc-bitcoin"},
+                                                                      {"DOGE", "doge-dogecoin"},
+                                                                      {"USD",  "usd-us-dollars"},
+                                                                      {"EUR",  "eur-euro"}};
     };
 }

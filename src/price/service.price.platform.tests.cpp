@@ -14,50 +14,33 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <doctest/doctest.h>
+#include "service.price.platform.hpp"
+#include "exceptions.price.platform.hpp"
 
-#include <string>
-#include <st/type.hpp>
-#include <st/traits.hpp>
-
-namespace antara
+namespace antara::mmbot::tests
 {
-    using st_endpoint = st::type<
-            std::string,
-            struct endpoint_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_key = st::type<
-            std::string,
-            struct key_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_quote = st::type<
-            std::string,
-            struct quote_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_base = st::type<
-            std::string,
-            struct base_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_price = st::type<
-            double,
-            struct price_tag,
-            st::arithmetic, st::addable_with<double>>;
-
-    struct pair
+    TEST_CASE ("simple service working")
     {
-        st_quote quote;
-        st_base base;
-    };
+        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        price_service_platform price_service{cfg};
+        antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
+        CHECK_GT(price_service.get_price(currency_pair).value(), 0.0);
+    }
+
+    TEST_CASE ("simple service not working (empty or wrong cfg)")
+    {
+        config cfg{};
+        price_service_platform price_service{cfg};
+        antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
+        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
+    }
+
+    TEST_CASE ("simple service not working (wrong pair)")
+    {
+        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        price_service_platform price_service{cfg};
+        antara::pair currency_pair{st_quote{"EUR"}, st_base{"NONEXISTENT"}};
+        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
+    }
 }
