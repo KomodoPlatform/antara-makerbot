@@ -17,26 +17,19 @@
 #include <vector>
 #include <unordered_map>
 
-namespace antara {
-  struct asset {
-    std::string symbol;
+#include "strategy_manager.hpp"
 
-    bool operator==(const asset &other) const {
-      return symbol == other.symbol;
-    }
+namespace antara {
+  bool asset::operator==(const asset &other) const {
+    return symbol == other.symbol;
   };
 
-  struct pair {
-    antara::asset base;
-    antara::asset quote;
+  std::pair<antara::asset, antara::asset> pair::to_std_pair() {
+    return std::pair<antara::asset, antara::asset>(base, quote);
+  };
 
-    std::pair<antara::asset, antara::asset> to_std_pair() {
-      return std::pair<antara::asset, antara::asset>(base, quote);
-    }
-
-    bool operator==(const pair &rhs) const {
-      return base == rhs.base && quote == rhs.quote;
-    }
+  bool pair::operator==(const pair &rhs) const {
+    return base == rhs.base && quote == rhs.quote;
   };
 }
 
@@ -68,7 +61,7 @@ public:
 };
 
 class OrderLevel {
- public:
+public:
   float price;
   float quantity;
   Side side;
