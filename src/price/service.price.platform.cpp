@@ -32,13 +32,13 @@ namespace antara::mmbot
         }
     }
 
-    st_price price_service_platform::get_price(antara::pair currency_pair)
+    st_price price_service_platform::get_price(antara::pair currency_pair) const
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         std::atomic_size_t nb_calls_succeed = 0u;
         double price = 0.0;
         std::mutex mutex;
-        auto price_functor = [&](auto &&current_platform_price) {
+        auto price_functor = [&nb_calls_succeed, &mutex, &price, &currency_pair](auto &&current_platform_price) {
             auto &&[platform_name, platform_ptr] = current_platform_price;
             auto current_price = platform_ptr->get_price(currency_pair).value();
             if( current_price != 0.0 ) {

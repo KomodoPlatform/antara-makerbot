@@ -29,11 +29,11 @@ namespace antara::mmbot
     public:
         explicit price_service_platform(const config &cfg) noexcept;
 
-        st_price get_price(antara::pair currency_pair);
+        st_price get_price(antara::pair currency_pair) const;
 
     private:
         using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
-        const config &mmbot_config_;
+        [[maybe_unused]] const config &mmbot_config_;
         registry_platform_price registry_platform_price_{};
     };
 }
