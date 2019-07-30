@@ -51,7 +51,7 @@ FetchContent_Declare(
 
 FetchContent_Declare(
         doom_st
-        URL https://github.com/doom/strong_type/archive/1.0.1.tar.gz
+        URL https://github.com/doom/strong_type/archive/1.0.2.tar.gz
 )
 
 SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
