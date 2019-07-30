@@ -15,7 +15,7 @@
  ******************************************************************************/
 
 #include <numeric>
-#include <taskflow/taskflow.hpp>
+#include "utils/antara.algorithm.hpp"
 #include "exceptions.price.platform.hpp"
 #include "service.price.platform.hpp"
 
@@ -36,12 +36,11 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         std::atomic_size_t nb_calls_succeed = 0u;
-        tf::Executor executor;
-        tf::Taskflow taskflow;
-        std::atomic<double> price = 0.0;
+        double price = 0.0;
         std::mutex mutex;
-        auto price_functor = [&](const auto &current_price_platform_ptr) {
-            auto current_price = current_price_platform_ptr->get_price(currency_pair).value();
+        auto price_functor = [&](auto &&current_platform_price) {
+            auto &&[platform_name, platform_ptr] = current_platform_price;
+            auto current_price = platform_ptr->get_price(currency_pair).value();
             if( current_price != 0.0 ) {
                 ++nb_calls_succeed;
             }
@@ -50,18 +49,14 @@ namespace antara::mmbot
                 price = price + current_price;
             }
         };
-        for (auto &&current_platform_price : registry_platform_price_) {
-            const auto &current_price_platform_ptr = current_platform_price.second;
-            taskflow.emplace([&]() { price_functor(current_price_platform_ptr); });
-        }
 
         if (!registry_platform_price_.empty()) {
-            executor.run(taskflow);
-            executor.wait_for_all();
+            antara::par_for_each(begin(registry_platform_price_), end(registry_platform_price_), price_functor);
         }
+
         if (nb_calls_succeed == 0) {
             throw errors::pair_not_available();
         }
-        return st_price{price.load() / nb_calls_succeed.load()};
+        return st_price{price / nb_calls_succeed.load()};
     }
 }
