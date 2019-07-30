@@ -33,7 +33,7 @@ namespace antara::mmbot
 
     private:
         using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
-        [[maybe_unused]] const config &mmbot_config_;
+        const config &mmbot_config_;
         registry_platform_price registry_platform_price_{};
     };
 }

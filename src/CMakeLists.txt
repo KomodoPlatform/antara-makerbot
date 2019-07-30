@@ -2,7 +2,7 @@ add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE config/config.cpp price/coinpaprika.price.platform.cpp price/service.price.platform.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)
 target_include_directories(mmbot_shared_deps INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(mmbot_shared_deps INTERFACE mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type
+target_link_libraries(mmbot_shared_deps INTERFACE mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type Cpp-Taskflow
         $<$<AND:$<PLATFORM_ID:Linux>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
         $<$<PLATFORM_ID:Darwin>:c++fs>)
 

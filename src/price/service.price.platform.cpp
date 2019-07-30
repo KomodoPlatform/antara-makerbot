@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <numeric>
+#include <taskflow/taskflow.hpp>
 #include "exceptions.price.platform.hpp"
 #include "service.price.platform.hpp"
 
@@ -34,18 +35,27 @@ namespace antara::mmbot
     st_price price_service_platform::get_price(antara::pair currency_pair)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        std::size_t nb_calls_succeed = 0u;
-        auto price_functor = [&](auto result, auto &&pair) {
-            auto&&[current_platform_name, current_price_platform_ptr] = pair;
-            auto current_price = current_price_platform_ptr->get_price(currency_pair);
-            nb_calls_succeed += current_price.value() != 0.0;
-            return result + current_price;
+        std::atomic_size_t nb_calls_succeed = 0u;
+        tf::Executor executor;
+        tf::Taskflow taskflow;
+        std::atomic<double> price;
+        auto price_functor = [&](const auto &current_price_platform_ptr) {
+            auto current_price = current_price_platform_ptr->get_price(currency_pair).value();
+            nb_calls_succeed += (current_price != 0.0);
+            price = price + current_price;
         };
-        auto asset_price = std::accumulate(begin(registry_platform_price_), end(registry_platform_price_),
-                                           st_price{0.0}, price_functor);
+        for (auto &&current_platform_price : registry_platform_price_) {
+            const auto &current_price_platform_ptr = current_platform_price.second;
+            taskflow.emplace([&]() { price_functor(current_price_platform_ptr); });
+        }
+
+        if (!registry_platform_price_.empty()) {
+            executor.run(taskflow);
+            executor.wait_for_all();
+        }
         if (nb_calls_succeed == 0) {
             throw errors::pair_not_available();
         }
-        return st_price{asset_price.value() / nb_calls_succeed};
+        return st_price{price.load() / nb_calls_succeed.load()};
     }
 }
