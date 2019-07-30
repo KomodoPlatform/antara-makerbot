@@ -28,7 +28,16 @@ namespace antara::mmbot::tests
         CHECK_GT(price_service.get_price(currency_pair).value(), 0.0);
     }
 
-    TEST_CASE ("simple service not working (empty or wrong cfg)")
+    TEST_CASE ("simple service not working (wrong cfg)")
+    {
+        config cfg{};
+        cfg.price_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
+        price_service_platform price_service{cfg};
+        antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
+        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
+    }
+
+    TEST_CASE ("simple service not working (empty cfg)")
     {
         config cfg{};
         price_service_platform price_service{cfg};

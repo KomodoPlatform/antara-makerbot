@@ -2,13 +2,9 @@ add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE config/config.cpp price/coinpaprika.price.platform.cpp price/service.price.platform.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)
 target_include_directories(mmbot_shared_deps INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(mmbot_shared_deps INTERFACE mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type
+target_link_libraries(mmbot_shared_deps INTERFACE mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type Cpp-Taskflow
         $<$<AND:$<PLATFORM_ID:Linux>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
         $<$<PLATFORM_ID:Darwin>:c++fs>)
-
-target_enable_asan(mmbot_shared_deps)
-target_enable_tsan(mmbot_shared_deps)
-target_enable_ubsan(mmbot_shared_deps)
 
 add_executable(mmbot)
 target_sources(mmbot PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
@@ -24,7 +20,9 @@ target_sources(mmbot-test PUBLIC
         price/service.price.platform.tests.cpp)
 target_link_libraries(mmbot-test PRIVATE doctest PUBLIC mmbot_shared_deps)
 target_enable_coverage(mmbot-test)
-
+target_enable_tsan(mmbot-test)
+target_enable_ubsan(mmbot-test)
+target_enable_asan(mmbot-test)
 set_target_properties(mmbot-test mmbot
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
