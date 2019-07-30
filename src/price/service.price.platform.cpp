@@ -38,7 +38,7 @@ namespace antara::mmbot
         std::atomic_size_t nb_calls_succeed = 0u;
         tf::Executor executor;
         tf::Taskflow taskflow;
-        std::atomic<double> price;
+        std::atomic<double> price = 0.0;
         std::mutex mutex;
         auto price_functor = [&](const auto &current_price_platform_ptr) {
             auto current_price = current_price_platform_ptr->get_price(currency_pair).value();
