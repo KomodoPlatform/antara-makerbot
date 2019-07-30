@@ -52,7 +52,7 @@ namespace antara
 
     using st_spread = st::type<
             double,
-            struct spread_tab,
+            struct spread_tag,
             st::arithmetic
             >;
 
@@ -66,7 +66,7 @@ namespace antara
 
     using st_quantity = st::type<
             double,
-            struct quantity_tab,
+            struct quantity_tag,
             st::arithmetic,
             st::addable_with<double>
             >;
