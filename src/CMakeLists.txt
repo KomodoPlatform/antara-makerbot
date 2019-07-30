@@ -1,7 +1,7 @@
 add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE
   config/config.cpp
-  strategy_manager/strategy_manager.cpp
+  strategy_manager/strategy.manager.cpp
   price/coinpaprika.price.platform.cpp
   price/service.price.platform.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)

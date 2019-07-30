@@ -17,7 +17,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "strategy_manager.hpp"
+#include "strategy.manager.hpp"
 
 namespace antara {
   bool asset::operator==(const asset &other) const {
