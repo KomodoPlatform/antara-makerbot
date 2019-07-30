@@ -31,7 +31,7 @@ namespace antara::mmbot::tests
     TEST_CASE ("simple service not working (wrong cfg)")
     {
         config cfg{};
-        cfg.prices_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
+        cfg.price_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
         price_service_platform price_service{cfg};
         antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
         CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
@@ -40,10 +40,9 @@ namespace antara::mmbot::tests
     TEST_CASE ("simple service not working (empty cfg)")
     {
         config cfg{};
-        //cfg.prices_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
         price_service_platform price_service{cfg};
         antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
-                CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
+        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
     }
 
     TEST_CASE ("simple service not working (wrong pair)")

@@ -24,7 +24,7 @@ namespace antara::mmbot
     price_service_platform::price_service_platform(const config &cfg) noexcept : mmbot_config_(cfg)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        for (auto[platform_name, platform_cfg]: cfg.prices_registry) {
+        for (auto[platform_name, platform_cfg]: cfg.price_registry) {
             auto current_price_platform_ptr = factory_price_platform::create(platform_name, cfg);
             if (current_price_platform_ptr != nullptr) {
                 registry_platform_price_.emplace(platform_name, std::move(current_price_platform_ptr));
