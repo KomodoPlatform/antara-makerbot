@@ -31,6 +31,8 @@ class market_making_strategy
   antara::side side;
 
   market_making_strategy(antara::pair pair, antara::st_spread spread, antara::st_quantity quantity, antara::side side);
+
+  bool operator==(const market_making_strategy &other) const;
 };
 
 class strategy_manager
@@ -42,6 +44,7 @@ class strategy_manager
   void add_strategy(antara::market_making_strategy strat);
 
   const antara::market_making_strategy& get_strategy(const antara::pair& pair) const;
+  const std::unordered_map<antara::pair, antara::market_making_strategy>& get_strategies();
 
  private:
   std::unordered_map<antara::pair, antara::market_making_strategy> strategies;

@@ -47,6 +47,16 @@ TEST_CASE ("")
       quantity,
       side);
 
+  CHECK_EQ(0, sm.get_strategies().size());
+
+  sm.add_strategy(strat);
+
+  CHECK_EQ(1, sm.get_strategies().size());
+
+  antara::market_making_strategy other = sm.get_strategy(pair);
+
+  CHECK_EQ(strat, other);
+
 }
 
 }

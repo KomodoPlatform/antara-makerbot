@@ -54,6 +54,14 @@ market_making_strategy::market_making_strategy(
   this->side = side;
 };
 
+bool market_making_strategy::operator==(const market_making_strategy &other) const
+{
+  return pair == other.pair
+      && spread == other.spread
+      && quantity == other.quantity
+      && side == side;
+}
+
 strategy_manager::strategy_manager() {}
 
 void antara::strategy_manager::add_strategy(antara::pair pair, market_making_strategy strat)
@@ -67,8 +75,14 @@ void strategy_manager::add_strategy(market_making_strategy strat)
   this->add_strategy(pair, strat);
 }
 
-const market_making_strategy& strategy_manager::get_strategy(const antara::pair& pair) const {
+const market_making_strategy& strategy_manager::get_strategy(const antara::pair& pair) const
+{
   return strategies.at(pair);
+}
+
+const std::unordered_map<antara::pair, antara::market_making_strategy>& strategy_manager::get_strategies()
+{
+  return strategies;
 }
 
 orders::order_level strategy_manager::make_bid(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
