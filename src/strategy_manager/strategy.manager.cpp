@@ -17,6 +17,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "orders/orders.cpp"
 #include "strategy.manager.hpp"
 
 namespace antara
@@ -46,36 +47,6 @@ class market_making_strategy
   antara::side side;
 };
 
-class OrderLevel
-{
- public:
-  antara::st_price price;
-  antara::st_quantity quantity;
-  antara::side side;
-
-  OrderLevel(antara::st_price price, antara::st_quantity quantity, antara::side side)
-  {
-    this->price = price;
-    this->quantity = quantity;
-    this->side = side;
-  }
-};
-
-class OrderSet
-{
- public:
-  antara::pair pair;
-  std::vector<OrderLevel> levels;
-
-  OrderSet();
-
-  OrderSet(antara::pair pair, std::vector<OrderLevel> levels)
-  {
-    this->pair = pair;
-    this->levels = levels;
-  }
-};
-
 class StrategyManager
 {
 
@@ -99,55 +70,55 @@ class StrategyManager
  private:
   std::unordered_map<antara::pair, market_making_strategy> strategies;
 
-  OrderLevel make_bid(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
+  orders::OrderLevel make_bid(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
   {
     antara::st_spread mod = antara::st_spread{1.0} - spread;
     antara::st_price price = antara::st_price{mid.value() * mod.value()};
     antara::side side = antara::side::buy;
-    OrderLevel ol(antara::st_price{price}, quantity, side);
+    orders::OrderLevel ol(antara::st_price{price}, quantity, side);
     return ol;
   }
 
-  OrderLevel make_ask(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
+  orders::OrderLevel make_ask(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
   {
     antara::st_spread mod = antara::st_spread{1.0} + spread;
     antara::st_price price = antara::st_price{mid.value() * mod.value()};
     antara::side side = antara::side::sell;
-    OrderLevel ol(price, quantity, side);
+    orders::OrderLevel ol(price, quantity, side);
     return ol;
   }
 
-  OrderSet create_order_level(antara::pair pair, market_making_strategy strat, antara::st_price mid)
+  orders::OrderSet create_order_level(antara::pair pair, market_making_strategy strat, antara::st_price mid)
   {
     antara::side side = strat.side;
     antara::st_spread spread = strat.spread;
     antara::st_quantity quantity = strat.quantity;
 
-    OrderSet os;
+    orders::OrderSet os;
 
     switch (side) {
 
       case antara::side::buy: {
-        OrderLevel level = make_bid(mid, spread, quantity);
-        std::vector<OrderLevel> levels; levels.push_back(level);
-        os = OrderSet(pair, levels);
+        orders::OrderLevel level = make_bid(mid, spread, quantity);
+        std::vector<orders::OrderLevel> levels; levels.push_back(level);
+        os = orders::OrderSet(pair, levels);
         break;
       }
 
       case antara::side::sell: {
-        OrderLevel level = make_ask(mid, spread, quantity);
-        std::vector<OrderLevel> levels; levels.push_back(level);
-        os = OrderSet(pair, levels);
+        orders::OrderLevel level = make_ask(mid, spread, quantity);
+        std::vector<orders::OrderLevel> levels; levels.push_back(level);
+        os = orders::OrderSet(pair, levels);
         break;
       }
 
       case antara::side::both: {
-        OrderLevel bid = make_bid(mid, spread, quantity);
-        OrderLevel ask = make_ask(mid, spread, quantity);
-        std::vector<OrderLevel> levels;
+        orders::OrderLevel bid = make_bid(mid, spread, quantity);
+        orders::OrderLevel ask = make_ask(mid, spread, quantity);
+        std::vector<orders::OrderLevel> levels;
         levels.push_back(bid);
         levels.push_back(ask);
-        os = OrderSet(pair, levels);
+        os = orders::OrderSet(pair, levels);
         break;
       }
 
