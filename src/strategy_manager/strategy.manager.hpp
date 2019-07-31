@@ -41,7 +41,7 @@ class strategy_manager
   void add_strategy(antara::pair pair, antara::market_making_strategy strat);
   void add_strategy(antara::market_making_strategy strat);
 
-  antara::market_making_strategy& get_strategy(const antara::pair& pair);
+  const antara::market_making_strategy& get_strategy(const antara::pair& pair) const;
 
  private:
   std::unordered_map<antara::pair, antara::market_making_strategy> strategies;

@@ -67,12 +67,7 @@ void strategy_manager::add_strategy(market_making_strategy strat)
   this->add_strategy(pair, strat);
 }
 
-// const market_making_strategy& get_strategy(const antara::pair& pair) const {
-//   return strategies.at(pair);
-// }
-
-market_making_strategy& strategy_manager::get_strategy(const antara::pair& pair)
-{
+const market_making_strategy& strategy_manager::get_strategy(const antara::pair& pair) const {
   return strategies.at(pair);
 }
 
@@ -94,7 +89,8 @@ orders::order_level strategy_manager::make_ask(antara::st_price mid, antara::st_
   return ol;
 }
 
-orders::order_set strategy_manager::create_order_level(antara::pair pair, market_making_strategy strat, antara::st_price mid)
+orders::order_set strategy_manager::create_order_level(
+    antara::pair pair, market_making_strategy strat, antara::st_price mid)
 {
   antara::side side = strat.side;
   antara::st_spread spread = strat.spread;
