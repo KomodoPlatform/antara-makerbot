@@ -24,7 +24,7 @@ namespace antara
 
 bool asset::operator==(const asset &other) const
 {
-  return symbol == other.symbol;
+  return symbol.value() == other.symbol.value();
 };
 
 bool asset::operator!=(const asset &other) const
