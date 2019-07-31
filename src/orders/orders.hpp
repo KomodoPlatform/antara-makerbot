@@ -17,6 +17,7 @@
 #pragma once
 
 #include <vector>
+
 #include <utils/mmbot_strong_types.hpp>
 
 namespace antara::orders
