@@ -69,6 +69,7 @@ namespace antara
       st_symbol symbol;
 
       bool operator==(const asset &rhs) const;
+      bool operator!=(const asset &rhs) const;
     };
 
     struct pair

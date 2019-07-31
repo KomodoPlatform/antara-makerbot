@@ -16,42 +16,24 @@
 
 #include <utils/mmbot_strong_types.hpp>
 
-namespace antara
+#include "orders.hpp"
+
+namespace antara::orders
 {
 
-namespace orders
+order_level::order_level(antara::st_price price, antara::st_quantity quantity, antara::side side)
 {
+  this->price = price;
+  this->quantity = quantity;
+  this->side = side;
+}
 
-class OrderLevel
+order_set::order_set() {};
+
+order_set::order_set(antara::pair pair, std::vector<order_level> levels)
 {
- public:
-  antara::st_price price;
-  antara::st_quantity quantity;
-  antara::side side;
-
-  OrderLevel(antara::st_price price, antara::st_quantity quantity, antara::side side)
-  {
-    this->price = price;
-    this->quantity = quantity;
-    this->side = side;
-  }
-};
-
-class OrderSet
-{
- public:
-  antara::pair pair;
-  std::vector<OrderLevel> levels;
-
-  OrderSet();
-
-  OrderSet(antara::pair pair, std::vector<OrderLevel> levels)
-  {
-    this->pair = pair;
-    this->levels = levels;
-  }
-};
-
+  this->pair = pair;
+  this->levels = levels;
 }
 
 }

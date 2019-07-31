@@ -18,6 +18,37 @@
 #include <unordered_map>
 
 #include <utils/mmbot_strong_types.hpp>
+#include <orders/orders.hpp>
 
-namespace antara {}
+namespace antara {
+
+class market_making_strategy
+{
+ public:
+  antara::pair pair;
+  antara::st_spread spread;
+  antara::st_quantity quantity;
+  antara::side side;
+
+  market_making_strategy(antara::pair pair, antara::st_spread spread, antara::st_quantity quantity, antara::side side);
+};
+
+class strategy_manager
+{
+ public:
+  strategy_manager();
+
+  void add_strategy(antara::pair pair, antara::market_making_strategy strat);
+  void add_strategy(antara::market_making_strategy strat);
+
+  antara::market_making_strategy& get_strategy(const antara::pair& pair);
+
+ private:
+  std::unordered_map<antara::pair, antara::market_making_strategy> strategies;
+  orders::order_level make_bid(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
+  orders::order_level make_ask(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
+  orders::order_set create_order_level(antara::pair pair, market_making_strategy strat, antara::st_price mid);
+};
+
+}
 

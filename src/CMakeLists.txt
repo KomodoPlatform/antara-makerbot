@@ -2,6 +2,7 @@ add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE
   config/config.cpp
   strategy_manager/strategy.manager.cpp
+  orders/orders.cpp
   price/coinpaprika.price.platform.cpp
   price/service.price.platform.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)
@@ -19,6 +20,7 @@ target_sources(mmbot-test PUBLIC
         mmbot.tests.cpp
         cex/cex.tests.cpp
         config/config.tests.cpp
+        strategy_manager/strategy.manager.tests.cpp
         price/coinpaprika.price.platform.tests.cpp
         price/factory.price.plaftorm.tests.cpp
         price/service.price.platform.tests.cpp)
