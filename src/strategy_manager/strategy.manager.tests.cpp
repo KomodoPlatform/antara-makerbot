@@ -22,7 +22,7 @@
 namespace antara::mmbot::tests
 {
 
-TEST_CASE ("")
+TEST_CASE ("asset equality")
 {
   antara::asset a1 = {antara::st_symbol{"A"}};
   antara::asset a2 = {antara::st_symbol{"A"}};
@@ -32,7 +32,7 @@ TEST_CASE ("")
   CHECK_NE(a1, a3);
 }
 
-TEST_CASE ("")
+TEST_CASE ("strats can be added and retreived")
 {
   antara::strategy_manager sm = antara::strategy_manager();
 
@@ -59,7 +59,7 @@ TEST_CASE ("")
 
 }
 
-TEST_CASE ("")
+TEST_CASE ("bids can be made")
 {
   antara::st_price mid = antara::st_price{10.0};
   antara::st_spread spread = antara::st_spread{0.1};
@@ -76,7 +76,7 @@ TEST_CASE ("")
 
 }
 
-TEST_CASE ("")
+TEST_CASE ("asks can be made")
 {
   antara::st_price mid = antara::st_price{10.0};
   antara::st_spread spread = antara::st_spread{0.1};
