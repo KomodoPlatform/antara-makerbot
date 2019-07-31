@@ -33,27 +33,6 @@ bool pair::operator==(const pair &rhs) const {
   return base == rhs.base && quote == rhs.quote;
 };
 
-}
-
-namespace std {
-
-template <>
-struct hash<antara::pair> {
-  std::size_t operator()(const antara::pair& p) const {
-    using std::size_t;
-    using std::hash;
-
-    std::size_t h1 = std::hash<std::string>{}(p.base.symbol.value());
-    std::size_t h2 = std::hash<std::string>{}(p.quote.symbol.value());
-
-    return h1 ^ (h2 << 1);
-  }
-};
-
-}
-
-namespace antara {
-
 enum class side { BUY, SELL, BOTH };
 
 class market_making_strategy {
