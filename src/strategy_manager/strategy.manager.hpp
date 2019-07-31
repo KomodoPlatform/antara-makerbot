@@ -35,6 +35,7 @@ namespace antara
     class strategy_manager
     {
     public:
+        using registry_strategies = std::unordered_map<antara::pair, antara::market_making_strategy>;
         strategy_manager() = default;
 
         void add_strategy(const antara::pair& pair, const antara::market_making_strategy& strat);
@@ -43,7 +44,7 @@ namespace antara
 
         [[nodiscard]] const antara::market_making_strategy &get_strategy(const antara::pair &pair) const;
 
-        [[nodiscard]] const std::unordered_map<antara::pair, antara::market_making_strategy> &get_strategies() const;
+        [[nodiscard]] const registry_strategies &get_strategies() const;
 
         static orders::order_level make_bid(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
 
@@ -52,7 +53,8 @@ namespace antara
         static orders::order_set create_order_set(antara::pair pair, market_making_strategy strat, antara::st_price mid);
 
     private:
-        std::unordered_map<antara::pair, antara::market_making_strategy> strategies;
+
+        registry_strategies registry_strategies_;
     };
 
 }

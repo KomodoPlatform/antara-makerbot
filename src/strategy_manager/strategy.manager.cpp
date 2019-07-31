@@ -47,7 +47,7 @@ namespace antara
 
     void antara::strategy_manager::add_strategy(const antara::pair &pair, const market_making_strategy &strat)
     {
-        strategies.emplace(pair, strat);
+        registry_strategies_.emplace(pair, strat);
     }
 
     void strategy_manager::add_strategy(const market_making_strategy &strat)
@@ -58,12 +58,12 @@ namespace antara
 
     const market_making_strategy &strategy_manager::get_strategy(const antara::pair &pair) const
     {
-        return strategies.at(pair);
+        return registry_strategies_.at(pair);
     }
 
-    const std::unordered_map<antara::pair, antara::market_making_strategy> &strategy_manager::get_strategies() const
+    const strategy_manager::registry_strategies &strategy_manager::get_strategies() const
     {
-        return strategies;
+        return registry_strategies_;
     }
 
     orders::order_level
