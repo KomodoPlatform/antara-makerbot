@@ -80,6 +80,8 @@ namespace antara
         bool operator==(const pair &rhs) const;
     };
 
+    enum class side { buy, sell, both };
+
 }
 
 namespace std {

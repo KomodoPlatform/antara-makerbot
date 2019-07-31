@@ -37,12 +37,6 @@ bool pair::operator==(const pair &rhs) const
   return base == rhs.base && quote == rhs.quote;
 };
 
-}
-
-namespace antara {
-
-enum class side { buy, sell, both };
-
 class market_making_strategy
 {
  public:
