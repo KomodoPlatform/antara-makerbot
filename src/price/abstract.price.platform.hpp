@@ -29,7 +29,7 @@ namespace antara::mmbot
 
         }
 
-        virtual st_price get_price(antara::pair currency_pair) const = 0;
+        [[nodiscard]] virtual st_price get_price(antara::pair currency_pair, [[maybe_unused]] std::size_t nb_try_in_a_row) const = 0;
         virtual ~abstract_price_platform() = default;
 
     protected:

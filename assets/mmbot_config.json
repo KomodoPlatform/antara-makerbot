@@ -14,6 +14,10 @@
   "price_infos_registry": {
     "coinpaprika": {
       "price_endpoint": "https://api.coinpaprika.com/v1"
+    },
+    "coinmarketcap": {
+      "price_endpoint": "https://sandbox-api.coinmarketcap.com/v1",
+      "price_api_key": "your_api_key_here"
     }
   }
 }

@@ -28,6 +28,9 @@ namespace antara::mmbot
     void from_json(const nlohmann::json &j, price_config &cfg)
     {
         cfg.price_endpoint = st_endpoint{j.at("price_endpoint").get<std::string>()};
+        if (j.count("price_api_key") > 0) {
+            cfg.price_api_key = st_key{j.at("price_api_key").get<std::string>()};
+        }
     }
 
     void from_json(const nlohmann::json &j, config &cfg)
@@ -46,6 +49,9 @@ namespace antara::mmbot
     void to_json(nlohmann::json &j, const price_config &cfg)
     {
         j["price_endpoint"] = cfg.price_endpoint.value();
+        if (cfg.price_api_key.has_value()) {
+            j["price_api_key"] = cfg.price_api_key.value().value();
+        }
     }
 
     void to_json(nlohmann::json &j, const config &cfg)
@@ -73,7 +79,17 @@ namespace antara::mmbot
 
     bool price_config::operator==(const price_config &rhs) const
     {
-        return price_endpoint.value() == rhs.price_endpoint.value();
+#ifdef _MSC_VER
+        if (price_api_key.has_value() && rhs.price_api_key.has_value()) {
+             return price_endpoint.value() == rhs.price_endpoint.value()
+                    && price_api_key.value().value() == rhs.price_api_key.value().value();
+        } else {
+            return price_endpoint.value() == rhs.price_endpoint.value();
+        }
+#else
+        return price_endpoint.value() == rhs.price_endpoint.value()
+               && price_api_key == rhs.price_api_key;
+#endif
     }
 
     bool price_config::operator!=(const price_config &rhs) const
