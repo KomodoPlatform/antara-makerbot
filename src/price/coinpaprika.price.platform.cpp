@@ -22,7 +22,7 @@
 
 namespace antara::mmbot
 {
-    st_price coinpaprika_price_platform::get_price(antara::pair currency_pair, std::size_t nb_try_in_a_raw) const
+    st_price coinpaprika_price_platform::get_price(antara::pair currency_pair, std::size_t nb_try_in_a_row) const
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         if (this->coin_id_translation_.find(currency_pair.base.symbol.value()) != this->coin_id_translation_.end() &&
@@ -40,11 +40,11 @@ namespace antara::mmbot
                 auto resp_json = nlohmann::json::parse(response.body);
                 auto price = st_price{resp_json["price"].get<double>()};
                 return price;
-            } else if (response.code == 429 && nb_try_in_a_raw < 10) {
+            } else if (response.code == 429 && nb_try_in_a_row < 10) {
                 using namespace std::chrono_literals;
                 std::this_thread::sleep_for(1s);
-                ++nb_try_in_a_raw;
-                return get_price(currency_pair, nb_try_in_a_raw);
+                ++nb_try_in_a_row;
+                return get_price(currency_pair, nb_try_in_a_row);
             } else {
                 DVLOG_F(loguru::Verbosity_ERROR, "http error: %d", response.code);
             }
