@@ -20,7 +20,7 @@
 
 namespace antara::mmbot
 {
-    st_price coinpaprika_price_platform::get_price(antara::pair currency_pair)
+    st_price coinpaprika_price_platform::get_price(antara::pair currency_pair) const
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         if (this->coin_id_translation_.find(currency_pair.base.symbol.value()) != this->coin_id_translation_.end() &&
@@ -28,7 +28,7 @@ namespace antara::mmbot
             std::string path =
                     "/price-converter?base_currency_id=" + this->coin_id_translation_.at(currency_pair.base.symbol.value()) +
                     "&quote_currency_id=" + this->coin_id_translation_.at(currency_pair.quote.symbol.value()) + "&amount=1";
-            auto final_uri = mmbot_config_.prices_registry.at("coinpaprika").price_endpoint.value() + path;
+            auto final_uri = mmbot_config_.price_registry.at("coinpaprika").price_endpoint.value() + path;
             DVLOG_F(loguru::Verbosity_INFO, "request: %s", final_uri.c_str());
             auto response = RestClient::get(final_uri);
             DVLOG_F(loguru::Verbosity_INFO, "response: %s\nstatus: %d", response.body.c_str(), response.code);

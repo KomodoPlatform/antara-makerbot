@@ -56,7 +56,7 @@ namespace antara::mmbot
         using cex_infos_registry = std::unordered_map<std::string, cex_config>;
         using price_infos_registry = std::unordered_map<std::string, price_config>;
         cex_infos_registry cex_registry;
-        price_infos_registry prices_registry;
+        price_infos_registry price_registry;
     };
 
     void from_json(const nlohmann::json &j, cex_config &cfg);

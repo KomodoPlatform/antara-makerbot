@@ -16,24 +16,19 @@
 
 #pragma once
 
-#include <algorithm>
-#include <memory>
-#include <unordered_map>
-#include "factory.price.platform.hpp"
-#include "abstract.price.platform.hpp"
+#include <taskflow/taskflow.hpp>
 
-namespace antara::mmbot
+namespace antara
 {
-    class price_service_platform
+    template<class InputIt, class UnaryFunction>
+    void par_for_each(InputIt first, InputIt last, UnaryFunction f)
     {
-    public:
-        explicit price_service_platform(const config &cfg) noexcept;
-
-        st_price get_price(antara::pair currency_pair) const;
-
-    private:
-        using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
-        [[maybe_unused]] const config &mmbot_config_;
-        registry_platform_price registry_platform_price_{};
-    };
+        tf::Executor executor;
+        tf::Taskflow taskflow;
+        for (; first != last; ++first) {
+            taskflow.emplace([f, first]() { f(*first); });
+        }
+        executor.run(taskflow);
+        executor.wait_for_all();
+    }
 }
