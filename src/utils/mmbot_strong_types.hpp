@@ -46,30 +46,33 @@ namespace antara
     using st_spread = st::type<
             double,
             struct spread_tag,
-            st::arithmetic
-            >;
+            st::arithmetic,
+            st::addable_with<double>
+    >;
 
     using st_price = st::type<
             double,
             struct price_tag,
             st::arithmetic,
             st::addable_with<double>,
-            st::multiplicable_with<double>
-            >;
+            st::multiplicable_with<double>,
+            st::multiplicable_with<st_spread>
+    >;
 
     using st_quantity = st::type<
             double,
             struct quantity_tag,
             st::arithmetic,
             st::addable_with<double>
-            >;
+    >;
 
     struct asset
     {
-      st_symbol symbol;
+        st_symbol symbol;
 
-      bool operator==(const asset &rhs) const;
-      bool operator!=(const asset &rhs) const;
+        bool operator==(const asset &rhs) const;
+
+        bool operator!=(const asset &rhs) const;
     };
 
     struct pair
@@ -77,27 +80,31 @@ namespace antara
         asset quote;
         asset base;
 
-        std::pair<asset, asset> to_std_pair();
         bool operator==(const pair &rhs) const;
     };
 
-    enum class side { buy, sell, both };
+    enum side
+    {
+        buy, sell, both
+    };
 
 }
 
-namespace std {
+namespace std
+{
+    template<>
+    struct hash<antara::pair>
+    {
+        std::size_t operator()(const antara::pair &p) const
+        {
+            using std::size_t;
+            using std::hash;
 
-template <>
-struct hash<antara::pair> {
-  std::size_t operator()(const antara::pair& p) const {
-    using std::size_t;
-    using std::hash;
+            std::size_t h1 = std::hash<std::string>{}(p.base.symbol.value());
+            std::size_t h2 = std::hash<std::string>{}(p.quote.symbol.value());
 
-    std::size_t h1 = std::hash<std::string>{}(p.base.symbol.value());
-    std::size_t h2 = std::hash<std::string>{}(p.quote.symbol.value());
-
-    return h1 ^ (h2 << 1);
-  }
-};
+            return h1 ^ (h2 << 1);
+        }
+    };
 
 }
