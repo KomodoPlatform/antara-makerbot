@@ -61,7 +61,7 @@ namespace antara
         return strategies.at(pair);
     }
 
-    const std::unordered_map<antara::pair, antara::market_making_strategy> &strategy_manager::get_strategies()
+    const std::unordered_map<antara::pair, antara::market_making_strategy> &strategy_manager::get_strategies() const
     {
         return strategies;
     }
