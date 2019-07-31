@@ -50,7 +50,7 @@ namespace antara
 
         static orders::order_level make_ask(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
 
-        static orders::order_set create_order_set(antara::pair pair, market_making_strategy strat, antara::st_price mid);
+        static orders::order_set create_order_set(antara::pair pair, const market_making_strategy& strat, antara::st_price mid);
 
     private:
 
