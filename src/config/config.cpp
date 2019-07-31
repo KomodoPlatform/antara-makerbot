@@ -80,7 +80,7 @@ namespace antara::mmbot
     bool price_config::operator==(const price_config &rhs) const
     {
 #ifdef _MSC_VER
-        if (price_api_key.has_value() && rhs.price_api.key.has_value()) {
+        if (price_api_key.has_value() && rhs.price_api_key.has_value()) {
              return price_endpoint.value() == rhs.price_endpoint.value()
                     && price_api_key.value().value() == rhs.price_api_key.value().value();
         } else {
