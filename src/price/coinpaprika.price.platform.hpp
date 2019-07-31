@@ -29,7 +29,7 @@ namespace antara::mmbot
 
         }
 
-        st_price get_price(antara::pair currency_pair) const final;
+        [[nodiscard]] st_price get_price(antara::pair currency_pair, std::size_t nb_try_in_a_raw) const final;
 
         ~coinpaprika_price_platform() override = default;
 

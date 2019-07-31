@@ -40,7 +40,7 @@ namespace antara::mmbot
         std::mutex mutex;
         auto price_functor = [&nb_calls_succeed, &mutex, &price, &currency_pair](auto &&current_platform_price) {
             auto &&[platform_name, platform_ptr] = current_platform_price;
-            auto current_price = platform_ptr->get_price(currency_pair).value();
+            auto current_price = platform_ptr->get_price(currency_pair, 0u).value();
             if( current_price != 0.0 ) {
                 ++nb_calls_succeed;
             }

@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <optional>
 #include <vector>
 #include <unordered_map>
 #include <nlohmann/json.hpp>
@@ -45,6 +46,7 @@ namespace antara::mmbot
         bool operator!=(const price_config &rhs) const;
 
         antara::st_endpoint price_endpoint;
+        std::optional<antara::st_key> price_api_key{std::nullopt};
     };
 
     struct config

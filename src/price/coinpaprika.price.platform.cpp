@@ -14,20 +14,24 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <thread>
 #include <nlohmann/json.hpp>
 #include <restclient-cpp/restclient.h>
+#include <thread>
 #include "coinpaprika.price.platform.hpp"
 
 namespace antara::mmbot
 {
-    st_price coinpaprika_price_platform::get_price(antara::pair currency_pair) const
+    st_price coinpaprika_price_platform::get_price(antara::pair currency_pair, std::size_t nb_try_in_a_raw) const
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         if (this->coin_id_translation_.find(currency_pair.base.symbol.value()) != this->coin_id_translation_.end() &&
             this->coin_id_translation_.find(currency_pair.quote.symbol.value()) != this->coin_id_translation_.end()) {
             std::string path =
-                    "/price-converter?base_currency_id=" + this->coin_id_translation_.at(currency_pair.base.symbol.value()) +
-                    "&quote_currency_id=" + this->coin_id_translation_.at(currency_pair.quote.symbol.value()) + "&amount=1";
+                    "/price-converter?base_currency_id=" +
+                    this->coin_id_translation_.at(currency_pair.base.symbol.value()) +
+                    "&quote_currency_id=" + this->coin_id_translation_.at(currency_pair.quote.symbol.value()) +
+                    "&amount=1";
             auto final_uri = mmbot_config_.price_registry.at("coinpaprika").price_endpoint.value() + path;
             DVLOG_F(loguru::Verbosity_INFO, "request: %s", final_uri.c_str());
             auto response = RestClient::get(final_uri);
@@ -36,6 +40,11 @@ namespace antara::mmbot
                 auto resp_json = nlohmann::json::parse(response.body);
                 auto price = st_price{resp_json["price"].get<double>()};
                 return price;
+            } else if (response.code == 429 && nb_try_in_a_raw < 10) {
+                using namespace std::chrono_literals;
+                std::this_thread::sleep_for(1s);
+                ++nb_try_in_a_raw;
+                return get_price(currency_pair, nb_try_in_a_raw);
             } else {
                 DVLOG_F(loguru::Verbosity_ERROR, "http error: %d", response.code);
             }

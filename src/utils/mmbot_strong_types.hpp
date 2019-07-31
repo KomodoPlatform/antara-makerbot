@@ -32,9 +32,7 @@ namespace antara
     using st_key = st::type<
             std::string,
             struct key_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
+            st::equality_comparable>;
 
     using st_symbol = st::type<
             std::string,
