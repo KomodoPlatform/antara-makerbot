@@ -24,7 +24,7 @@ namespace antara::mmbot::tests
     {
         auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
         price_service_platform price_service{cfg};
-        antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
+        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"KMD"}}};
         CHECK_GT(price_service.get_price(currency_pair).value(), 0.0);
     }
 
@@ -33,7 +33,7 @@ namespace antara::mmbot::tests
         config cfg{};
         cfg.price_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
         price_service_platform price_service{cfg};
-        antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
+        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"KMD"}}};
         CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
     }
 
@@ -41,7 +41,7 @@ namespace antara::mmbot::tests
     {
         config cfg{};
         price_service_platform price_service{cfg};
-        antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
+        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"KMD"}}};
         CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
     }
 
@@ -49,7 +49,7 @@ namespace antara::mmbot::tests
     {
         auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
         price_service_platform price_service{cfg};
-        antara::pair currency_pair{st_quote{"EUR"}, st_base{"NONEXISTENT"}};
+        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"NONEXISTENT"}}};
         CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
     }
 }
