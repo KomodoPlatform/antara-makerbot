@@ -103,7 +103,7 @@ orders::order_level strategy_manager::make_ask(antara::st_price mid, antara::st_
   return ol;
 }
 
-orders::order_set strategy_manager::create_order_level(
+orders::order_set strategy_manager::create_order_set(
     antara::pair pair, market_making_strategy strat, antara::st_price mid)
 {
   antara::side side = strat.side;

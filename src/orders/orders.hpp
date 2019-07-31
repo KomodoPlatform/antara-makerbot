@@ -29,6 +29,8 @@ class order_level
   antara::side side;
 
   order_level(antara::st_price price, antara::st_quantity quantity, antara::side side);
+
+  bool operator==(const order_level &rhs) const;
 };
 
 class order_set

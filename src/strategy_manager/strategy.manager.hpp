@@ -46,11 +46,12 @@ class strategy_manager
   const antara::market_making_strategy& get_strategy(const antara::pair& pair) const;
   const std::unordered_map<antara::pair, antara::market_making_strategy>& get_strategies();
 
- private:
-  std::unordered_map<antara::pair, antara::market_making_strategy> strategies;
   orders::order_level make_bid(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
   orders::order_level make_ask(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
-  orders::order_set create_order_level(antara::pair pair, market_making_strategy strat, antara::st_price mid);
+  orders::order_set create_order_set(antara::pair pair, market_making_strategy strat, antara::st_price mid);
+
+ private:
+  std::unordered_map<antara::pair, antara::market_making_strategy> strategies;
 };
 
 }

@@ -59,4 +59,38 @@ TEST_CASE ("")
 
 }
 
+TEST_CASE ("")
+{
+  antara::st_price mid = antara::st_price{10.0};
+  antara::st_spread spread = antara::st_spread{0.1};
+  antara::st_quantity quantity = antara::st_quantity{10.0};
+
+  antara::st_price bid_price = antara::st_price{9.0};
+
+  antara::strategy_manager sm = antara::strategy_manager();
+
+  antara::orders::order_level expected = antara::orders::order_level(bid_price, quantity, antara::side::buy);
+  antara::orders::order_level actual = sm.make_bid(mid, spread, quantity);
+
+  CHECK_EQ(expected, actual);
+
+}
+
+TEST_CASE ("")
+{
+  antara::st_price mid = antara::st_price{10.0};
+  antara::st_spread spread = antara::st_spread{0.1};
+  antara::st_quantity quantity = antara::st_quantity{10.0};
+
+  antara::st_price ask_price = antara::st_price{11.0};
+
+  antara::strategy_manager sm = antara::strategy_manager();
+
+  antara::orders::order_level expected = antara::orders::order_level(ask_price, quantity, antara::side::sell);
+  antara::orders::order_level actual = sm.make_ask(mid, spread, quantity);
+
+  CHECK_EQ(expected, actual);
+
+}
+
 }
