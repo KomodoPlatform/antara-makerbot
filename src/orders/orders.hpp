@@ -23,27 +23,19 @@
 namespace antara::orders
 {
 
-class order_level
-{
- public:
-  antara::st_price price;
-  antara::st_quantity quantity;
-  antara::side side;
+    struct order_level
+    {
+        antara::st_price price;
+        antara::st_quantity quantity;
+        antara::side side;
 
-  order_level(antara::st_price price, antara::st_quantity quantity, antara::side side);
+        bool operator==(const order_level &rhs) const;
+    };
 
-  bool operator==(const order_level &rhs) const;
-};
-
-class order_set
-{
- public:
-  antara::pair pair;
-  std::vector<order_level> levels;
-
-  order_set();
-
-  order_set(antara::pair pair, std::vector<order_level> levels);
-};
+    struct order_set
+    {
+        antara::pair pair;
+        std::vector<order_level> levels;
+    };
 
 }

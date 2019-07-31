@@ -20,27 +20,10 @@
 
 namespace antara::orders
 {
-
-order_level::order_level(antara::st_price price, antara::st_quantity quantity, antara::side side)
-{
-  this->price = price;
-  this->quantity = quantity;
-  this->side = side;
-}
-
-bool order_level::operator==(const order_level &other) const
-{
-  return price == other.price
-      && quantity == other.quantity
-      && side == side;
-}
-
-order_set::order_set() {};
-
-order_set::order_set(antara::pair pair, std::vector<order_level> levels)
-{
-  this->pair = pair;
-  this->levels = levels;
-}
-
+    bool order_level::operator==(const order_level &other) const
+    {
+        return price == other.price
+               && quantity == other.quantity
+               && side == other.side;
+    }
 }
