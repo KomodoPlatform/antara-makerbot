@@ -105,4 +105,13 @@ namespace std
         }
     };
 
+    template<>
+    struct hash<antara::st_symbol>
+    {
+        std::size_t operator()(const antara::st_symbol &symbol) const
+        {
+           return std::hash<std::string>()(symbol.value());
+        }
+    };
+
 }

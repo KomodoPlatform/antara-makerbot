@@ -18,19 +18,22 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 #include <unordered_map>
 #include "factory.price.platform.hpp"
 #include "abstract.price.platform.hpp"
 
 namespace antara::mmbot
 {
+    using registry_quotes_for_specific_base = std::unordered_map<st_symbol, std::vector<st_symbol>>;
+    using registry_price_result = std::unordered_map<antara::pair, st_price>;
     class price_service_platform
     {
     public:
         explicit price_service_platform(const config &cfg) noexcept;
 
         st_price get_price(antara::pair currency_pair) const;
-
+        registry_price_result get_price(const registry_quotes_for_specific_base& quotes_for_specific_base) const;
     private:
         using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
         [[maybe_unused]] const config &mmbot_config_;
