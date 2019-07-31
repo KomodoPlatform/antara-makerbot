@@ -19,20 +19,5 @@
 
 #include <utils/mmbot_strong_types.hpp>
 
-namespace antara {
-  struct asset {
-    std::string symbol;
-
-    bool operator==(const asset &other) const;
-  };
-
-  // struct pair {
-  //   antara::asset base;
-  //   antara::asset quote;
-
-  //   std::pair<antara::asset, antara::asset> to_std_pair();
-
-  //   bool operator==(const pair &rhs) const;
-  // };
-}
+namespace antara {}
 

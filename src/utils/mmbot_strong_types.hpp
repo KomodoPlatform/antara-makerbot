@@ -36,16 +36,9 @@ namespace antara
             st::addable_with<char *>,
             st::addable_with<const char *>>;
 
-    using st_quote = st::type<
+    using st_symbol = st::type<
             std::string,
-            struct quote_tag,
-            st::equality_comparable,
-            st::addable_with<char *>,
-            st::addable_with<const char *>>;
-
-    using st_base = st::type<
-            std::string,
-            struct base_tag,
+            struct symbol_tag,
             st::equality_comparable,
             st::addable_with<char *>,
             st::addable_with<const char *>>;
@@ -71,12 +64,19 @@ namespace antara
             st::addable_with<double>
             >;
 
+    struct asset
+    {
+      st_symbol symbol;
+
+      bool operator==(const asset &rhs) const;
+    };
+
     struct pair
     {
-        st_quote quote;
-        st_base base;
+        asset quote;
+        asset base;
 
-        std::pair<st_quote, st_base> to_std_pair();
+        std::pair<asset, asset> to_std_pair();
         bool operator==(const pair &rhs) const;
     };
 }

@@ -23,11 +23,11 @@ namespace antara::mmbot
     st_price coinpaprika_price_platform::get_price(antara::pair currency_pair)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        if (this->coin_id_translation_.find(currency_pair.base.value()) != this->coin_id_translation_.end() &&
-            this->coin_id_translation_.find(currency_pair.quote.value()) != this->coin_id_translation_.end()) {
+        if (this->coin_id_translation_.find(currency_pair.base.symbol.value()) != this->coin_id_translation_.end() &&
+            this->coin_id_translation_.find(currency_pair.quote.symbol.value()) != this->coin_id_translation_.end()) {
             std::string path =
-                    "/price-converter?base_currency_id=" + this->coin_id_translation_.at(currency_pair.base.value()) +
-                    "&quote_currency_id=" + this->coin_id_translation_.at(currency_pair.quote.value()) + "&amount=1";
+                    "/price-converter?base_currency_id=" + this->coin_id_translation_.at(currency_pair.base.symbol.value()) +
+                    "&quote_currency_id=" + this->coin_id_translation_.at(currency_pair.quote.symbol.value()) + "&amount=1";
             auto final_uri = mmbot_config_.prices_registry.at("coinpaprika").price_endpoint.value() + path;
             DVLOG_F(loguru::Verbosity_INFO, "request: %s", final_uri.c_str());
             auto response = RestClient::get(final_uri);
@@ -40,7 +40,7 @@ namespace antara::mmbot
                 DVLOG_F(loguru::Verbosity_ERROR, "http error: %d", response.code);
             }
         } else {
-            DVLOG_F(loguru::Verbosity_ERROR, "base: %s not found", currency_pair.base.value().c_str());
+            DVLOG_F(loguru::Verbosity_ERROR, "base: %s not found", currency_pair.base.symbol.value().c_str());
         }
         return st_price{0.0};
     }
