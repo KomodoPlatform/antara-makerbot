@@ -33,7 +33,7 @@ namespace antara::mmbot::tests
         config cfg{};
         cfg.price_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
         price_service_platform price_service{cfg};
-        antara::pair currency_pair{st_quote{"EUR"}, st_base{"KMD"}};
+        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"KMD"}}};
         CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
     }
 
