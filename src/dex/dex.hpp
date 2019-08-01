@@ -18,7 +18,7 @@
 
 namespace antara
 {
-    class dex_adapter
+    class dex
     {
 
     };

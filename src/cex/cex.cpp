@@ -14,14 +14,12 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <orders/orders.hpp>
+#include "cex.hpp"
 
 namespace antara
 {
-    class cex {
-    public:
-        void place_order(const orders::order_level &ol);
-    };
+    void antara::cex::place_order(const orders::order_level &ol)
+    {
+        return;
+    }
 }

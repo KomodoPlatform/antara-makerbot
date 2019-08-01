@@ -14,7 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "dex.adapter.hpp"
+#include "dex.hpp"
 
 namespace antara
 {
