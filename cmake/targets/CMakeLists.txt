@@ -54,6 +54,11 @@ FetchContent_Declare(
         URL https://github.com/doom/strong_type/archive/1.0.2.tar.gz
 )
 
+FetchContent_Declare(
+        restinio
+        URL https://bitbucket.org/sobjectizerteam/restinio/downloads/restinio-0.5.1-full.zip
+)
+
 SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
 SET(JSON_BuildTests OFF CACHE BOOL "Override option" FORCE)
 
@@ -79,7 +84,7 @@ FetchContent_Declare(
         URL https://github.com/mrtazz/restclient-cpp/archive/master.zip
 )
 
-FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow)
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio)
 find_package(Threads)
 add_library(logurulog OBJECT)
 target_sources(logurulog PUBLIC ${loguru_SOURCE_DIR}/loguru.cpp)
@@ -102,3 +107,8 @@ target_compile_features(restclient_obj PRIVATE cxx_std_11)
 target_link_libraries(restclient_obj PUBLIC CURL::libcurl Threads::Threads)
 target_include_directories(restclient_obj PUBLIC ${restclient-cpp_SOURCE_DIR}/include ${restclient-cpp_BINARY_DIR}/include)
 add_library(mmbot::http ALIAS restclient_obj)
+
+
+add_subdirectory(${restinio_SOURCE_DIR}/dev/fmt ${restinio_BINARY_DIR}/fmt)
+add_subdirectory(${restinio_SOURCE_DIR}/dev/nodejs/http_parser ${restinio_BINARY_DIR}/http_parser)
+add_subdirectory(${restinio_SOURCE_DIR}/dev ${restinio_BINARY_DIR})
