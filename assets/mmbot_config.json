@@ -19,5 +19,6 @@
       "price_endpoint": "https://sandbox-api.coinmarketcap.com/v1",
       "price_api_key": "your_api_key_here"
     }
-  }
+  },
+  "http_port": 8080
 }

@@ -39,7 +39,7 @@ namespace antara::mmbot
 
         void run()
         {
-            restinio::run(restinio::on_this_thread<http_server_traits>().port(8080).address("localhost"));
+            restinio::run(restinio::on_this_thread<http_server_traits>().port(mmbot_cfg_.http_port).address("localhost"));
         }
 
     private:

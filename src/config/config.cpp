@@ -37,6 +37,7 @@ namespace antara::mmbot
     {
         j.at("cex_infos_registry").get_to(cfg.cex_registry);
         j.at("price_infos_registry").get_to(cfg.price_registry);
+        j.at("http_port").get_to(cfg.http_port);
     }
 
     void to_json(nlohmann::json &j, const cex_config &cfg)
@@ -64,12 +65,14 @@ namespace antara::mmbot
         for (auto&&[key, value] : cfg.price_registry) {
             j["price_infos"][key] = value;
         }
+        j["http_port"] = cfg.http_port;
     }
 
     bool config::operator==(const config &rhs) const
     {
         return cex_registry == rhs.cex_registry &&
-               price_registry == rhs.price_registry;
+               price_registry == rhs.price_registry &&
+               http_port == rhs.http_port;
     }
 
     bool config::operator!=(const config &rhs) const
