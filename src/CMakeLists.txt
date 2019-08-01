@@ -2,6 +2,7 @@ add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE
   config/config.cpp
   strategy_manager/strategy.manager.cpp
+  order_manager/order.manager.cpp
   orders/orders.cpp
   price/coinpaprika.price.platform.cpp
   price/service.price.platform.cpp)
