@@ -14,9 +14,34 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <http/http.server.hpp>
+#pragma once
 
-int main()
+#include <memory>
+#include <restinio/all.hpp>
+#include <config/config.hpp>
+
+namespace antara::mmbot
 {
-    return 0;
+    struct http_server_traits : public restinio::default_single_thread_traits_t
+    {
+        using request_handler_t = restinio::router::express_router_t<>;
+    };
+
+    class http_server
+    {
+    public:
+        using router = std::unique_ptr<restinio::router::express_router_t<>>;
+        http_server(const mmbot::config &mmbot_cfg) : mmbot_cfg_(mmbot_cfg)
+        {
+
+        }
+
+        void run()
+        {
+
+        }
+
+    private:
+        const mmbot::config &mmbot_cfg_;
+    };
 }
