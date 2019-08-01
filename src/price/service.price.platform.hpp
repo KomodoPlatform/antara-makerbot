@@ -25,7 +25,7 @@
 
 namespace antara::mmbot
 {
-    using registry_quotes_for_specific_base = std::unordered_map<st_symbol, std::vector<st_symbol>>;
+    using registry_quotes_for_specific_base = std::unordered_map<st_symbol::value_type, std::vector<st_symbol>>;
     using registry_price_result = std::unordered_map<antara::pair, st_price>;
     class price_service_platform
     {

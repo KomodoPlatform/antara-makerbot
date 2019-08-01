@@ -65,7 +65,7 @@ namespace antara::mmbot
         antara::mmbot::registry_price_result res{};
         for (auto&&[current_symbol, current_quotes_table] : quotes_for_specific_base) {
             for (auto &&current_quote : current_quotes_table) {
-                antara::pair current_pair{antara::asset{current_quote}, antara::asset{current_symbol}};
+                antara::pair current_pair{antara::asset{current_quote}, antara::asset{st_symbol{current_symbol}}};
                 res.emplace(current_pair, this->get_price(current_pair));
             }
         }

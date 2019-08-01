@@ -59,8 +59,7 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("simple service using get price with a registry of symbols")
     {
-        registry_quotes_for_specific_base registry_symbols{{st_symbol{"KMD"}, {st_symbol{"DOGE"}, st_symbol{
-                "ETH"}, st_symbol{"BTC"}}}};
+        registry_quotes_for_specific_base registry_symbols{{"KMD", {st_symbol{"DOGE"}, st_symbol{"ETH"}, st_symbol{"BTC"}}}};
         auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
         price_service_platform price_service{cfg};
         auto res = price_service.get_price(registry_symbols);
