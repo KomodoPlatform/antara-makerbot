@@ -24,7 +24,8 @@ namespace antara::mmbot::tests
     {
         auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
         price_service_platform price_service{cfg};
-        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"KMD"}}};
+        antara::pair currency_pair{{st_symbol{"EUR"}},
+                                   {st_symbol{"KMD"}}};
         CHECK_GT(price_service.get_price(currency_pair).value(), 0.0);
     }
 
@@ -33,7 +34,8 @@ namespace antara::mmbot::tests
         config cfg{};
         cfg.price_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
         price_service_platform price_service{cfg};
-        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"KMD"}}};
+        antara::pair currency_pair{{st_symbol{"EUR"}},
+                                   {st_symbol{"KMD"}}};
         CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
     }
 
@@ -41,7 +43,8 @@ namespace antara::mmbot::tests
     {
         config cfg{};
         price_service_platform price_service{cfg};
-        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"KMD"}}};
+        antara::pair currency_pair{{st_symbol{"EUR"}},
+                                   {st_symbol{"KMD"}}};
         CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
     }
 
@@ -49,7 +52,21 @@ namespace antara::mmbot::tests
     {
         auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
         price_service_platform price_service{cfg};
-        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"NONEXISTENT"}}};
+        antara::pair currency_pair{{st_symbol{"EUR"}},
+                                   {st_symbol{"NONEXISTENT"}}};
         CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
+    }
+
+    TEST_CASE ("simple service using get price with a registry of symbols")
+    {
+        registry_quotes_for_specific_base registry_symbols{{"KMD", {st_symbol{"DOGE"}, st_symbol{"ETH"}, st_symbol{"BTC"}}}};
+        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        price_service_platform price_service{cfg};
+        auto res = price_service.get_price(registry_symbols);
+        CHECK(!res.empty());
+        CHECK_EQ_F(3u, res.size(), "size should be 3");
+        for (auto&& current_result: res) {
+            CHECK_GT(current_result.second.value(), 0.0);
+        }
     }
 }

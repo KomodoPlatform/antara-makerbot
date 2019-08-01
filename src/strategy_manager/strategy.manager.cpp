@@ -87,7 +87,7 @@ namespace antara
     }
 
     orders::order_set strategy_manager::create_order_set(
-            antara::pair pair, market_making_strategy strat, antara::st_price mid)
+            antara::pair pair, const market_making_strategy &strat, antara::st_price mid)
     {
         antara::side side = strat.side;
         antara::st_spread spread = strat.spread;

@@ -59,4 +59,16 @@ namespace antara::mmbot
         }
         return st_price{price / nb_calls_succeed.load()};
     }
+
+    registry_price_result price_service_platform::get_price(const registry_quotes_for_specific_base &quotes_for_specific_base) const
+    {
+        antara::mmbot::registry_price_result res{};
+        for (auto&&[current_symbol, current_quotes_table] : quotes_for_specific_base) {
+            for (auto &&current_quote : current_quotes_table) {
+                antara::pair current_pair{antara::asset{current_quote}, antara::asset{st_symbol{current_symbol}}};
+                res.emplace(current_pair, this->get_price(current_pair));
+            }
+        }
+        return res;
+    }
 }
