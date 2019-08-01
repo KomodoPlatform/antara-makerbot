@@ -116,5 +116,6 @@ add_subdirectory(${restinio_SOURCE_DIR}/dev ${restinio_BINARY_DIR})
 add_library(restiniofull INTERFACE)
 target_link_libraries(restiniofull INTERFACE restinio::restinio)
 target_include_directories(restiniofull INTERFACE ${restinio_SOURCE_DIR}/dev/asio/include)
-target_compile_definitions(restiniofull INTERFACE -D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS -DASIO_STANDALONE -DASIO_HAS_STD_CHRONO -DASIO_DISABLE_STD_STRING_VIEW)
+target_compile_definitions(restiniofull INTERFACE $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS>
+        $<$<CXX_COMPILER_ID:MSVC>:_WIN32_WINNT=0x0A00> -DASIO_STANDALONE -DASIO_HAS_STD_CHRONO -DASIO_DISABLE_STD_STRING_VIEW)
 add_library(mmbot::restinio ALIAS restiniofull)
