@@ -35,5 +35,15 @@ namespace antara
         return true;
     }
 
+    void order_manager::change_order_status(const orders::order_status_change &osc)
+    {
+        // if the dex order has been filled, place the order on the cex
+        // take account of partial fills
 
+        orders::order_set os = registry_order_sets_.at(osc.pair);
+
+        orders::order_level ol;
+
+        cex_.place_order(ol);
+    }
 }

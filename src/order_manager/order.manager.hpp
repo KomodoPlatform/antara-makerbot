@@ -21,7 +21,8 @@
 
 #include <utils/mmbot_strong_types.hpp>
 #include <orders/orders.hpp>
-#include <dex_adapter/dex.adapter.hpp>
+#include <dex/dex.hpp>
+#include <cex/cex.hpp>
 
 namespace antara
 {
@@ -29,6 +30,7 @@ namespace antara
     {
     public:
         using registry_order_sets = std::unordered_map<antara::pair, orders::order_set>;
+        order_manager() = default;
 
         bool place_order(const orders::order_level &ol);
         bool place_orders(const orders::order_set &os);
@@ -36,8 +38,11 @@ namespace antara
         [[nodiscard]] const orders::order_set &get_orders(antara::pair &pair) const;
         [[nodiscard]] const registry_order_sets &get_all_orders() const;
 
+        void change_order_status(const orders::order_status_change &osc);
+
     private:
         registry_order_sets registry_order_sets_;
-        dex_adapter dex;
+        dex dex_;
+        cex cex_;
     };
 }
