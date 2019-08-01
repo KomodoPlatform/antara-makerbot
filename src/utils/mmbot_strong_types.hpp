@@ -22,6 +22,7 @@
 
 namespace antara
 {
+    static constexpr const int g_factor = 100000000;
     using st_endpoint = st::type<
             std::string,
             struct endpoint_tag,
@@ -49,7 +50,7 @@ namespace antara
     >;
 
     using st_price = st::type<
-            double,
+            std::uint64_t,
             struct price_tag,
             st::arithmetic,
             st::addable_with<double>,

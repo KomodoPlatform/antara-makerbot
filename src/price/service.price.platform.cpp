@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 #include <numeric>
+#include <fmt/format.h>
 #include "utils/antara.algorithm.hpp"
 #include "exceptions.price.platform.hpp"
 #include "service.price.platform.hpp"
@@ -41,7 +42,7 @@ namespace antara::mmbot
         auto price_functor = [&nb_calls_succeed, &mutex, &price, &currency_pair](auto &&current_platform_price) {
             auto &&[platform_name, platform_ptr] = current_platform_price;
             auto current_price = platform_ptr->get_price(currency_pair, 0u).value();
-            if( current_price != 0.0 ) {
+            if( current_price > 0 ) {
                 ++nb_calls_succeed;
             }
             {
@@ -75,7 +76,8 @@ namespace antara::mmbot
         all_price_json["prices"] = nlohmann::json::array();
         for (auto &&[current_pair, current_price] : res) {
             auto current_object = nlohmann::json::object();
-            current_object[current_pair.base.symbol.value() + "/" + current_pair.quote.symbol.value()] = current_price.value();
+            auto current_price_str = fmt::format("{:.8f}", static_cast<double>(current_price.value()) / g_factor);
+            current_object[current_pair.base.symbol.value() + "/" + current_pair.quote.symbol.value()] = current_price_str;
             all_price_json["prices"].push_back(std::move(current_object));
         }
         all_price_ = all_price_json.dump();

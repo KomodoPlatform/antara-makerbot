@@ -26,7 +26,7 @@ namespace antara::mmbot::tests
         price_service_platform price_service{cfg};
         antara::pair currency_pair{{st_symbol{"EUR"}},
                                    {st_symbol{"KMD"}}};
-        CHECK_GT(price_service.get_price(currency_pair).value(), 0.0);
+        CHECK_GT(price_service.get_price(currency_pair).value(), 0);
     }
 
     TEST_CASE ("simple service not working (wrong cfg)")
@@ -66,7 +66,7 @@ namespace antara::mmbot::tests
         CHECK(!res.empty());
         CHECK_EQ_F(3u, res.size(), "size should be 3");
         for (auto&& current_result: res) {
-            CHECK_GT(current_result.second.value(), 0.0);
+            CHECK_GT(current_result.second.value(), 0);
         }
         CHECK(!price_service.get_all_price().empty());
     }
