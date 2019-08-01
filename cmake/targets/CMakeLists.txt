@@ -122,3 +122,9 @@ target_include_directories(restiniofull INTERFACE ${restinio_SOURCE_DIR}/dev/asi
 target_compile_definitions(restiniofull INTERFACE $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS>
         $<$<CXX_COMPILER_ID:MSVC>:_WIN32_WINNT=0x0A00> -DASIO_STANDALONE -DASIO_HAS_STD_CHRONO -DASIO_DISABLE_STD_STRING_VIEW)
 add_library(mmbot::restinio ALIAS restiniofull)
+
+if (UNIX)
+    configure_file(${jl777-coins_SOURCE_DIR}/coins ${CMAKE_BINARY_DIR}/bin/assets/coins.json COPYONLY)
+else ()
+    configure_file(${jl777-coins_SOURCE_DIR}/coins ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/assets/coins.json COPYONLY)
+endif ()
