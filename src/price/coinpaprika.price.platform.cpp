@@ -38,7 +38,7 @@ namespace antara::mmbot
             DVLOG_F(loguru::Verbosity_INFO, "response: %s\nstatus: %d", response.body.c_str(), response.code);
             if (response.code == 200) {
                 auto resp_json = nlohmann::json::parse(response.body);
-                auto price = st_price{resp_json["price"].get<double>() * g_factor};
+                auto price = st_price{static_cast<std::uint64_t>(resp_json["price"].get<double>() * g_factor)};
                 return price;
             } else if (response.code == 429 && nb_try_in_a_row < 10) {
                 using namespace std::chrono_literals;
