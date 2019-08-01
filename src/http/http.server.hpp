@@ -31,6 +31,7 @@ namespace antara::mmbot
     {
     public:
         using router = std::unique_ptr<restinio::router::express_router_t<>>;
+
         http_server(const mmbot::config &mmbot_cfg) : mmbot_cfg_(mmbot_cfg)
         {
 
@@ -38,7 +39,7 @@ namespace antara::mmbot
 
         void run()
         {
-
+            restinio::run(restinio::on_this_thread<http_server_traits>().port(8080).address("localhost"));
         }
 
     private:
