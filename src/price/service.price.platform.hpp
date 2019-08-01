@@ -33,10 +33,12 @@ namespace antara::mmbot
         explicit price_service_platform(const config &cfg) noexcept;
 
         st_price get_price(antara::pair currency_pair) const;
-        registry_price_result get_price(const registry_quotes_for_specific_base& quotes_for_specific_base) const;
+        registry_price_result get_price(const registry_quotes_for_specific_base& quotes_for_specific_base);
+        [[nodiscard]] const std::string& get_all_price() const;;
     private:
         using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
         [[maybe_unused]] const config &mmbot_config_;
         registry_platform_price registry_platform_price_{};
+        std::string all_price_;
     };
 }

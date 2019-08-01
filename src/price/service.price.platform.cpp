@@ -60,8 +60,9 @@ namespace antara::mmbot
         return st_price{price / nb_calls_succeed.load()};
     }
 
-    registry_price_result price_service_platform::get_price(const registry_quotes_for_specific_base &quotes_for_specific_base) const
+    registry_price_result price_service_platform::get_price(const registry_quotes_for_specific_base &quotes_for_specific_base)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         antara::mmbot::registry_price_result res{};
         for (auto&&[current_symbol, current_quotes_table] : quotes_for_specific_base) {
             for (auto &&current_quote : current_quotes_table) {
@@ -69,6 +70,22 @@ namespace antara::mmbot
                 res.emplace(current_pair, this->get_price(current_pair));
             }
         }
+        all_price_.clear();
+        nlohmann::json all_price_json;
+        all_price_json["prices"] = nlohmann::json::array();
+        for (auto &&[current_pair, current_price] : res) {
+            auto current_object = nlohmann::json::object();
+            current_object[current_pair.base.symbol.value() + "/" + current_pair.quote.symbol.value()] = current_price.value();
+            all_price_json["prices"].push_back(std::move(current_object));
+        }
+        all_price_ = all_price_json.dump();
         return res;
+    }
+
+    const std::string &price_service_platform::get_all_price() const
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "all_price: %s", all_price_.c_str());
+        return all_price_;
     }
 }

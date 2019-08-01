@@ -68,5 +68,6 @@ namespace antara::mmbot::tests
         for (auto&& current_result: res) {
             CHECK_GT(current_result.second.value(), 0.0);
         }
+        CHECK(!price_service.get_all_price().empty());
     }
 }
