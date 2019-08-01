@@ -28,7 +28,16 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("whole order sets can be placed")
     {
-        CHECK(true);
+        antara::order_manager om = antara::order_manager();
+
+        CHECK_EQ(0, om.get_all_orders().size());
+
+        orders::order_set os =
+            {{st_symbol{"A"}, st_symbol{"B"}},
+             std::vector<orders::order_level>()};
+        om.place_orders(os);
+
+        CHECK_EQ(1, om.get_all_orders().size());
     }
 
     TEST_CASE ("order status can be changed")
