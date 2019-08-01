@@ -38,4 +38,15 @@ namespace antara::orders
         std::vector<order_level> levels;
     };
 
+    enum class order_status
+    {
+        live, cancelled, filled
+    };
+
+    struct order_status_change
+    {
+        antara::pair pair;
+        order_level ol;
+        order_status os;
+    };
 }
