@@ -35,4 +35,14 @@ namespace antara::mmbot::tests
     {
         CHECK(true);
     }
+
+    TEST_CASE ("can return the order set for a pair")
+    {
+        CHECK(true);
+    }
+
+    TEST_CASE ("can return all order sets")
+    {
+        CHECK(true);
+    }
 }
