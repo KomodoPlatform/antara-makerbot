@@ -84,7 +84,10 @@ FetchContent_Declare(
         URL https://github.com/mrtazz/restclient-cpp/archive/master.zip
 )
 
-FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio)
+FetchContent_Declare(jl777-coins
+        URL https://github.com/jl777/coins/archive/master.zip)
+
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins)
 find_package(Threads)
 add_library(logurulog OBJECT)
 target_sources(logurulog PUBLIC ${loguru_SOURCE_DIR}/loguru.cpp)
