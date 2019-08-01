@@ -18,23 +18,26 @@
 
 #include <vector>
 #include <unordered_map>
+
 #include <utils/mmbot_strong_types.hpp>
 #include <orders/orders.hpp>
+#include <dex_adapter/dex.adapter.hpp>
 
 namespace antara
 {
     class order_manager
     {
     public:
-        using registry_order_sets = std::unordered_map<antara::pair, antara::order_set>;
+        using registry_order_sets = std::unordered_map<antara::pair, orders::order_set>;
 
-        bool place_order(orders:order_level);
-        bool place_orders(orders::order_set);
+        bool place_order(const orders::order_level &ol);
+        bool place_orders(const orders::order_set &os);
 
         [[nodiscard]] const orders::order_set &get_orders(antara::pair &pair) const;
         [[nodiscard]] const registry_order_sets &get_all_orders() const;
 
     private:
         registry_order_sets registry_order_sets_;
-    }
+        dex_adapter dex;
+    };
 }

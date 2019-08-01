@@ -14,26 +14,10 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "order.manager.hpp"
-
 namespace antara
 {
-    bool order_manager::place_order(const orders::order_level &ol)
+    class dex_adapter
     {
-        // for manually placing orders
-        // the strat manager will use place_orders
-        // registry_order_sets.emplace
-        return true;
-    }
 
-    bool order_manager::place_orders(const orders::order_set &os)
-    {
-        registry_order_sets_.emplace(os.pair, os);
-
-        // the return value will indicate success
-        // could be a specific return type, or throw exception on failure, not sure yet
-        return true;
-    }
-
-
+    };
 }
