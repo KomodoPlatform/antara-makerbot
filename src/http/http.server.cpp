@@ -14,32 +14,37 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <memory>
-#include <restinio/all.hpp>
-#include <config/config.hpp>
+#include "http/http.server.hpp"
 
 namespace antara::mmbot
 {
-    struct http_server_traits : public restinio::default_single_thread_traits_t
+    http_server::http_server(const mmbot::config &mmbot_cfg) : mmbot_cfg_(mmbot_cfg)
     {
-        using request_handler_t = restinio::router::express_router_t<>;
-    };
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+    }
 
-    class http_server
+    http_server::router http_server::create_routes()
     {
-    public:
-        using router = std::unique_ptr<restinio::router::express_router_t<>>;
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        using namespace restinio;
+        auto http_router = std::make_unique<restinio::router::express_router_t<>>();
+        http_router->http_get("/", [](auto req, auto) {
+            return req->create_response(status_ok()).set_body("Welcome.").done();
+        });
 
-        explicit http_server(const mmbot::config &mmbot_cfg);
+        http_router->non_matched_request_handler(
+                [](auto req) {
+                    return req->create_response(status_not_found()).set_body("Not Found").done();
+                });
+        return http_router;
+    }
 
-        void run();
-
-    private:
-        router create_routes();
-
-    private:
-        const mmbot::config &mmbot_cfg_;
-    };
+    void http_server::run()
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "launch http server on port: %d", mmbot_cfg_.http_port);
+        restinio::run(
+                restinio::on_this_thread<http_server_traits>().port(mmbot_cfg_.http_port).address(
+                        "localhost").request_handler(create_routes()));
+    }
 }

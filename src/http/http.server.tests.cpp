@@ -14,32 +14,38 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <csignal>
+#include <thread>
+#include <doctest/doctest.h>
+#include <restclient-cpp/restclient.h>
+#include "config/config.hpp"
+#include "http.server.hpp"
 
-#include <memory>
-#include <restinio/all.hpp>
-#include <config/config.hpp>
-
-namespace antara::mmbot
+namespace antara::mmbot::tests
 {
-    struct http_server_traits : public restinio::default_single_thread_traits_t
+    TEST_CASE ("test run http_server")
     {
-        using request_handler_t = restinio::router::express_router_t<>;
-    };
+        using namespace std::chrono_literals;
+        mmbot::config cfg;
+        cfg.http_port = 8080;
+        http_server server{cfg};
+        std::thread thr(&http_server::run, server);
+        std::this_thread::sleep_for(1s);
+        std::raise(SIGINT);
+        thr.join();
+    }
 
-    class http_server
+    TEST_CASE ("test welcome http_server")
     {
-    public:
-        using router = std::unique_ptr<restinio::router::express_router_t<>>;
-
-        explicit http_server(const mmbot::config &mmbot_cfg);
-
-        void run();
-
-    private:
-        router create_routes();
-
-    private:
-        const mmbot::config &mmbot_cfg_;
-    };
+        using namespace std::chrono_literals;
+        mmbot::config cfg;
+        cfg.http_port = 8080;
+        http_server server{cfg};
+        std::thread thr(&http_server::run, server);
+        std::this_thread::sleep_for(1s);
+        auto resp = RestClient::get("localhost:8080/");
+        CHECK_EQ(resp.code, 200);
+        std::raise(SIGINT);
+        thr.join();
+    }
 }
