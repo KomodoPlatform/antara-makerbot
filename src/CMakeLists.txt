@@ -24,6 +24,7 @@ target_sources(mmbot-test PUBLIC
         cex/cex.tests.cpp
         config/config.tests.cpp
         strategy_manager/strategy.manager.tests.cpp
+        order_manager/order.manager.tests.cpp
         price/coinpaprika.price.platform.tests.cpp
         price/factory.price.plaftorm.tests.cpp
         price/service.price.platform.tests.cpp)
