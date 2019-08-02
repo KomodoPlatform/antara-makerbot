@@ -32,11 +32,7 @@ namespace antara
                 str.insert(0, "0");
             }
         };
-        if (cfg.base_ercs_registry.at(symbol.value())) {
-            process_functor(price_str, 18u);
-        } else {
-            process_functor(price_str, 8u);
-        }
+        process_functor(price_str, cfg.base_ercs_registry.at(symbol.value()) ? 18u : 8u);
         return price_str;
     }
 
@@ -44,11 +40,7 @@ namespace antara
     generate_st_price_from_api_price(const mmbot::config &cfg, const st_symbol &symbol, double price_api_value) noexcept
     {
         std::string price_str;
-        if (cfg.base_ercs_registry.at(symbol.value())) {
-            price_str = fmt::format("{:.18f}", price_api_value);
-        } else {
-            price_str = fmt::format("{:.8f}", price_api_value);
-        }
+        price_str = fmt::format(cfg.base_ercs_registry.at(symbol.value()) ? "{:.18f}" : "{:.8f}", price_api_value);
         price_str.erase(std::find(price_str.begin(), price_str.end(), '.'));
         ltrim(price_str, "0");
         return st_price{std::stoull(price_str)};
