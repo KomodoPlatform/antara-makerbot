@@ -23,7 +23,7 @@
 
 namespace antara::mmbot::tests
 {
-    /*TEST_CASE ("test run http_server")
+    TEST_CASE ("test run http_server")
     {
         using namespace std::chrono_literals;
         mmbot::config cfg;
@@ -47,5 +47,5 @@ namespace antara::mmbot::tests
         CHECK_EQ(resp.code, 200);
         std::raise(SIGINT);
         thr.join();
-    }*/
+    }
 }
