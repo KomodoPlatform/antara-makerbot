@@ -19,14 +19,24 @@
 
 namespace antara
 {
-    std::string get_price_as_string_decimal(const mmbot::config &cfg, const antara::pair &pair, st_price price)
+    std::string get_price_as_string_decimal(const mmbot::config &cfg, const antara::pair &pair, st_price price) noexcept
     {
         std::string price_str;
         if (cfg.base_ercs_registry.at(pair.base.symbol.value())) {
-            price_str = fmt::format("{:.18f}", (static_cast<double>(price.value()) / g_factor) + g_rounding);
+            price_str = fmt::format("{:.18f}", generate_api_price_from_st_price(price));
         } else {
-            price_str = fmt::format("{:.8f}", (static_cast<double>(price.value()) / g_factor) + g_rounding);
+            price_str = fmt::format("{:.8f}", generate_api_price_from_st_price(price));
         }
         return price_str;
+    }
+
+    double generate_api_price_from_st_price(st_price price) noexcept
+    {
+        return (static_cast<double>(price.value()) / g_factor) + g_rounding;
+    }
+
+    st_price generate_st_price_from_api_price(double price_api_value) noexcept
+    {
+        return st_price{static_cast<std::uint64_t>((price_api_value + g_rounding) * g_factor)};
     }
 }

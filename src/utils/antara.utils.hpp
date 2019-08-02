@@ -22,5 +22,10 @@
 
 namespace antara
 {
-    std::string get_price_as_string_decimal(const mmbot::config &cfg, const antara::pair &pair, st_price price);
+    [[nodiscard]] std::string get_price_as_string_decimal(const mmbot::config &cfg, const antara::pair &pair,
+                                                          st_price price) noexcept;
+
+    [[nodiscard]] st_price generate_st_price_from_api_price(double price_api_value) noexcept;
+
+    [[nodiscard]]double generate_api_price_from_st_price(st_price price) noexcept;
 }
