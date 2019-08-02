@@ -23,6 +23,7 @@
 namespace antara
 {
     static constexpr const int g_factor = 100000000;
+    static constexpr const double g_rounding = 0.000000004999;
     using st_endpoint = st::type<
             std::string,
             struct endpoint_tag,
