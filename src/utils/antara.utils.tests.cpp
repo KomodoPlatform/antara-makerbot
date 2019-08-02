@@ -23,18 +23,18 @@ namespace antara::tests
     TEST_CASE("antara price as string decimal with normal coin")
     {
         auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        auto dummy_price = generate_st_price_from_api_price(1.15000000);
-        antara::pair dummy_pair;
-        dummy_pair.base = asset{st_symbol{"BTC"}};
-        CHECK_EQ("1.15000000", antara::get_price_as_string_decimal(cfg, dummy_pair, dummy_price));
+        auto dummy_price = generate_st_price_from_api_price(cfg, st_symbol{"BTC"}, 1.15000000);
+        CHECK_EQ(115000000ull, dummy_price.value());
+        auto dummy_price_str = get_price_as_string_decimal(cfg, st_symbol{"BTC"}, dummy_price);
+        CHECK_EQ("1.15000000", dummy_price_str);
     }
 
     TEST_CASE("antara price as string decimal with erc coin")
     {
         auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        auto dummy_price = generate_st_price_from_api_price(0.010089534999000000);
-        antara::pair dummy_pair;
-        dummy_pair.base = asset{st_symbol{"ZIL"}};
-        CHECK_EQ("0.010089534999000000", antara::get_price_as_string_decimal(cfg, dummy_pair, dummy_price));
+        auto dummy_price = generate_st_price_from_api_price(cfg, st_symbol{"ZIL"}, 0.010089534999000000);
+        CHECK_EQ(10089534999000000ull, dummy_price.value());
+        auto dummy_price_str = get_price_as_string_decimal(cfg, st_symbol{"ZIL"}, dummy_price);
+        CHECK_EQ("0.010089534999000000", dummy_price_str);
     }
 }

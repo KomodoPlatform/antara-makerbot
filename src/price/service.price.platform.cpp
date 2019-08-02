@@ -77,7 +77,7 @@ namespace antara::mmbot
         all_price_json["prices"] = nlohmann::json::array();
         for (auto &&[current_pair, current_price] : res) {
             auto current_object = nlohmann::json::object();
-            std::string current_price_str = antara::get_price_as_string_decimal(mmbot_config_, current_pair, current_price);
+            std::string current_price_str = antara::get_price_as_string_decimal(mmbot_config_, current_pair.base.symbol, current_price);
             current_object[current_pair.base.symbol.value() + "/" + current_pair.quote.symbol.value()] = current_price_str;
             all_price_json["prices"].push_back(std::move(current_object));
         }

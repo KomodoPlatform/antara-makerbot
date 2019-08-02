@@ -19,24 +19,38 @@
 
 namespace antara
 {
-    std::string get_price_as_string_decimal(const mmbot::config &cfg, const antara::pair &pair, st_price price) noexcept
+    std::string get_price_as_string_decimal(const mmbot::config &cfg, const st_symbol &symbol, st_price price) noexcept
     {
         std::string price_str;
-        if (cfg.base_ercs_registry.at(pair.base.symbol.value())) {
-            price_str = fmt::format("{:.18f}", generate_api_price_from_st_price(price));
+        price_str = std::to_string(price.value());
+        auto process_functor = [](std::string &str, std::size_t factor) {
+            while (str.size() < factor) {
+                str.insert(0, "0");
+            }
+            str.insert(str.size() - factor, ".");
+            if (str[0] == '.') {
+                str.insert(0, "0");
+            }
+        };
+        if (cfg.base_ercs_registry.at(symbol.value())) {
+            process_functor(price_str, 18u);
         } else {
-            price_str = fmt::format("{:.8f}", generate_api_price_from_st_price(price));
+            process_functor(price_str, 8u);
         }
         return price_str;
     }
 
-    double generate_api_price_from_st_price(st_price price) noexcept
+    st_price
+    generate_st_price_from_api_price(const mmbot::config &cfg, const st_symbol &symbol, double price_api_value) noexcept
     {
-        return (static_cast<double>(price.value()) / g_factor) + g_rounding;
-    }
-
-    st_price generate_st_price_from_api_price(double price_api_value) noexcept
-    {
-        return st_price{static_cast<std::uint64_t>((price_api_value + g_rounding) * g_factor)};
+        std::string price_str;
+        if (cfg.base_ercs_registry.at(symbol.value())) {
+            price_str = fmt::format("{:.18f}", price_api_value);
+        } else {
+            price_str = fmt::format("{:.8f}", price_api_value);
+        }
+        price_str.erase(std::find(price_str.begin(), price_str.end(), '.'));
+        ltrim(price_str, "0");
+        return st_price{std::stoull(price_str)};
     }
 }

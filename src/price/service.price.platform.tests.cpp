@@ -22,7 +22,7 @@ namespace antara::mmbot::tests
 {
     TEST_CASE ("simple service working")
     {
-        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         price_service_platform price_service{cfg};
         antara::pair currency_pair{{st_symbol{"EUR"}},
                                    {st_symbol{"KMD"}}};

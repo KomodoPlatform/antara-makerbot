@@ -51,7 +51,7 @@ namespace antara
     >;
 
     using st_price = st::type<
-            std::uint64_t,
+            unsigned long long,
             struct price_tag,
             st::arithmetic,
             st::addable_with<double>,
