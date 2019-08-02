@@ -56,7 +56,7 @@ FetchContent_Declare(
 
 FetchContent_Declare(
         restinio
-        URL https://bitbucket.org/sobjectizerteam/restinio/downloads/restinio-0.5.1-full.zip
+        URL https://bitbucket.org/sobjectizerteam/restinio/downloads/restinio-0.5.1.1-full.zip
 )
 
 SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
