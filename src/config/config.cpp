@@ -68,6 +68,22 @@ namespace antara::mmbot
         j["http_port"] = cfg.http_port;
     }
 
+    mmbot::config load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept
+    {
+        auto cfg = load_configuration<mmbot::config>(std::forward<std::filesystem::path>(config_path), std::move(filename));
+        auto full_path = config_path / "coins.json";
+        std::ifstream ifs(full_path);
+        DCHECK_F(ifs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
+        nlohmann::json coins_json_data;
+        ifs >> coins_json_data;
+        for (auto &&current_element: coins_json_data) {
+            cfg.base_ercs_registry.emplace(current_element["coin"].get<std::string>(),
+                                           current_element.find("etomic") != current_element.end() &&
+                                           current_element["coin"].get<std::string>() != "ETH");
+        }
+        return cfg;
+    }
+
     bool config::operator==(const config &rhs) const
     {
         return cex_registry == rhs.cex_registry &&

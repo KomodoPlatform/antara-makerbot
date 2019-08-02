@@ -77,7 +77,7 @@ namespace antara::mmbot
         for (auto &&[current_pair, current_price] : res) {
             auto current_object = nlohmann::json::object();
             std::string current_price_str;
-            if (current_pair.base.symbol.value() == "ETH") {
+            if (mmbot_config_.base_ercs_registry.at(current_pair.base.symbol.value())) {
                 current_price_str = fmt::format("{:.18f}", static_cast<double>(current_price.value()) / g_factor);
             } else {
                 current_price_str = fmt::format("{:.8f}", static_cast<double>(current_price.value()) / g_factor);
