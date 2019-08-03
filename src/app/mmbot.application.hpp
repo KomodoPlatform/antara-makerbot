@@ -23,6 +23,8 @@ namespace antara::mmbot
     class application
     {
     public:
+        application() noexcept;
+        ~application() noexcept;
         int run();
     private:
         antara::mmbot::config mmbot_config_{

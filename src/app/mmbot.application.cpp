@@ -14,12 +14,15 @@
  *                                                                            *
  ******************************************************************************/
 
+#include "version/version.hpp"
 #include "mmbot.application.hpp"
 
 namespace antara::mmbot
 {
     int application::run()
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, "launching antara-mmbot version: %s", version());
         try {
             server_.run();
         }
@@ -28,5 +31,15 @@ namespace antara::mmbot
             return 1;
         }
         return 0;
+    }
+
+    application::application() noexcept
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+    }
+
+    application::~application() noexcept
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
 }
