@@ -23,29 +23,38 @@
 
 namespace antara::mmbot::tests
 {
-    TEST_CASE ("test run http_server")
+    class http_server_tests_fixture
     {
-        using namespace std::chrono_literals;
-        mmbot::config cfg;
-        cfg.http_port = 8080;
-        http_server server{cfg};
-        std::thread thr(&http_server::run, server);
+    public:
+        http_server_tests_fixture()
+        {
+            server_thread_ = std::thread(&http_server::run, server_);
+        }
+
+        ~http_server_tests_fixture()
+        {
+            server_thread_.join();
+        }
+
+    private:
+        antara::mmbot::config mmbot_config_{
+                mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json")};
+        antara::mmbot::http_server server_{mmbot_config_};
+        std::thread server_thread_;
+    };
+
+    using namespace std::chrono_literals;
+    TEST_CASE_FIXTURE (http_server_tests_fixture, "test run http_server")
+    {
         std::this_thread::sleep_for(1s);
         std::raise(SIGINT);
-        thr.join();
     }
 
-    TEST_CASE ("test welcome http_server")
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test welcome http_server")
     {
-        using namespace std::chrono_literals;
-        mmbot::config cfg;
-        cfg.http_port = 8080;
-        http_server server{cfg};
-        std::thread thr(&http_server::run, server);
         std::this_thread::sleep_for(1s);
         auto resp = RestClient::get("localhost:8080/");
         CHECK_EQ(resp.code, 200);
         std::raise(SIGINT);
-        thr.join();
     }
 }

@@ -21,7 +21,7 @@ namespace antara::mmbot
     int application::run()
     {
         try {
-            server.run();
+            server_.run();
         }
         catch (const std::exception &e) {
             VLOG_F(loguru::Verbosity_FATAL, "exception catch: %s", e.what());
