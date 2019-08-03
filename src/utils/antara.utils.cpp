@@ -32,14 +32,14 @@ namespace antara
                 str.insert(0, "0");
             }
         };
-        process_functor(price_str, cfg.base_ercs_registry.at(symbol.value()));
+        process_functor(price_str, cfg.precision_registry.at(symbol.value()));
         return price_str;
     }
 
     std::string unformat_str_to_representation_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
     {
         //! 115000000
-        auto nb_decimal = static_cast<int>(cfg.base_ercs_registry.at(symbol.value()));
+        auto nb_decimal = static_cast<int>(cfg.precision_registry.at(symbol.value()));
         if (nb_decimal <= static_cast<int>(price_str.size())) {
             price_str.insert(price_str.size() - nb_decimal, 1, '.');
         }
@@ -48,7 +48,7 @@ namespace antara
 
     std::string format_str_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
     {
-        auto nb_decimal = static_cast<int>(cfg.base_ercs_registry.at(symbol.value()));
+        auto nb_decimal = static_cast<int>(cfg.precision_registry.at(symbol.value()));
         auto after_decimal_str = price_str.substr(price_str.find('.') + 1, price_str.size());
         if (static_cast<int>(after_decimal_str.size()) > nb_decimal) {
             price_str = price_str.substr(0, price_str.find('.') + nb_decimal + 1);

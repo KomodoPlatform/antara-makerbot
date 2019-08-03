@@ -63,7 +63,7 @@ namespace antara::mmbot
         price_infos_registry price_registry;
         using st_http_port = unsigned short;
         st_http_port http_port;
-        is_base_ercs_registry base_ercs_registry;
+        is_base_ercs_registry precision_registry;
     };
 
     void from_json(const nlohmann::json &j, cex_config &cfg);

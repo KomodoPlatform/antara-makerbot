@@ -83,11 +83,11 @@ namespace antara::mmbot
             } else if (current_element.find("etomic") != current_element.end() && current_element.find("decimals") != current_element.end()) {
                 nb_decimals = current_element["decimals"].get<int>();
             }
-            cfg.base_ercs_registry.emplace(current_element["coin"].get<std::string>(),
+            cfg.precision_registry.emplace(current_element["coin"].get<std::string>(),
                                            nb_decimals);
         }
-        cfg.base_ercs_registry.emplace("EUR", 2u);
-        cfg.base_ercs_registry.emplace("USD", 2u);
+        cfg.precision_registry.emplace("EUR", 2u);
+        cfg.precision_registry.emplace("USD", 2u);
         return cfg;
     }
 
