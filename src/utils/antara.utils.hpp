@@ -28,8 +28,7 @@ namespace antara
     [[nodiscard]] std::string get_price_as_string_decimal(const mmbot::config &cfg, const st_symbol& symbol,
                                                           st_price price) noexcept;
 
-    [[nodiscard]] st_price generate_st_price_from_api_price(const mmbot::config &cfg, const st_symbol &symbol,
-                                                            double price_api_value) noexcept;
+    [[nodiscard]] st_price generate_st_price_from_api_price(std::string price_api_value) noexcept;
 
     static inline void ltrim(std::string &s, const std::string &delimiters = " \f\n\r\t\v")
     {

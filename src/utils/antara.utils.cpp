@@ -36,11 +36,8 @@ namespace antara
         return price_str;
     }
 
-    st_price
-    generate_st_price_from_api_price(const mmbot::config &cfg, const st_symbol &symbol, double price_api_value) noexcept
+    st_price generate_st_price_from_api_price(std::string price_str) noexcept
     {
-        std::string price_str;
-        price_str = fmt::format(cfg.base_ercs_registry.at(symbol.value()) ? "{:.18f}" : "{:.8f}", price_api_value);
         price_str.erase(std::find(price_str.begin(), price_str.end(), '.'));
         ltrim(price_str, "0");
         return st_price{std::stoull(price_str)};
