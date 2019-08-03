@@ -31,8 +31,6 @@ namespace antara
     [[nodiscard]] st_price generate_st_price_from_api_price(const mmbot::config &cfg, const st_symbol &symbol,
                                                             double price_api_value) noexcept;
 
-    //[[nodiscard]]double generate_api_price_from_st_price(st_price price) noexcept;
-
     static inline void ltrim(std::string &s, const std::string &delimiters = " \f\n\r\t\v")
     {
         s.erase(0, s.find_first_not_of(delimiters));
