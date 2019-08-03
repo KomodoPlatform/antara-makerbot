@@ -20,10 +20,50 @@
 
 namespace antara::orders
 {
+    order::order(antara::pair pair, st_price price, st_quantity quantity,
+                st_quantity filled, antara::side side, order_status status)
+    {
+        this->pair = pair;
+        this->price = price;
+        this->quantity = quantity;
+        this->filled = filled;
+        this->side = side;
+        this->status = status;
+    }
+
     bool order_level::operator==(const order_level &other) const
     {
         return price == other.price
-               && quantity == other.quantity
-               && side == other.side;
+            && quantity == other.quantity
+            && side == other.side;
+    }
+
+    void order::change_status(const order_status_change &osc)
+    {
+        status = osc.status;
+    }
+
+    bool execution::operator==(const execution &other) const
+    {
+        return pair == other.pair
+            && price == other.price
+            && quantity == other.quantity
+            && side == other.side
+            && maker == other.maker;
+    }
+
+    bool execution::operator!=(const execution &other) const
+    {
+        return !(*this == other);
+    }
+
+    const execution order::create_execution(const st_quantity &q, const st_maker &maker) const
+    {
+        return execution{pair, price, q, side, maker};
+    }
+
+    void order::execute(const execution &ex)
+    {
+        this->filled = this->filled + ex.quantity;
     }
 }

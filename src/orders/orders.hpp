@@ -29,7 +29,7 @@ namespace antara::orders
         antara::st_quantity quantity;
         antara::side side;
 
-        bool operator==(const order_level &rhs) const;
+        bool operator==(const order_level &other) const;
     };
 
     struct order_set
@@ -46,7 +46,41 @@ namespace antara::orders
     struct order_status_change
     {
         antara::pair pair;
-        order_level ol;
-        order_status os;
+        order_level order;
+        order_status status;
+    };
+
+    struct execution
+    {
+        antara::pair pair;
+        st_price price;
+        st_quantity quantity;
+        antara::side side;
+        st_maker maker;
+
+        bool operator==(const execution &other) const;
+        bool operator!=(const execution &other) const;
+    };
+
+    class order
+    {
+    public:
+        antara::pair pair;
+        st_price price;
+        st_quantity quantity;
+        st_quantity filled;
+        antara::side side;
+        order_status status;
+
+        order(antara::pair pair, st_price price, st_quantity quantity,
+              st_quantity filled, antara::side side, order_status status);
+
+        bool operator==(const order_level &other) const;
+
+        void change_status(const order_status_change &osc);
+
+        const execution create_execution(const st_quantity &quantity, const st_maker &maker) const;
+
+        void execute(const execution &ex);
     };
 }
