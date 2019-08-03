@@ -14,18 +14,19 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <cstdlib>
-#include "app/mmbot.application.hpp"
+#pragma once
 
-int main()
+#include <http/http.server.hpp>
+
+namespace antara::mmbot
 {
-    loguru::add_file("mmbot.everything.log", loguru::Append, loguru::Verbosity_MAX);
-    loguru::add_file("mmbot.latest.readable.log", loguru::Truncate, loguru::Verbosity_INFO);
-    loguru::set_thread_name("main thread");
-    loguru::set_fatal_handler([](const loguru::Message& message){
-        VLOG_F(loguru::Verbosity_FATAL, "err occured: %s", message.message);
-        std::exit(1);
-    });
-    antara::mmbot::application app;
-    return app.run();
+    class application
+    {
+    public:
+        int run();
+    private:
+        antara::mmbot::config mmbot_config_{
+                mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json")};
+        antara::mmbot::http_server server{mmbot_config_};
+    };
 }
