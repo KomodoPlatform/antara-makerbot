@@ -20,6 +20,7 @@
 
 namespace antara::mmbot::tests
 {
+    //! TDD
     TEST_CASE ("simple service working")
     {
         auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
@@ -69,5 +70,37 @@ namespace antara::mmbot::tests
             CHECK_GT(current_result.second.value(), 0);
         }
         CHECK(!price_service.get_all_price().empty());
+    }
+
+    //! BDD
+    SCENARIO("price service functionnality") {
+        GIVEN("a price service with a good configuration") {
+            auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+            price_service_platform price_service{cfg};
+            AND_WHEN("give a valid asset pair") {
+                antara::pair currency_pair{{st_symbol{"EUR"}},
+                                           {st_symbol{"KMD"}}};
+                AND_THEN("i ask for the price of this valid pair") {
+                    auto price = price_service.get_price(currency_pair).value();
+                    THEN("i'm exepecting to get a price greater than zero") {
+                        CHECK_GT(price, 0);
+                    }
+                }
+            }
+        }
+        GIVEN("a price service with a wrong configuration (bad endpoint)") {
+            config cfg{};
+            cfg.price_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
+            price_service_platform price_service{cfg};
+            AND_WHEN("give a valid asset pair") {
+                antara::pair currency_pair{{st_symbol{"EUR"}},
+                                           {st_symbol{"KMD"}}};
+                AND_THEN("i ask for the price of this valid pair") {
+                    THEN("i'm exepecting to get an exception pair not available") {
+                        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
+                    }
+                }
+            }
+        }
     }
 }
