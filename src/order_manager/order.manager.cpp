@@ -47,7 +47,7 @@ namespace antara
         cex_.place_order(ol);
     }
 
-    const orders::order_set &order_manager::get_orders(antara::pair &pair) const
+    const orders::order_set &order_manager::get_orders(const antara::pair &pair) const
     {
         return registry_order_sets_.at(pair);
     }

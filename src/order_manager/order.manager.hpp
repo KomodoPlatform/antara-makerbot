@@ -35,7 +35,7 @@ namespace antara
         bool place_order(const orders::order_level &ol);
         bool place_orders(const orders::order_set &os);
 
-        [[nodiscard]] const orders::order_set &get_orders(antara::pair &pair) const;
+        [[nodiscard]] const orders::order_set &get_orders(const antara::pair &pair) const;
         [[nodiscard]] const registry_order_sets &get_all_orders() const;
 
         void change_order_status(const orders::order_status_change &osc);
