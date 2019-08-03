@@ -25,10 +25,16 @@
 
 namespace antara
 {
-    [[nodiscard]] std::string get_price_as_string_decimal(const mmbot::config &cfg, const st_symbol& symbol,
+    [[nodiscard]] std::string get_price_as_string_decimal(const mmbot::config &cfg, const st_symbol &symbol,
                                                           st_price price) noexcept;
 
-    [[nodiscard]] st_price generate_st_price_from_api_price(std::string price_api_value) noexcept;
+    [[nodiscard]] st_price generate_st_price_from_api_price(const mmbot::config &cfg, const st_symbol &symbol,
+                                                            std::string price_api_value) noexcept;
+
+    std::string format_str_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str);
+
+    std::string unformat_str_to_representation_price(const mmbot::config &cfg, const st_symbol &symbol,
+                                                     std::string price_str);
 
     static inline void ltrim(std::string &s, const std::string &delimiters = " \f\n\r\t\v")
     {

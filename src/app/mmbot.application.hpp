@@ -29,6 +29,7 @@ namespace antara::mmbot
     private:
         antara::mmbot::config mmbot_config_{
                 mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json")};
-        antara::mmbot::http_server server_{mmbot_config_};
+        price_service_platform price_service_{mmbot_config_};
+        antara::mmbot::http_server server_{mmbot_config_, price_service_};
     };
 }

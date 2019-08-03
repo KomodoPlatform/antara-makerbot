@@ -58,7 +58,7 @@ namespace antara::mmbot
 
         using cex_infos_registry = std::unordered_map<std::string, cex_config>;
         using price_infos_registry = std::unordered_map<std::string, price_config>;
-        using is_base_ercs_registry = std::unordered_map<std::string, bool>;
+        using is_base_ercs_registry = std::unordered_map<std::string, std::size_t>;
         cex_infos_registry cex_registry;
         price_infos_registry price_registry;
         using st_http_port = unsigned short;

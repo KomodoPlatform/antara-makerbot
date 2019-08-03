@@ -20,21 +20,44 @@
 
 namespace antara::tests
 {
-    TEST_CASE("antara price as string decimal with normal coin")
+    TEST_CASE("antara price format bitcoin normal price")
     {
         auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        auto dummy_price = generate_st_price_from_api_price("1.15000000");
-        CHECK_EQ(115000000ull, dummy_price.value());
-        auto dummy_price_str = get_price_as_string_decimal(cfg, st_symbol{"BTC"}, dummy_price);
-        CHECK_EQ("1.15000000", dummy_price_str);
+
+        auto formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "1.15000000");
+        CHECK_EQ("115000000", formatted_price);
+        CHECK_EQ("1.15000000", unformat_str_to_representation_price(cfg, st_symbol{"BTC"}, formatted_price));
+
+        formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "1.15");
+        CHECK_EQ("115000000", formatted_price);
+
+        formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "100000.15");
+        CHECK_EQ("10000015000000", formatted_price);
+        CHECK_EQ("100000.15000000", unformat_str_to_representation_price(cfg, st_symbol{"BTC"}, formatted_price));
     }
 
-    TEST_CASE("antara price as string decimal with erc coin")
+    TEST_CASE("antara price format bitcoin erc coin normal price")
     {
         auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        auto dummy_price = generate_st_price_from_api_price("0.010089534999000000");
-        CHECK_EQ(10089534999000000ull, dummy_price.value());
-        auto dummy_price_str = get_price_as_string_decimal(cfg, st_symbol{"ZIL"}, dummy_price);
-        CHECK_EQ("0.010089534999000000", dummy_price_str);
+        auto formatted_price = format_str_api_price(cfg, st_symbol{"ZIL"}, "0.010089534999000000");
+        CHECK_EQ("10089534999000000", formatted_price);
+    }
+
+    TEST_CASE("antara price as string decimal with normal coin lot of decimals")
+    {
+        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        auto formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "0.0000972439793401814");
+        CHECK_EQ("9724", formatted_price);
+        formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "0.00009724");
+        CHECK_EQ("9724", formatted_price);
+    }
+
+    TEST_CASE("antara price as string decimal with fiat")
+    {
+        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        auto formatted_price = format_str_api_price(cfg, st_symbol{"EUR"}, "0.92");
+        CHECK_EQ("92", formatted_price);
+        formatted_price = format_str_api_price(cfg, st_symbol{"EUR"}, "0.922222");
+        CHECK_EQ("92", formatted_price);
     }
 }

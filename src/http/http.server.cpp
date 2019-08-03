@@ -18,7 +18,8 @@
 
 namespace antara::mmbot
 {
-    http_server::http_server(const mmbot::config &mmbot_cfg) : mmbot_cfg_(mmbot_cfg)
+    http_server::http_server(const mmbot::config &mmbot_cfg, price_service_platform &price_service) : mmbot_cfg_(
+            mmbot_cfg), price_rest_callbook(mmbot_cfg, price_service)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
@@ -30,6 +31,11 @@ namespace antara::mmbot
         auto http_router = std::make_unique<restinio::router::express_router_t<>>();
         http_router->http_get("/", [](auto req, auto) {
             return req->create_response(status_ok()).set_body("Welcome.").done();
+        });
+
+        http_router->http_get("/api/v1/getprice", [this](auto&&... params)
+        {
+            return this->price_rest_callbook.get_price(std::forward<decltype(params)>(params)...);
         });
 
         http_router->non_matched_request_handler(

@@ -23,8 +23,8 @@ namespace antara::mmbot::tests
     {
         auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         CHECK(!cfg.base_ercs_registry.empty());
-        CHECK(!cfg.base_ercs_registry["ETH"]);
-        CHECK(cfg.base_ercs_registry["ZIL"]);
+        CHECK_EQ(cfg.base_ercs_registry["ETH"], 18u);
+        CHECK_EQ(cfg.base_ercs_registry["ZIL"], 18u);
     }
     TEST_CASE ("mmbot cfg from json")
     {

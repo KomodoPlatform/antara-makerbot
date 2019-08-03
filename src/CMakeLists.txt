@@ -6,6 +6,7 @@ target_sources(mmbot_shared_deps INTERFACE
         price/coinpaprika.price.platform.cpp
         price/service.price.platform.cpp
         http/http.server.cpp
+        http/http.price.rest.cpp
         utils/antara.utils.cpp
         app/mmbot.application.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)

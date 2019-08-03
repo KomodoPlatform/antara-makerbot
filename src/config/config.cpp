@@ -77,10 +77,17 @@ namespace antara::mmbot
         nlohmann::json coins_json_data;
         ifs >> coins_json_data;
         for (auto &&current_element: coins_json_data) {
+            std::size_t nb_decimals = 8u;
+            if (current_element.find("etomic") != current_element.end() && current_element.find("decimals") == current_element.end()) {
+                nb_decimals = 18;
+            } else if (current_element.find("etomic") != current_element.end() && current_element.find("decimals") != current_element.end()) {
+                nb_decimals = current_element["decimals"].get<int>();
+            }
             cfg.base_ercs_registry.emplace(current_element["coin"].get<std::string>(),
-                                           current_element.find("etomic") != current_element.end() &&
-                                           current_element["coin"].get<std::string>() != "ETH");
+                                           nb_decimals);
         }
+        cfg.base_ercs_registry.emplace("EUR", 2u);
+        cfg.base_ercs_registry.emplace("USD", 2u);
         return cfg;
     }
 
