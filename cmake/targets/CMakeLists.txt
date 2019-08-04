@@ -7,8 +7,8 @@ add_library(mmbot::error_settings ALIAS mmbot_error_settings)
 target_compile_options(
         mmbot_error_settings
         INTERFACE
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wfatal-errors -Weffc++>
-        $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wfatal-errors -Weffc++>
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wfatal-errors>
+        $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wfatal-errors>
         $<$<CXX_COMPILER_ID:MSVC>:/W4 /permissive->)
 
 
