@@ -35,7 +35,7 @@ before_build:
   - cmake ../ -G "%GENERATOR%" -A %platform% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_IGNORE_PATH="C:/Program Files/Git/usr/bin"
 
 build_script:
-  - cmake --build . --config %BUILD_TYPE% -- /verbosity:minimal /maxcpucount:3
+  - cmake --build . --target mmbot-test --config %BUILD_TYPE% -- /verbosity:minimal /maxcpucount:3
   - cd bin && cd %BUILD_TYPE% && ls
   - ps: |
       $filePattern = '*-test.exe'

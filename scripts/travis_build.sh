@@ -27,11 +27,7 @@ function build() {
 
     echo "result -> ${cmd} ${options} ../"
     ${cmd} ${options} ../
-    if [[ -n ${NINJA} ]]; then
-        ninja || travis_terminate 1
-    else
-        cmake --build . --config ${BUILD_TYPE} || travis_terminate 1
-    fi
+    cmake --build . --target mmbot-test --config ${BUILD_TYPE} || travis_terminate 1
 }
 
 function run_test() {
