@@ -16,6 +16,7 @@
 
 #include <sstream>
 #include <fmt/format.h>
+#include "bcmath_stl.h"
 #include "antara.utils.hpp"
 
 namespace antara
@@ -51,17 +52,15 @@ namespace antara
     {
         auto nb_decimal = static_cast<int>(cfg.precision_registry.at(symbol.value()));
         auto after_decimal_str = price_str.substr(price_str.find('.') + 1, price_str.size());
-        if (static_cast<int>(after_decimal_str.size()) > nb_decimal || price_str.find('e') != std::string::npos) {
-            auto as_double = std::stod(price_str);
-            price_str = fmt::format("{:." + std::to_string(nb_decimal) + "f}", as_double);
-        } else {
-            int missing_zero = nb_decimal - static_cast<int>(after_decimal_str.size());
-            for (; missing_zero > 0; --missing_zero) {
-                price_str += '0';
-            }
+        if (static_cast<int>(after_decimal_str.size()) > nb_decimal) {
+            price_str = BCMath::bcround(price_str, nb_decimal);
+            after_decimal_str = price_str.substr(price_str.find('.') + 1, price_str.size());
+        }
+        int missing_zero = nb_decimal - static_cast<int>(after_decimal_str.size());
+        for (; missing_zero > 0; --missing_zero) {
+            price_str += '0';
         }
         if (auto pos = price_str.find('.'); pos != std::string::npos) {
-            //! use std::rotate lol ?
             price_str += '*';
             std::iter_swap(price_str.begin() + pos, price_str.begin() + (price_str.size() - 1));
             price_str.erase(pos, 1);
@@ -146,7 +145,8 @@ namespace antara
     }
 
     bool
-    my_json_sax::parse_error([[maybe_unused]]  std::size_t position, [[maybe_unused]]  const std::string &last_token, [[maybe_unused]]  const nlohmann::detail::exception &ex)
+    my_json_sax::parse_error([[maybe_unused]]  std::size_t position, [[maybe_unused]]  const std::string &last_token,
+                             [[maybe_unused]]  const nlohmann::detail::exception &ex)
     {
         return false;
     }

@@ -54,9 +54,6 @@ namespace antara::tests
         formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "0.00009724");
         CHECK_EQ("9724", formatted_price);
         CHECK_EQ("0.00009724", unformat_str_to_representation_price(cfg, st_symbol{"BTC"}, formatted_price));
-
-        formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "9.72439793401814e-05");
-        CHECK_EQ("9724", formatted_price);
     }
 
     TEST_CASE("antara price as string decimal with fiat")

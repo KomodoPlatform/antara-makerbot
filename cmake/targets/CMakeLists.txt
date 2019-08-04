@@ -7,8 +7,8 @@ add_library(mmbot::error_settings ALIAS mmbot_error_settings)
 target_compile_options(
         mmbot_error_settings
         INTERFACE
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wfatal-errors>
-        $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wfatal-errors>
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wfatal-errors -Weffc++>
+        $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wfatal-errors -Weffc++>
         $<$<CXX_COMPILER_ID:MSVC>:/W4 /permissive->)
 
 
@@ -93,7 +93,10 @@ FetchContent_Declare(
 FetchContent_Declare(jl777-coins
         URL https://github.com/jl777/coins/archive/master.zip)
 
-FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins abseil-cpp)
+FetchContent_Declare(bcmath
+        URL https://github.com/milerius/BCMath-for-Cpp/archive/master.zip)
+
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins abseil-cpp bcmath)
 find_package(Threads)
 add_library(logurulog OBJECT)
 target_sources(logurulog PUBLIC ${loguru_SOURCE_DIR}/loguru.cpp)
@@ -134,3 +137,9 @@ if (UNIX)
 else ()
     configure_file(${jl777-coins_SOURCE_DIR}/coins ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/assets/coins.json COPYONLY)
 endif ()
+
+add_library(bcmath STATIC)
+target_include_directories(bcmath INTERFACE ${bcmath_SOURCE_DIR})
+target_sources(bcmath PUBLIC ${bcmath_SOURCE_DIR}/bcmath_stl.cpp)
+target_link_libraries(bcmath PUBLIC mmbot::default_settings)
+add_library(mmbot::bcmath ALIAS bcmath)
