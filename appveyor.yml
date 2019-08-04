@@ -36,6 +36,7 @@ before_build:
 
 build_script:
   - cmake --build . --target mmbot-test --config %BUILD_TYPE% -- /verbosity:minimal /maxcpucount:3
+  - cmake --build . --target mmbot --config %BUILD_TYPE% -- /verbosity:minimal /maxcpucount:3
   - cd bin && cd %BUILD_TYPE% && ls
   - ps: |
       $filePattern = '*-test.exe'

@@ -28,6 +28,7 @@ function build() {
     echo "result -> ${cmd} ${options} ../"
     ${cmd} ${options} ../
     cmake --build . --target mmbot-test --config ${BUILD_TYPE} || travis_terminate 1
+    cmake --build . --target mmbot --config ${BUILD_TYPE} || travis_terminate 1
 }
 
 function run_test() {
