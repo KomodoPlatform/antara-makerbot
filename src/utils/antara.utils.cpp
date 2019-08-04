@@ -97,17 +97,17 @@ namespace antara
         return true;
     }
 
-    bool my_json_sax::number_integer([[maybe_unused]]  long long int val)
+    bool my_json_sax::number_integer([[maybe_unused]]  number_integer_t val)
     {
         return true;
     }
 
-    bool my_json_sax::number_unsigned([[maybe_unused]]  unsigned long long int val)
+    bool my_json_sax::number_unsigned([[maybe_unused]]  number_unsigned_t val)
     {
         return true;
     }
 
-    bool my_json_sax::number_float([[maybe_unused]] double val,
+    bool my_json_sax::number_float([[maybe_unused]] number_float_t val,
                                    const std::string &s)
     {
         this->float_as_string = s;
@@ -124,7 +124,7 @@ namespace antara
         return true;
     }
 
-    bool my_json_sax::key([[maybe_unused]] std::string &val)
+    bool my_json_sax::key([[maybe_unused]] string_t &val)
     {
         return true;
     }
