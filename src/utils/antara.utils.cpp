@@ -36,12 +36,20 @@ namespace antara
         return price_str;
     }
 
-    std::string unformat_str_to_representation_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
+    std::string
+    unformat_str_to_representation_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
     {
-        //! 115000000
         auto nb_decimal = static_cast<int>(cfg.precision_registry.at(symbol.value()));
-        if (nb_decimal <= static_cast<int>(price_str.size())) {
+
+        while (static_cast<int>(price_str.length()) <= nb_decimal) {
+            price_str.insert(0, 1, '0');
+        }
+
+        if (nb_decimal < static_cast<int>(price_str.length())) {
             price_str.insert(price_str.size() - nb_decimal, 1, '.');
+        } else if (nb_decimal == static_cast<int>(price_str.length())) {
+            price_str.insert(price_str.size() - nb_decimal, 1, '.');
+            price_str.insert(0, 1, '0');
         }
         return price_str;
     }

@@ -41,15 +41,19 @@ namespace antara::tests
         auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         auto formatted_price = format_str_api_price(cfg, st_symbol{"ZIL"}, "0.010089534999000000");
         CHECK_EQ("10089534999000000", formatted_price);
+        CHECK_EQ("0.010089534999000000", unformat_str_to_representation_price(cfg, st_symbol{"ZIL"}, formatted_price));
     }
 
     TEST_CASE("antara price as string decimal with normal coin lot of decimals")
     {
         auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+
         auto formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "0.0000972439793401814");
         CHECK_EQ("9724", formatted_price);
+
         formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "0.00009724");
         CHECK_EQ("9724", formatted_price);
+        CHECK_EQ("0.00009724", unformat_str_to_representation_price(cfg, st_symbol{"BTC"}, formatted_price));
     }
 
     TEST_CASE("antara price as string decimal with fiat")
@@ -59,5 +63,6 @@ namespace antara::tests
         CHECK_EQ("92", formatted_price);
         formatted_price = format_str_api_price(cfg, st_symbol{"EUR"}, "0.922222");
         CHECK_EQ("92", formatted_price);
+        CHECK_EQ("0.92", unformat_str_to_representation_price(cfg, st_symbol{"EUR"}, formatted_price));
     }
 }
