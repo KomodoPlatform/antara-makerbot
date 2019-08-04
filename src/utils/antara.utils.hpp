@@ -40,4 +40,34 @@ namespace antara
     {
         s.erase(0, s.find_first_not_of(delimiters));
     }
+
+    struct my_json_sax : nlohmann::json_sax<nlohmann::json>
+    {
+        bool null() override;
+
+        bool boolean(bool val) override;
+
+        bool number_integer(number_integer_t val) override;
+
+        bool number_unsigned(number_unsigned_t val) override;
+
+        bool number_float(number_float_t val, const string_t &s) override;
+
+        bool string(string_t &val) override;
+
+        bool start_object(std::size_t elements) override;
+
+        bool key(string_t &val) override;
+
+        bool end_object() override;
+
+        bool start_array(std::size_t elements) override;
+
+        bool end_array() override;
+
+        bool parse_error(std::size_t position, const std::string &last_token,
+                         const nlohmann::detail::exception &ex) override;
+
+        std::string float_as_string;
+    };
 }

@@ -87,4 +87,67 @@ namespace antara
         value += std::stoull(low_str);
         return st_price{value};
     }
+
+    bool my_json_sax::null()
+    {
+        return true;
+    }
+
+    bool my_json_sax::boolean([[maybe_unused]]  bool val)
+    {
+        return true;
+    }
+
+    bool my_json_sax::number_integer([[maybe_unused]]  long long int val)
+    {
+        return true;
+    }
+
+    bool my_json_sax::number_unsigned([[maybe_unused]]  unsigned long long int val)
+    {
+        return true;
+    }
+
+    bool my_json_sax::number_float([[maybe_unused]] double val,
+                                   const std::string &s)
+    {
+        this->float_as_string = s;
+        return true;
+    }
+
+    bool my_json_sax::string([[maybe_unused]]  std::string &val)
+    {
+        return true;
+    }
+
+    bool my_json_sax::start_object([[maybe_unused]]  std::size_t elements)
+    {
+        return true;
+    }
+
+    bool my_json_sax::key([[maybe_unused]] std::string &val)
+    {
+        return true;
+    }
+
+    bool my_json_sax::end_object()
+    {
+        return true;
+    }
+
+    bool my_json_sax::start_array([[maybe_unused]] std::size_t elements)
+    {
+        return true;
+    }
+
+    bool my_json_sax::end_array()
+    {
+        return true;
+    }
+
+    bool
+    my_json_sax::parse_error([[maybe_unused]]  std::size_t position, [[maybe_unused]]  const std::string &last_token, [[maybe_unused]]  const nlohmann::detail::exception &ex)
+    {
+        return false;
+    }
 }
