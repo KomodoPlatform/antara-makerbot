@@ -54,6 +54,9 @@ namespace antara::tests
         formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "0.00009724");
         CHECK_EQ("9724", formatted_price);
         CHECK_EQ("0.00009724", unformat_str_to_representation_price(cfg, st_symbol{"BTC"}, formatted_price));
+
+        formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "9.72439793401814e-05");
+        CHECK_EQ("9724", formatted_price);
     }
 
     TEST_CASE("antara price as string decimal with fiat")
@@ -73,5 +76,12 @@ namespace antara::tests
         CHECK_EQ("12345678.010089534999123456", get_price_as_string_decimal(cfg, st_symbol{"ZIL"}, price));
         price = generate_st_price_from_api_price(cfg, st_symbol{"ZIL"}, "12345678.010089534999000000");
         CHECK_EQ("12345678.010089534999000000", get_price_as_string_decimal(cfg, st_symbol{"ZIL"}, price));
+    }
+
+    TEST_CASE("antara price with to much decimal than expected")
+    {
+        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        auto price = generate_st_price_from_api_price(cfg, st_symbol{"BTC"}, "17999.204999999998");
+        CHECK_EQ("17999.20500000", get_price_as_string_decimal(cfg, st_symbol{"BTC"}, price));
     }
 }

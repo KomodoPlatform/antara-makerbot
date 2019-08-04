@@ -16,7 +16,6 @@
 
 #include <sstream>
 #include <fmt/format.h>
-#include <iostream>
 #include "antara.utils.hpp"
 
 namespace antara
@@ -52,8 +51,9 @@ namespace antara
     {
         auto nb_decimal = static_cast<int>(cfg.precision_registry.at(symbol.value()));
         auto after_decimal_str = price_str.substr(price_str.find('.') + 1, price_str.size());
-        if (static_cast<int>(after_decimal_str.size()) > nb_decimal) {
-            price_str = price_str.substr(0, price_str.find('.') + nb_decimal + 1);
+        if (static_cast<int>(after_decimal_str.size()) > nb_decimal || price_str.find('e') != std::string::npos) {
+            auto as_double = std::stod(price_str);
+            price_str = fmt::format("{:." + std::to_string(nb_decimal) + "f}", as_double);
         } else {
             int missing_zero = nb_decimal - static_cast<int>(after_decimal_str.size());
             for (; missing_zero > 0; --missing_zero) {
