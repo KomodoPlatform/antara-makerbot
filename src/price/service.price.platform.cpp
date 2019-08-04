@@ -38,7 +38,7 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         std::atomic_size_t nb_calls_succeed = 0u;
-        std::uint64_t price = 0;
+        absl::uint128 price = 0;
         std::mutex mutex;
         auto price_functor = [&nb_calls_succeed, &mutex, &price, &currency_pair](auto &&current_platform_price) {
             auto &&[platform_name, platform_ptr] = current_platform_price;

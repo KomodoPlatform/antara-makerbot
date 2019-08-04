@@ -14,26 +14,20 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <sstream>
 #include <fmt/format.h>
+#include <iostream>
 #include "antara.utils.hpp"
 
 namespace antara
 {
     std::string get_price_as_string_decimal(const mmbot::config &cfg, const st_symbol &symbol, st_price price) noexcept
     {
+        std::stringstream ss;
+        ss << price.value();
         std::string price_str;
-        price_str = std::to_string(price.value());
-        auto process_functor = [](std::string &str, std::size_t factor) {
-            while (str.size() < factor) {
-                str.insert(0, "0");
-            }
-            str.insert(str.size() - factor, ".");
-            if (str[0] == '.') {
-                str.insert(0, "0");
-            }
-        };
-        process_functor(price_str, cfg.precision_registry.at(symbol.value()));
-        return price_str;
+        ss >> price_str;
+        return unformat_str_to_representation_price(cfg, symbol, price_str);
     }
 
     std::string
@@ -81,6 +75,16 @@ namespace antara
     generate_st_price_from_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str) noexcept
     {
         price_str = format_str_api_price(cfg, symbol, price_str);
-        return st_price{std::stoull(price_str)};
+        if (price_str.length() <= 20) {
+            return st_price{std::stoull(price_str)};
+        }
+
+        absl::uint128 value = std::stoull(price_str.substr(0, 20));
+        auto low_str = price_str.substr(20);
+        for (std::size_t i = 0; i < low_str.size(); ++i) {
+            value *= 10;
+        }
+        value += std::stoull(low_str);
+        return st_price{value};
     }
 }

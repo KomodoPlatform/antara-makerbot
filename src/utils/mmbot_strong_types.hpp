@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <absl/numeric/int128.h>
 #include <st/type.hpp>
 #include <st/traits.hpp>
 
@@ -51,12 +52,9 @@ namespace antara
     >;
 
     using st_price = st::type<
-            unsigned long long,
+            absl::uint128,
             struct price_tag,
-            st::arithmetic,
-            st::addable_with<double>,
-            st::multiplicable_with<double>,
-            st::multiplicable_with<st_spread>
+            st::arithmetic
     >;
 
     using st_quantity = st::type<

@@ -74,6 +74,12 @@ FetchContent_Declare(
         URL https://github.com/nlohmann/json/archive/v3.6.1.tar.gz
 )
 
+set(BUILD_TESTING OFF CACHE BOOL "Override option" FORCE)
+FetchContent_Declare(
+        abseil-cpp
+        URL https://github.com/abseil/abseil-cpp/archive/master.zip
+)
+
 FetchContent_Declare(
         loguru
         URL https://github.com/emilk/loguru/archive/master.zip
@@ -87,7 +93,7 @@ FetchContent_Declare(
 FetchContent_Declare(jl777-coins
         URL https://github.com/jl777/coins/archive/master.zip)
 
-FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins)
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins abseil-cpp)
 find_package(Threads)
 add_library(logurulog OBJECT)
 target_sources(logurulog PUBLIC ${loguru_SOURCE_DIR}/loguru.cpp)
