@@ -16,31 +16,20 @@
 
 #pragma once
 
-#include <unordered_map>
-#include "abstract.price.platform.hpp"
+#include <http/http.server.hpp>
 
 namespace antara::mmbot
 {
-    class coinpaprika_price_platform : public abstract_price_platform
+    class application
     {
     public:
-        explicit coinpaprika_price_platform(const config &cfg) : abstract_price_platform(cfg)
-        {
-
-        }
-
-        [[nodiscard]] st_price get_price(antara::pair currency_pair, std::size_t nb_try_in_a_row) const final;
-
-        ~coinpaprika_price_platform() override = default;
-
+        application() noexcept;
+        ~application() noexcept;
+        int run();
     private:
-        using coinpaprika_coin_id_translation_registry = std::unordered_map<std::string, std::string>;
-        coinpaprika_coin_id_translation_registry coin_id_translation_{{"KMD",  "kmd-komodo"},
-                                                                      {"BTC",  "btc-bitcoin"},
-                                                                      {"ETH",  "eth-ethereum"},
-                                                                      {"DOGE", "doge-dogecoin"},
-                                                                      {"USD",  "usd-us-dollars"},
-                                                                      {"EUR",  "eur-euro"},
-                                                                      {"ZIL",  "zil-zilliqa"}};
+        antara::mmbot::config mmbot_config_{
+                mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json")};
+        price_service_platform price_service_{mmbot_config_};
+        antara::mmbot::http_server server_{mmbot_config_, price_service_};
     };
 }

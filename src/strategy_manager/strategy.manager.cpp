@@ -76,7 +76,7 @@ namespace antara
     strategy_manager::make_bid(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
     {
         antara::st_spread mod = antara::st_spread{1.0} - spread;
-        antara::st_price price = mid * mod;
+        antara::st_price price = mid; //* mod;
         antara::side side = antara::side::buy;
         orders::order_level ol{antara::st_price{price}, quantity, side};
         return ol;
@@ -86,14 +86,14 @@ namespace antara
     strategy_manager::make_ask(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
     {
         antara::st_spread mod = 1.0 + spread;
-        antara::st_price price = mid * mod;
+        antara::st_price price = mid; //* mod;
         antara::side side = antara::side::sell;
         orders::order_level ol{price, quantity, side};
         return ol;
     }
 
     orders::order_set strategy_manager::create_order_set(
-            antara::pair pair, market_making_strategy strat, antara::st_price mid)
+            antara::pair pair, const market_making_strategy &strat, antara::st_price mid)
     {
         antara::side side = strat.side;
         antara::st_spread spread = strat.spread;

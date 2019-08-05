@@ -35,7 +35,7 @@ namespace antara::orders
 
     bool order_level::operator==(const order_level &other) const
     {
-        return price == other.price
+        return price.value() == other.price.value()
             && quantity == other.quantity
             && side == other.side;
     }

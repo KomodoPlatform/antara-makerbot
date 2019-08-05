@@ -16,31 +16,33 @@
 
 #pragma once
 
-#include <unordered_map>
-#include "abstract.price.platform.hpp"
+#include <memory>
+#include <restinio/all.hpp>
+#include <config/config.hpp>
+#include "price/service.price.platform.hpp"
+#include "http.price.rest.hpp"
 
 namespace antara::mmbot
 {
-    class coinpaprika_price_platform : public abstract_price_platform
+    struct http_server_traits : public restinio::default_single_thread_traits_t
+    {
+        using request_handler_t = restinio::router::express_router_t<>;
+    };
+
+    class http_server
     {
     public:
-        explicit coinpaprika_price_platform(const config &cfg) : abstract_price_platform(cfg)
-        {
+        using router = std::unique_ptr<restinio::router::express_router_t<>>;
 
-        }
+        explicit http_server(const mmbot::config &mmbot_cfg, price_service_platform& price_service);
 
-        [[nodiscard]] st_price get_price(antara::pair currency_pair, std::size_t nb_try_in_a_row) const final;
-
-        ~coinpaprika_price_platform() override = default;
+        void run();
 
     private:
-        using coinpaprika_coin_id_translation_registry = std::unordered_map<std::string, std::string>;
-        coinpaprika_coin_id_translation_registry coin_id_translation_{{"KMD",  "kmd-komodo"},
-                                                                      {"BTC",  "btc-bitcoin"},
-                                                                      {"ETH",  "eth-ethereum"},
-                                                                      {"DOGE", "doge-dogecoin"},
-                                                                      {"USD",  "usd-us-dollars"},
-                                                                      {"EUR",  "eur-euro"},
-                                                                      {"ZIL",  "zil-zilliqa"}};
+        router create_routes();
+
+    private:
+        const mmbot::config &mmbot_cfg_;
+        http::rest::price price_rest_callbook;
     };
 }

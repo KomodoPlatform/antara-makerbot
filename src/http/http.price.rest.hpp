@@ -16,31 +16,22 @@
 
 #pragma once
 
-#include <unordered_map>
-#include "abstract.price.platform.hpp"
+#include <restinio/all.hpp>
+#include "price/service.price.platform.hpp"
 
-namespace antara::mmbot
+namespace antara::mmbot::http::rest
 {
-    class coinpaprika_price_platform : public abstract_price_platform
+    class price
     {
     public:
-        explicit coinpaprika_price_platform(const config &cfg) : abstract_price_platform(cfg)
-        {
+        explicit price(const config& cfg, price_service_platform &price_service) noexcept;
 
-        }
+        ~price() noexcept;
 
-        [[nodiscard]] st_price get_price(antara::pair currency_pair, std::size_t nb_try_in_a_row) const final;
-
-        ~coinpaprika_price_platform() override = default;
+        restinio::request_handling_status_t get_price(restinio::request_handle_t req, restinio::router::route_params_t);
 
     private:
-        using coinpaprika_coin_id_translation_registry = std::unordered_map<std::string, std::string>;
-        coinpaprika_coin_id_translation_registry coin_id_translation_{{"KMD",  "kmd-komodo"},
-                                                                      {"BTC",  "btc-bitcoin"},
-                                                                      {"ETH",  "eth-ethereum"},
-                                                                      {"DOGE", "doge-dogecoin"},
-                                                                      {"USD",  "usd-us-dollars"},
-                                                                      {"EUR",  "eur-euro"},
-                                                                      {"ZIL",  "zil-zilliqa"}};
+        [[maybe_unused]] price_service_platform &price_service_;
+        const config& mmbot_config_;
     };
 }

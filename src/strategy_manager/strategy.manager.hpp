@@ -53,7 +53,7 @@ namespace antara
             antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
 
         static orders::order_set create_order_set(
-            antara::pair pair, market_making_strategy strat, antara::st_price mid);
+            antara::pair pair, market_making_strategy &strat, antara::st_price mid);
 
     private:
 

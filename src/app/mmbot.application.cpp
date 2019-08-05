@@ -14,33 +14,32 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <unordered_map>
-#include "abstract.price.platform.hpp"
+#include "version/version.hpp"
+#include "mmbot.application.hpp"
 
 namespace antara::mmbot
 {
-    class coinpaprika_price_platform : public abstract_price_platform
+    int application::run()
     {
-    public:
-        explicit coinpaprika_price_platform(const config &cfg) : abstract_price_platform(cfg)
-        {
-
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, "launching antara-mmbot version: %s", version());
+        try {
+            server_.run();
         }
+        catch (const std::exception &e) {
+            VLOG_F(loguru::Verbosity_FATAL, "exception catch: %s", e.what());
+            return 1;
+        }
+        return 0;
+    }
 
-        [[nodiscard]] st_price get_price(antara::pair currency_pair, std::size_t nb_try_in_a_row) const final;
+    application::application() noexcept
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+    }
 
-        ~coinpaprika_price_platform() override = default;
-
-    private:
-        using coinpaprika_coin_id_translation_registry = std::unordered_map<std::string, std::string>;
-        coinpaprika_coin_id_translation_registry coin_id_translation_{{"KMD",  "kmd-komodo"},
-                                                                      {"BTC",  "btc-bitcoin"},
-                                                                      {"ETH",  "eth-ethereum"},
-                                                                      {"DOGE", "doge-dogecoin"},
-                                                                      {"USD",  "usd-us-dollars"},
-                                                                      {"EUR",  "eur-euro"},
-                                                                      {"ZIL",  "zil-zilliqa"}};
-    };
+    application::~application() noexcept
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+    }
 }
