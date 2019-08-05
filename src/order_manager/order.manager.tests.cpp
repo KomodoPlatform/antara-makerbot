@@ -30,19 +30,31 @@ namespace antara::mmbot::tests
     {
         antara::order_manager om = antara::order_manager();
 
-        CHECK_EQ(0, om.get_all_orders().size());
+        CHECK_EQ(0, om.get_all_order_sets().size());
 
         orders::order_set os =
             {{st_symbol{"A"}, st_symbol{"B"}},
              std::vector<orders::order_level>()};
         om.place_orders(os);
 
-        CHECK_EQ(1, om.get_all_orders().size());
+        CHECK_EQ(1, om.get_all_order_sets().size());
     }
 
     TEST_CASE ("order status can be changed")
     {
-        CHECK(true);
+        st_order_id id = st_order_id{"ID"};
+        antara::pair pair = pair.of("A", "B");
+
+        orders::order o = orders::order_builder(id, pair)
+            .status(orders::order_status::live)
+            .build();
+
+        orders::order_status new_status = orders::order_status::cancelled;
+        orders::order_status_change osc = { id, new_status };
+
+        o.change_status(osc);
+
+        CHECK_EQ(new_status, o.status);
     }
 
     TEST_CASE ("can return the order set for a pair")

@@ -42,6 +42,7 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("executions can be created from orders")
     {
+        st_order_id id = st_order_id{"ID"};
         antara::pair pair = {{st_symbol{"A"}}, {st_symbol{"B"}}};
         st_price price = st_price{5};
         st_quantity quantity = st_quantity{10};
@@ -50,7 +51,7 @@ namespace antara::mmbot::tests
         antara::orders::order_status status = antara::orders::order_status::live;
 
         antara::orders::order order = antara::orders::order(
-            pair, price, quantity, filled, side, status);
+            id, pair, price, quantity, filled, side, status);
 
         st_quantity ex_quantity = st_quantity{10};
         st_maker maker = st_maker{true};
@@ -63,6 +64,7 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("execute increases the filled quantity")
     {
+        st_order_id id = st_order_id{"ID"};
         antara::pair pair = {{st_symbol{"A"}}, {st_symbol{"B"}}};
         st_price price = st_price{5};
         st_quantity quantity = st_quantity{10};
@@ -70,7 +72,7 @@ namespace antara::mmbot::tests
         antara::side side = antara::side::buy;
         orders::order_status status = orders::order_status::live;
 
-        orders::order order = orders::order(pair, price, quantity, filled, side, status);
+        orders::order order = orders::order(id, pair, price, quantity, filled, side, status);
 
         st_quantity ex_quantity = st_quantity{3};
         orders::execution ex = {
