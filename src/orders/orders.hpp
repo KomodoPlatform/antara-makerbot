@@ -45,8 +45,7 @@ namespace antara::orders
 
     struct order_status_change
     {
-        antara::pair pair;
-        order_level order;
+        st_order_id id;
         order_status status;
     };
 
@@ -65,6 +64,8 @@ namespace antara::orders
     class order
     {
     public:
+        st_order_id id;
+
         antara::pair pair;
         st_price price;
         st_quantity quantity;
@@ -72,8 +73,9 @@ namespace antara::orders
         antara::side side;
         order_status status;
 
-        order(antara::pair pair, st_price price, st_quantity quantity,
-              st_quantity filled, antara::side side, order_status status);
+        order(st_order_id &id, antara::pair &pair, st_price &price,
+              st_quantity &quantity, st_quantity &filled, antara::side &side,
+              order_status &status);
 
         bool operator==(const order_level &other) const;
 

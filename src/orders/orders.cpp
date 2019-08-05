@@ -20,9 +20,11 @@
 
 namespace antara::orders
 {
-    order::order(antara::pair pair, st_price price, st_quantity quantity,
-                st_quantity filled, antara::side side, order_status status)
+    order::order(st_order_id &id, antara::pair &pair, st_price &price,
+                st_quantity &quantity, st_quantity &filled, antara::side &side,
+                order_status &status)
     {
+        this->id = id;
         this->pair = pair;
         this->price = price;
         this->quantity = quantity;
