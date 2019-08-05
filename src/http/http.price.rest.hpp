@@ -14,16 +14,24 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <utils/mmbot_strong_types.hpp>
+#pragma once
 
-#include "orders.hpp"
+#include <restinio/all.hpp>
+#include "price/service.price.platform.hpp"
 
-namespace antara::orders
+namespace antara::mmbot::http::rest
 {
-    bool order_level::operator==(const order_level &other) const
+    class price
     {
-        return price.value() == other.price.value()
-               && quantity == other.quantity
-               && side == other.side;
-    }
+    public:
+        explicit price(const config& cfg, price_service_platform &price_service) noexcept;
+
+        ~price() noexcept;
+
+        restinio::request_handling_status_t get_price(restinio::request_handle_t req, restinio::router::route_params_t);
+
+    private:
+        [[maybe_unused]] price_service_platform &price_service_;
+        const config& mmbot_config_;
+    };
 }

@@ -40,6 +40,7 @@ namespace antara::mmbot
                                                                       {"ETH",  "eth-ethereum"},
                                                                       {"DOGE", "doge-dogecoin"},
                                                                       {"USD",  "usd-us-dollars"},
-                                                                      {"EUR",  "eur-euro"}};
+                                                                      {"EUR",  "eur-euro"},
+                                                                      {"ZIL",  "zil-zilliqa"}};
     };
 }

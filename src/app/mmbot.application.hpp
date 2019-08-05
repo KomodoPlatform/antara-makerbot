@@ -14,16 +14,22 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <utils/mmbot_strong_types.hpp>
+#pragma once
 
-#include "orders.hpp"
+#include <http/http.server.hpp>
 
-namespace antara::orders
+namespace antara::mmbot
 {
-    bool order_level::operator==(const order_level &other) const
+    class application
     {
-        return price.value() == other.price.value()
-               && quantity == other.quantity
-               && side == other.side;
-    }
+    public:
+        application() noexcept;
+        ~application() noexcept;
+        int run();
+    private:
+        antara::mmbot::config mmbot_config_{
+                mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json")};
+        price_service_platform price_service_{mmbot_config_};
+        antara::mmbot::http_server server_{mmbot_config_, price_service_};
+    };
 }

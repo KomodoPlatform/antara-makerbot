@@ -17,11 +17,14 @@
 #pragma once
 
 #include <string>
+#include <absl/numeric/int128.h>
 #include <st/type.hpp>
 #include <st/traits.hpp>
 
 namespace antara
 {
+    static constexpr const int g_factor = 100000000;
+    static constexpr const long double g_rounding = 0.000000004999;
     using st_endpoint = st::type<
             std::string,
             struct endpoint_tag,
@@ -49,12 +52,9 @@ namespace antara
     >;
 
     using st_price = st::type<
-            double,
+            absl::uint128,
             struct price_tag,
-            st::arithmetic,
-            st::addable_with<double>,
-            st::multiplicable_with<double>,
-            st::multiplicable_with<st_spread>
+            st::arithmetic
     >;
 
     using st_quantity = st::type<

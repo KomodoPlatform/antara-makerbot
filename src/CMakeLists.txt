@@ -1,13 +1,17 @@
 add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE
-  config/config.cpp
-  strategy_manager/strategy.manager.cpp
-  orders/orders.cpp
-  price/coinpaprika.price.platform.cpp
-  price/service.price.platform.cpp)
+        config/config.cpp
+        strategy_manager/strategy.manager.cpp
+        orders/orders.cpp
+        price/coinpaprika.price.platform.cpp
+        price/service.price.platform.cpp
+        http/http.server.cpp
+        http/http.price.rest.cpp
+        utils/antara.utils.cpp
+        app/mmbot.application.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)
 target_include_directories(mmbot_shared_deps INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(mmbot_shared_deps INTERFACE mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type Cpp-Taskflow
+target_link_libraries(mmbot_shared_deps INTERFACE absl::numeric mmbot::bcmath mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type Cpp-Taskflow mmbot::restinio
         $<$<AND:$<PLATFORM_ID:Linux>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
         $<$<PLATFORM_ID:Darwin>:c++fs>)
 
@@ -23,7 +27,9 @@ target_sources(mmbot-test PUBLIC
         strategy_manager/strategy.manager.tests.cpp
         price/coinpaprika.price.platform.tests.cpp
         price/factory.price.plaftorm.tests.cpp
-        price/service.price.platform.tests.cpp)
+        price/service.price.platform.tests.cpp
+        http/http.server.tests.cpp
+        utils/antara.utils.tests.cpp)
 target_link_libraries(mmbot-test PRIVATE doctest PUBLIC mmbot_shared_deps)
 target_enable_coverage(mmbot-test)
 target_enable_tsan(mmbot-test)
@@ -36,6 +42,6 @@ set_target_properties(mmbot-test mmbot
 
 if (UNIX)
     configure_file(${PROJECT_SOURCE_DIR}/assets/mmbot_config.json ${CMAKE_BINARY_DIR}/bin/assets/mmbot_config.json COPYONLY)
-else()
+else ()
     configure_file(${PROJECT_SOURCE_DIR}/assets/mmbot_config.json ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/assets/mmbot_config.json COPYONLY)
 endif ()

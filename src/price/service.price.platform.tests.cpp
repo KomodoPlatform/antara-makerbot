@@ -20,53 +20,74 @@
 
 namespace antara::mmbot::tests
 {
-    TEST_CASE ("simple service working")
-    {
-        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        price_service_platform price_service{cfg};
-        antara::pair currency_pair{{st_symbol{"EUR"}},
-                                   {st_symbol{"KMD"}}};
-        CHECK_GT(price_service.get_price(currency_pair).value(), 0.0);
-    }
-
-    TEST_CASE ("simple service not working (wrong cfg)")
-    {
-        config cfg{};
-        cfg.price_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
-        price_service_platform price_service{cfg};
-        antara::pair currency_pair{{st_symbol{"EUR"}},
-                                   {st_symbol{"KMD"}}};
-        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
-    }
-
-    TEST_CASE ("simple service not working (empty cfg)")
-    {
-        config cfg{};
-        price_service_platform price_service{cfg};
-        antara::pair currency_pair{{st_symbol{"EUR"}},
-                                   {st_symbol{"KMD"}}};
-        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
-    }
-
-    TEST_CASE ("simple service not working (wrong pair)")
-    {
-        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        price_service_platform price_service{cfg};
-        antara::pair currency_pair{{st_symbol{"EUR"}},
-                                   {st_symbol{"NONEXISTENT"}}};
-        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
-    }
-
-    TEST_CASE ("simple service using get price with a registry of symbols")
-    {
-        registry_quotes_for_specific_base registry_symbols{{"KMD", {st_symbol{"DOGE"}, st_symbol{"ETH"}, st_symbol{"BTC"}}}};
-        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        price_service_platform price_service{cfg};
-        auto res = price_service.get_price(registry_symbols);
-        CHECK(!res.empty());
-        CHECK_EQ_F(3u, res.size(), "size should be 3");
-        for (auto&& current_result: res) {
-            CHECK_GT(current_result.second.value(), 0.0);
+    //! BDD
+    SCENARIO("price service functionnality") {
+        GIVEN("a price service with a good configuration") {
+            auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+            price_service_platform price_service{cfg};
+            WHEN("give a valid asset pair") {
+                antara::pair currency_pair{{st_symbol{"EUR"}},
+                                           {st_symbol{"KMD"}}};
+                THEN("i ask for the price of this valid pair") {
+                    auto price = price_service.get_price(currency_pair).value();
+                    AND_THEN("i'm exepecting to get a price greater than zero") {
+                        CHECK_GT(price, 0);
+                    }
+                }
+            }
+            AND_WHEN("give a wrong asset pair") {
+                antara::pair currency_pair{{st_symbol{"EUR"}},
+                                           {st_symbol{"NONEXISTENT"}}};
+                THEN("i ask for the price of this wrong pair") {
+                    AND_THEN("i'm exepecting to get an exception pair not available") {
+                        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
+                    }
+                }
+            }
+            AND_WHEN("i want to get price with a registry of symbols") {
+                THEN("i create the registry of symbols that i to get price") {
+                    registry_quotes_for_specific_base registry_symbols{{"KMD", {st_symbol{"DOGE"}, st_symbol{"ETH"}, st_symbol{"BTC"}}}, {"ZIL", {st_symbol{"KMD"}}}};
+                    AND_THEN("i ask for the price using the registry of symbols") {
+                        auto res = price_service.get_price(registry_symbols);
+                        AND_THEN("i should atleast get 4 different price that's all greater than 0")
+                        {
+                            CHECK(!res.empty());
+                            CHECK_EQ_F(4u, res.size(), "size should be 4");
+                            for (auto&& current_result: res) {
+                                CHECK_GT(current_result.second.value(), 0);
+                            }
+                            CHECK(!price_service.get_all_price().empty());
+                        }
+                    }
+                }
+            }
+        }
+        GIVEN("a price service with a wrong configuration (bad endpoint)") {
+            config cfg{};
+            cfg.price_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
+            price_service_platform price_service{cfg};
+            WHEN("give a valid asset pair") {
+                antara::pair currency_pair{{st_symbol{"EUR"}},
+                                           {st_symbol{"KMD"}}};
+                THEN("i ask for the price of this valid pair") {
+                    AND_THEN("i'm exepecting to get an exception pair not available") {
+                        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
+                    }
+                }
+            }
+        }
+        GIVEN("a price service with a wrong configuration (empty") {
+            config cfg{};
+            price_service_platform price_service{cfg};
+            WHEN("give a valid asset pair") {
+                antara::pair currency_pair{{st_symbol{"EUR"}},
+                                           {st_symbol{"KMD"}}};
+                THEN("i ask for the price of this valid pair") {
+                    AND_THEN("i'm exepecting to get an exception pair not available") {
+                        CHECK_THROWS_AS(price_service.get_price(currency_pair), errors::pair_not_available);
+                    }
+                }
+            }
         }
     }
 }

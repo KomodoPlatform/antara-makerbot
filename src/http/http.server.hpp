@@ -14,16 +14,35 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <utils/mmbot_strong_types.hpp>
+#pragma once
 
-#include "orders.hpp"
+#include <memory>
+#include <restinio/all.hpp>
+#include <config/config.hpp>
+#include "price/service.price.platform.hpp"
+#include "http.price.rest.hpp"
 
-namespace antara::orders
+namespace antara::mmbot
 {
-    bool order_level::operator==(const order_level &other) const
+    struct http_server_traits : public restinio::default_single_thread_traits_t
     {
-        return price.value() == other.price.value()
-               && quantity == other.quantity
-               && side == other.side;
-    }
+        using request_handler_t = restinio::router::express_router_t<>;
+    };
+
+    class http_server
+    {
+    public:
+        using router = std::unique_ptr<restinio::router::express_router_t<>>;
+
+        explicit http_server(const mmbot::config &mmbot_cfg, price_service_platform& price_service);
+
+        void run();
+
+    private:
+        router create_routes();
+
+    private:
+        const mmbot::config &mmbot_cfg_;
+        http::rest::price price_rest_callbook;
+    };
 }

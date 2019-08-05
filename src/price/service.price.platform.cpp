@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #include <numeric>
+#include <fmt/format.h>
+#include "utils/antara.utils.hpp"
 #include "utils/antara.algorithm.hpp"
 #include "exceptions.price.platform.hpp"
 #include "service.price.platform.hpp"
@@ -36,12 +38,12 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         std::atomic_size_t nb_calls_succeed = 0u;
-        double price = 0.0;
+        absl::uint128 price = 0;
         std::mutex mutex;
         auto price_functor = [&nb_calls_succeed, &mutex, &price, &currency_pair](auto &&current_platform_price) {
             auto &&[platform_name, platform_ptr] = current_platform_price;
             auto current_price = platform_ptr->get_price(currency_pair, 0u).value();
-            if( current_price != 0.0 ) {
+            if( current_price > 0 ) {
                 ++nb_calls_succeed;
             }
             {
@@ -60,8 +62,9 @@ namespace antara::mmbot
         return st_price{price / nb_calls_succeed.load()};
     }
 
-    registry_price_result price_service_platform::get_price(const registry_quotes_for_specific_base &quotes_for_specific_base) const
+    registry_price_result price_service_platform::get_price(const registry_quotes_for_specific_base &quotes_for_specific_base)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         antara::mmbot::registry_price_result res{};
         for (auto&&[current_symbol, current_quotes_table] : quotes_for_specific_base) {
             for (auto &&current_quote : current_quotes_table) {
@@ -69,6 +72,23 @@ namespace antara::mmbot
                 res.emplace(current_pair, this->get_price(current_pair));
             }
         }
+        all_price_.clear();
+        nlohmann::json all_price_json;
+        all_price_json["prices"] = nlohmann::json::array();
+        for (auto &&[current_pair, current_price] : res) {
+            auto current_object = nlohmann::json::object();
+            std::string current_price_str = antara::get_price_as_string_decimal(mmbot_config_, current_pair.base.symbol, current_price);
+            current_object[current_pair.base.symbol.value() + "/" + current_pair.quote.symbol.value()] = current_price_str;
+            all_price_json["prices"].push_back(std::move(current_object));
+        }
+        all_price_ = all_price_json.dump();
         return res;
+    }
+
+    const std::string &price_service_platform::get_all_price() const
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "all_price: %s", all_price_.c_str());
+        return all_price_;
     }
 }

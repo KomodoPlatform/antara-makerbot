@@ -17,6 +17,7 @@
 #pragma once
 
 #include <optional>
+#include <utility>
 #include <vector>
 #include <unordered_map>
 #include <nlohmann/json.hpp>
@@ -57,8 +58,12 @@ namespace antara::mmbot
 
         using cex_infos_registry = std::unordered_map<std::string, cex_config>;
         using price_infos_registry = std::unordered_map<std::string, price_config>;
+        using is_base_ercs_registry = std::unordered_map<std::string, std::size_t>;
         cex_infos_registry cex_registry;
         price_infos_registry price_registry;
+        using st_http_port = unsigned short;
+        st_http_port http_port;
+        is_base_ercs_registry precision_registry;
     };
 
     void from_json(const nlohmann::json &j, cex_config &cfg);
@@ -139,4 +144,6 @@ namespace antara::mmbot
         }
         return details::load_config<TConfig>(full_path);
     }
+
+    mmbot::config load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept;
 }

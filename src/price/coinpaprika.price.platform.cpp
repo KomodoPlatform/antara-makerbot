@@ -18,6 +18,7 @@
 #include <nlohmann/json.hpp>
 #include <restclient-cpp/restclient.h>
 #include <thread>
+#include "utils/antara.utils.hpp"
 #include "coinpaprika.price.platform.hpp"
 
 namespace antara::mmbot
@@ -37,8 +38,9 @@ namespace antara::mmbot
             auto response = RestClient::get(final_uri);
             DVLOG_F(loguru::Verbosity_INFO, "response: %s\nstatus: %d", response.body.c_str(), response.code);
             if (response.code == 200) {
-                auto resp_json = nlohmann::json::parse(response.body);
-                auto price = st_price{resp_json["price"].get<double>()};
+                antara::my_json_sax sx;
+                nlohmann::json::sax_parse(response.body, &sx);
+                auto price = generate_st_price_from_api_price(mmbot_config_, currency_pair.quote.symbol, sx.float_as_string);
                 return price;
             } else if (response.code == 429 && nb_try_in_a_row < 10) {
                 using namespace std::chrono_literals;
@@ -51,6 +53,6 @@ namespace antara::mmbot
         } else {
             DVLOG_F(loguru::Verbosity_ERROR, "base: %s not found", currency_pair.base.symbol.value().c_str());
         }
-        return st_price{0.0};
+        return st_price{0};
     }
 }

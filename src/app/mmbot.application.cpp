@@ -14,16 +14,32 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <utils/mmbot_strong_types.hpp>
+#include "version/version.hpp"
+#include "mmbot.application.hpp"
 
-#include "orders.hpp"
-
-namespace antara::orders
+namespace antara::mmbot
 {
-    bool order_level::operator==(const order_level &other) const
+    int application::run()
     {
-        return price.value() == other.price.value()
-               && quantity == other.quantity
-               && side == other.side;
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, "launching antara-mmbot version: %s", version());
+        try {
+            server_.run();
+        }
+        catch (const std::exception &e) {
+            VLOG_F(loguru::Verbosity_FATAL, "exception catch: %s", e.what());
+            return 1;
+        }
+        return 0;
+    }
+
+    application::application() noexcept
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+    }
+
+    application::~application() noexcept
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
 }
