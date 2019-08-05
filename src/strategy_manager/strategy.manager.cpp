@@ -25,7 +25,7 @@ namespace antara
     bool asset::operator==(const asset &other) const
     {
         return symbol.value() == other.symbol.value();
-    };
+    }
 
     bool asset::operator!=(const asset &other) const
     {
@@ -35,7 +35,13 @@ namespace antara
     bool pair::operator==(const pair &rhs) const
     {
         return base == rhs.base && quote == rhs.quote;
-    };
+    }
+
+    antara::pair antara::pair::of (std::string a, std::string b)
+    {
+        antara::pair pair = {{st_symbol{a}}, {st_symbol{b}}};
+        return pair;
+    }
 
     bool market_making_strategy::operator==(const market_making_strategy &other) const
     {
