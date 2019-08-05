@@ -45,8 +45,10 @@ namespace antara::mmbot::tests
         st_order_id id = st_order_id{"ID"};
         antara::pair pair = pair.of("A", "B");
 
+        orders::order_status status = orders::order_status::live;
+
         orders::order o = orders::order_builder(id, pair)
-            .status(orders::order_status::live)
+            .status(status)
             .build();
 
         orders::order_status new_status = orders::order_status::cancelled;
