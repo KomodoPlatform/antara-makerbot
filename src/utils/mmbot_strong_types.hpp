@@ -46,7 +46,7 @@ namespace antara
             struct spread_tag,
             st::arithmetic,
             st::addable_with<double>
-    >;
+        >;
 
     using st_price = st::type<
             double,
@@ -55,19 +55,25 @@ namespace antara
             st::addable_with<double>,
             st::multiplicable_with<double>,
             st::multiplicable_with<st_spread>
-    >;
+        >;
+
+    using st_order_id = st::type<
+            std::string,
+            struct order_id_tag,
+            st::arithmetic
+        >;
 
     using st_quantity = st::type<
             double,
             struct quantity_tag,
             st::arithmetic,
             st::addable_with<double>
-    >;
+        >;
 
     using st_maker = st::type<
-        bool,
-        struct maker_tag,
-        st::arithmetic
+            bool,
+            struct maker_tag,
+            st::arithmetic
         >;
 
     struct asset
