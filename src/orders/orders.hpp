@@ -85,4 +85,26 @@ namespace antara::orders
 
         void execute(const execution &ex);
     };
+
+    class order_builder
+    {
+    public:
+        order_builder(const st_order_id &id, const antara::pair &pair);
+        order build();
+
+        order_builder price(const st_price &price);
+        order_builder quantity(const st_quantity &quantity);
+        order_builder filled(const st_quantity &filled);
+        order_builder side(const antara::side &side);
+        order_builder status(const order_status &status);
+
+    private:
+        st_order_id id_;
+        antara::pair pair_;
+        st_price price_;
+        st_quantity quantity_;
+        st_quantity filled_;
+        antara::side side_;
+        orders::order_status status_;
+    };
 }

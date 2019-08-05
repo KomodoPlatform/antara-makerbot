@@ -68,4 +68,48 @@ namespace antara::orders
     {
         this->filled = this->filled + ex.quantity;
     }
+
+    // Order Builder
+
+    order_builder::order_builder(const st_order_id &id, const antara::pair &pair)
+    {
+        this->id_ = id;
+        this->pair_ = pair;
+
+        this->price_ = st_price{0};
+        this->quantity_ = st_quantity{0};
+        this->filled_ = st_quantity{0};
+        this->side_ = antara::side::buy;
+        this->status_ = orders::order_status::live;
+    }
+
+    order_builder order_builder::price(const st_price &price)
+    {
+        this->price_ = price;
+    }
+
+    order_builder order_builder::quantity(const st_quantity &quantity)
+    {
+        this->quantity_ = quantity;
+    }
+
+    order_builder order_builder::filled(const st_quantity &filled)
+    {
+        this->filled_ = filled;
+    }
+
+    order_builder order_builder::side(const antara::side &side)
+    {
+        this->side_ = side;
+    }
+
+    order_builder order_builder::status(const orders::order_status &status)
+    {
+        this->status_ = status;
+    }
+
+    order order_builder::build()
+    {
+        return order(id_, pair_, price_, quantity_, filled_, side_, status_);
+    }
 }
