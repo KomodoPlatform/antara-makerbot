@@ -48,7 +48,7 @@ namespace antara::orders
     bool execution::operator==(const execution &other) const
     {
         return pair == other.pair
-            && price == other.price
+            && price.value() == other.price.value()
             && quantity == other.quantity
             && side == other.side
             && maker == other.maker;
