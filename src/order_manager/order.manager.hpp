@@ -36,7 +36,7 @@ namespace antara
         [[nodiscard]] const orders::order_set &get_orders(const antara::pair &pair) const;
         [[nodiscard]] const order_sets_by_pair &get_all_order_sets() const;
 
-        using orders_by_id = std::unordered_map<st_order_id, orders::order>;
+        using orders_by_id = std::unordered_map<std::string, orders::order>;
 
         [[nodiscard]] const orders::order &get_order(const st_order_id &id) const;
         [[nodiscard]] const orders_by_id &get_all_orders() const;

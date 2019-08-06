@@ -29,7 +29,7 @@ namespace antara
     bool order_manager::place_order(const orders::order &o)
     {
         st_order_id id = dex_.place(o);
-        orders_by_id_.emplace(id, o);
+        orders_by_id_.emplace(id.value(), o);
         return true;
     }
 
@@ -66,7 +66,7 @@ namespace antara
 
     const orders::order &order_manager::get_order(const st_order_id &id) const
     {
-        return orders_by_id_.at(id);
+        return orders_by_id_.at(id.value());
     }
 
     const order_manager::orders_by_id &order_manager::get_all_orders() const

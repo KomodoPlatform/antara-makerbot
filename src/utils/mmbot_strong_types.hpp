@@ -54,16 +54,12 @@ namespace antara
     using st_price = st::type<
             absl::uint128,
             struct price_tag,
-        st::arithmetic //,
-            // st::addable_with<double>,
-            // st::multiplicable_with<double>,
-            // st::multiplicable_with<st_spread>
+            st::arithmetic
         >;
 
     using st_order_id = st::type<
             std::string,
-            struct order_id_tag,
-            st::arithmetic
+            struct order_id_tag
         >;
 
     using st_quantity = st::type<
