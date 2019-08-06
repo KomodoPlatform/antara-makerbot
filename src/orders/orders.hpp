@@ -73,9 +73,10 @@ namespace antara::orders
         antara::side side;
         order_status status;
 
-        order(st_order_id &id, antara::pair &pair, st_price &price,
-              st_quantity &quantity, st_quantity &filled, antara::side &side,
-              order_status &status);
+        order(st_order_id &id, antara::pair &pair, st_price &price, st_quantity &quantity,
+              st_quantity &filled, antara::side &side, order_status &status):
+            id(id), pair(pair), price(price), quantity(quantity),
+            filled(filled), side(side), status(status) {};
 
         bool operator==(const order_level &other) const;
 
