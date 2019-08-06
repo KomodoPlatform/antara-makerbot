@@ -62,6 +62,11 @@ namespace antara
             struct order_id_tag
         >;
 
+    using st_execution_id = st::type<
+            std::string,
+            struct execution_id_tag
+        >;
+
     using st_quantity = st::type<
             double,
             struct quantity_tag,

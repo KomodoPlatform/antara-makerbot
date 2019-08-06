@@ -51,6 +51,8 @@ namespace antara::orders
 
     struct execution
     {
+        st_execution_id id;
+
         antara::pair pair;
         st_price price;
         st_quantity quantity;
@@ -82,7 +84,7 @@ namespace antara::orders
 
         void change_status(const order_status_change &osc);
 
-        const execution create_execution(const st_quantity &quantity, const maker &maker) const;
+        const execution create_execution(const st_execution_id &id, const st_quantity &quantity, const maker &maker) const;
 
         void execute(const execution &ex);
     };

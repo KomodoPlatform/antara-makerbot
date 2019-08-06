@@ -29,13 +29,13 @@ namespace antara::mmbot::tests
         antara::side side = antara::side::buy;
         maker maker = true;
 
-        antara::orders::execution e1 = {pair, price, quantity, side, maker};
-        antara::orders::execution e2 = {pair, price, quantity, side, maker};
+        antara::orders::execution e1 = { st_execution_id{""}, pair, price, quantity, side, maker };
+        antara::orders::execution e2 = { st_execution_id{""}, pair, price, quantity, side, maker };
 
         CHECK_EQ(e1, e2);
 
         antara::st_price new_price = st_price{10};
-        antara::orders::execution e3 = {pair, new_price, quantity, side, maker};
+        antara::orders::execution e3 = { st_execution_id{""}, pair, new_price, quantity, side, maker };
 
         CHECK_NE(e1, e3);
     }
@@ -53,11 +53,12 @@ namespace antara::mmbot::tests
         antara::orders::order order = antara::orders::order(
             id, pair, price, quantity, filled, side, status);
 
+        st_execution_id ex_id = st_execution_id{""};
         st_quantity ex_quantity = st_quantity{10};
         maker maker = true;
 
-        antara::orders::execution actual = order.create_execution(ex_quantity, maker);
-        antara::orders::execution expected = { pair, price, ex_quantity, side, maker };
+        antara::orders::execution actual = order.create_execution(ex_id, ex_quantity, maker);
+        antara::orders::execution expected = { ex_id, pair, price, ex_quantity, side, maker };
 
         CHECK_EQ(actual, expected);
     }
@@ -65,7 +66,7 @@ namespace antara::mmbot::tests
     TEST_CASE ("execute increases the filled quantity")
     {
         st_order_id id = st_order_id{"ID"};
-        antara::pair pair = {{st_symbol{"A"}}, {st_symbol{"B"}}};
+        antara::pair pair = { {st_symbol{"A"}}, {st_symbol{"B"}} };
         st_price price = st_price{5};
         st_quantity quantity = st_quantity{10};
         st_quantity filled = st_quantity{0};
@@ -74,9 +75,10 @@ namespace antara::mmbot::tests
 
         orders::order order = orders::order(id, pair, price, quantity, filled, side, status);
 
+        st_execution_id ex_id = st_execution_id{""};
         st_quantity ex_quantity = st_quantity{3};
         orders::execution ex = {
-            pair, price, ex_quantity, side, true
+            ex_id, pair, price, ex_quantity, side, true
         };
 
         CHECK_EQ(st_quantity{0}, order.filled);
