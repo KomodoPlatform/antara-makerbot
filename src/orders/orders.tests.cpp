@@ -27,7 +27,7 @@ namespace antara::mmbot::tests
         antara::st_price price = st_price{5};
         antara::st_quantity quantity = st_quantity{10};
         antara::side side = antara::side::buy;
-        antara::st_maker maker = st_maker{true};
+        maker maker = true;
 
         antara::orders::execution e1 = {pair, price, quantity, side, maker};
         antara::orders::execution e2 = {pair, price, quantity, side, maker};
@@ -54,7 +54,7 @@ namespace antara::mmbot::tests
             id, pair, price, quantity, filled, side, status);
 
         st_quantity ex_quantity = st_quantity{10};
-        st_maker maker = st_maker{true};
+        maker maker = true;
 
         antara::orders::execution actual = order.create_execution(ex_quantity, maker);
         antara::orders::execution expected = { pair, price, ex_quantity, side, maker };
@@ -76,7 +76,7 @@ namespace antara::mmbot::tests
 
         st_quantity ex_quantity = st_quantity{3};
         orders::execution ex = {
-            pair, price, ex_quantity, side, st_maker{true}
+            pair, price, ex_quantity, side, true
         };
 
         CHECK_EQ(st_quantity{0}, order.filled);

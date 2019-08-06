@@ -55,7 +55,7 @@ namespace antara::orders
         st_price price;
         st_quantity quantity;
         antara::side side;
-        st_maker maker;
+        antara::maker maker;
 
         bool operator==(const execution &other) const;
         bool operator!=(const execution &other) const;
@@ -81,7 +81,7 @@ namespace antara::orders
 
         void change_status(const order_status_change &osc);
 
-        const execution create_execution(const st_quantity &quantity, const st_maker &maker) const;
+        const execution create_execution(const st_quantity &quantity, const maker &maker) const;
 
         void execute(const execution &ex);
     };

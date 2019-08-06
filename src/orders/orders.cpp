@@ -59,7 +59,7 @@ namespace antara::orders
         return !(*this == other);
     }
 
-    const execution order::create_execution(const st_quantity &q, const st_maker &maker) const
+    const execution order::create_execution(const st_quantity &q, const maker &maker) const
     {
         return execution{pair, price, q, side, maker};
     }

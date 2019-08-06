@@ -69,11 +69,7 @@ namespace antara
             st::addable_with<double>
         >;
 
-    using st_maker = st::type<
-            bool,
-            struct maker_tag,
-            st::arithmetic
-        >;
+    using maker = bool;
 
     struct asset
     {
