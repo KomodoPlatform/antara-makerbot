@@ -22,4 +22,42 @@ namespace antara
     {
         return st_order_id{"A"};
     }
+
+    std::vector<orders::order> dex::get_live_orders()
+    {
+        auto v = std::vector<orders::order>();
+        return v;
+    }
+
+    orders::order dex::get_order_status(const st_order_id &id)
+    {
+        antara::pair pair = pair.of("B", "C");
+        auto b = orders::order_builder(st_order_id{"A"}, pair);
+        orders::order o = b.build();
+        return o;
+    }
+
+    std::vector<orders::execution> dex::get_executions()
+    {
+        auto exs = std::vector<orders::execution>();
+        return exs;
+    }
+
+    std::vector<orders::execution> dex::get_executions(const st_order_id &id)
+    {
+        auto exs = std::vector<orders::execution>();
+        return exs;
+    }
+
+    std::vector<orders::execution> dex::get_executions(const std::vector<st_order_id> &ids)
+    {
+        auto exs = std::vector<orders::execution>();
+        return exs;
+    }
+
+    std::vector<orders::execution> dex::get_recent_executions()
+    {
+        auto exs = std::vector<orders::execution>();
+        return exs;
+    }
 }

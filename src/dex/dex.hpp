@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <vector>
+#include <unordered_map>
+
 #include <orders/orders.hpp>
 #include <utils/mmbot_strong_types.hpp>
 
@@ -25,5 +28,13 @@ namespace antara
     {
     public:
         st_order_id place(const orders::order &o);
+
+        std::vector<orders::order> get_live_orders();
+        orders::order get_order_status(const st_order_id &id);
+
+        std::vector<orders::execution> get_executions();
+        std::vector<orders::execution> get_executions(const st_order_id &id);
+        std::vector<orders::execution> get_executions(const std::vector<st_order_id> &ids);
+        std::vector<orders::execution> get_recent_executions();
     };
 }

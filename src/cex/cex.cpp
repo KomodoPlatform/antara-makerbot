@@ -22,4 +22,9 @@ namespace antara
     {
         return;
     }
+
+    void cex::mirror(const orders::execution &ex)
+    {
+        return;
+    }
 }

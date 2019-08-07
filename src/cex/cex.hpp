@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <vector>
+#include <unordered_map>
+
 #include <orders/orders.hpp>
 
 namespace antara
@@ -23,5 +26,6 @@ namespace antara
     class cex {
     public:
         void place_order(const orders::order_level &ol);
+        void mirror(const orders::execution &ex);
     };
 }
