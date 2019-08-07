@@ -18,13 +18,28 @@
 
 #include "orders.hpp"
 
+namespace antara
+{
+    pair pair::of (std::string a, std::string b)
+    {
+        antara::pair pair = {{st_symbol{a}}, {st_symbol{b}}};
+        return pair;
+    }
+}
+
 namespace antara::orders
 {
+
     bool order_level::operator==(const order_level &other) const
     {
         return price.value() == other.price.value()
             && quantity == other.quantity
             && side == other.side;
+    }
+
+    bool order::finished() const
+    {
+        return (status == orders::order_status::cancelled);
     }
 
     void order::change_status(const order_status_change &osc)

@@ -17,12 +17,12 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
 
 #include <utils/mmbot_strong_types.hpp>
 
 namespace antara::orders
 {
-
     struct order_level
     {
         antara::st_price price;
@@ -82,6 +82,8 @@ namespace antara::orders
 
         bool operator==(const order_level &other) const;
 
+        bool finished() const;
+
         void change_status(const order_status_change &osc);
 
         const execution create_execution(const st_execution_id &id, const st_quantity &quantity, const maker &maker) const;
@@ -110,4 +112,7 @@ namespace antara::orders
         antara::side side_;
         orders::order_status status_;
     };
+
+    using orders_by_id = std::unordered_map<std::string, orders::order>;
+    using executions_by_id = std::unordered_map<std::string, orders::execution>;
 }

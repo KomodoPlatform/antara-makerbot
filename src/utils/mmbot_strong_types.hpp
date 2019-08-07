@@ -91,7 +91,8 @@ namespace antara
         asset base;
 
         bool operator==(const pair &rhs) const;
-        pair of(std::string a, std::string b);
+
+        static pair of (std::string a, std::string b);
     };
 
     enum side

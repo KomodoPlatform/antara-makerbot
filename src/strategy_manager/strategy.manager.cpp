@@ -37,12 +37,6 @@ namespace antara
         return base == rhs.base && quote == rhs.quote;
     }
 
-    antara::pair antara::pair::of (std::string a, std::string b)
-    {
-        antara::pair pair = {{st_symbol{a}}, {st_symbol{b}}};
-        return pair;
-    }
-
     bool market_making_strategy::operator==(const market_making_strategy &other) const
     {
         return pair == other.pair

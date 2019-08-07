@@ -54,4 +54,22 @@ namespace antara
         dex dex_;
         cex cex_;
     };
+
+    class order_manager_2
+    {
+    public:
+        order_manager_2(const dex &dex, const cex &cex): dex_(dex), cex_(cex) {};
+
+        void start();
+        void poll();
+
+    private:
+        dex dex_;
+        cex cex_;
+
+        orders::orders_by_id orders_;
+        orders::executions_by_id executions_;
+
+        orders::executions_by_id find_new_executions(std::vector<orders::order> orders);
+    };
 }
