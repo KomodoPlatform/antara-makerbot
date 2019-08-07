@@ -88,7 +88,7 @@ All information about the legal part of the project is available in the `LEGAL` 
 ## Acknowledgments
 
 -  Viktor Kirilov [onqtam](https://github.com/onqtam) for the awesome `doctest` framework.
--  eao197 for the awesome `restinio` framework and the help during the development of the project.
+-  StiffStream company for the awesome `restinio` framework and the help of the team members during the development of the project.
 
 * * *
 
