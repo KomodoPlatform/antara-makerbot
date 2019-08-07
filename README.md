@@ -21,8 +21,9 @@ To build the project please follow the instructions below:
 ```bash
 mkdir build ## bash or powershell
 cd build ## bash or powershell
-cmake ../
-cmake --build . --config Release
+cmake -DCMAKE_BUILD_TYPE=Release ../
+cmake --build . --target mmbot --config Release
+cmake --build . --target mmbot-test --config Release
 ```
 
 ### Running the tests
@@ -49,7 +50,14 @@ cd bin/your_build_type # Debug or Release
 
 ## Built With
 
--   [doctest](https://github.com/onqtam/doctest) - Testing framework used
+-   [doctest](https://github.com/onqtam/doctest) - The fastest feature-rich C++11/14/17/20 single-header testing framework for unit tests and TDD http://bit.ly/doctest-docs
+-   [restinio](https://github.com/Stiffstream/restinio) - A header-only C++14 library that gives you an embedded HTTP/Websocket server
+-   [abseil](https://github.com/abseil/abseil-cpp) - Abseil Common Libraries (C++) https://abseil.io
+-   [cpp-taskflow](https://github.com/cpp-taskflow/cpp-taskflow) - Modern C++ Parallel Task Programming Library https://cpp-taskflow.github.io
+-   [doom-st](https://github.com/doom/strong_type) - C++ implementation of strong types
+-   [loguru](https://github.com/emilk/loguru) - A lightweight C++ logging library
+-   [nlohmann-json](https://github.com/nlohmann/json) - JSON for Modern C++ https://nlohmann.github.io/json/
+-   [restclient](https://github.com/mrtazz/restclient-cpp) - C++ client for making HTTP/REST requests http://code.mrtazz.com/restclient-cpp/
 
 ## Code of Conduct
 
@@ -80,6 +88,7 @@ All information about the legal part of the project is available in the `LEGAL` 
 ## Acknowledgments
 
 -  Viktor Kirilov [onqtam](https://github.com/onqtam) for the awesome `doctest` framework.
+-  eao197 for the awesome `restinio` framework and the help during the development of the project.
 
 * * *
 
