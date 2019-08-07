@@ -29,7 +29,7 @@ namespace antara::mmbot
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         using namespace restinio;
         auto http_router = std::make_unique<restinio::router::express_router_t<>>();
-        http_router->http_get("/", [](auto req, auto) {
+        http_router->http_get("/", [](const auto& req, const auto&) {
             return req->create_response(status_ok()).set_body("Welcome.").done();
         });
 
