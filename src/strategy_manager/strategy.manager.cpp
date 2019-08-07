@@ -86,14 +86,14 @@ namespace antara
         return ol;
     }
 
-    orders::order_set strategy_manager::create_order_set(
+    orders::order_group strategy_manager::create_order_group(
             antara::pair pair, const market_making_strategy &strat, antara::st_price mid)
     {
         antara::side side = strat.side;
         antara::st_spread spread = strat.spread;
         antara::st_quantity quantity = strat.quantity;
 
-        orders::order_set os;
+        orders::order_group os;
 
         switch (side) {
 
@@ -101,7 +101,7 @@ namespace antara
                 orders::order_level level = make_bid(mid, spread, quantity);
                 std::vector<orders::order_level> levels;
                 levels.push_back(level);
-                os = orders::order_set{pair, levels};
+                os = orders::order_group{pair, levels};
                 break;
             }
 
@@ -109,7 +109,7 @@ namespace antara
                 orders::order_level level = make_ask(mid, spread, quantity);
                 std::vector<orders::order_level> levels;
                 levels.push_back(level);
-                os = orders::order_set{pair, levels};
+                os = orders::order_group{pair, levels};
                 break;
             }
 
@@ -119,7 +119,7 @@ namespace antara
                 std::vector<orders::order_level> levels;
                 levels.push_back(bid);
                 levels.push_back(ask);
-                os = orders::order_set{pair, levels};
+                os = orders::order_group{pair, levels};
                 break;
             }
 

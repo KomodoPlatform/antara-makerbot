@@ -29,39 +29,16 @@ namespace antara
     class order_manager
     {
     public:
-        order_manager() = default;
-
-        using order_sets_by_pair = std::unordered_map<antara::pair, orders::order_set>;
-
-        [[nodiscard]] const orders::order_set &get_orders(const antara::pair &pair) const;
-        [[nodiscard]] const order_sets_by_pair &get_all_order_sets() const;
-
-        using orders_by_id = std::unordered_map<std::string, orders::order>;
+        order_manager(const dex &dex, const cex &cex): dex_(dex), cex_(cex) {};
 
         [[nodiscard]] const orders::order &get_order(const st_order_id &id) const;
-        [[nodiscard]] const orders_by_id &get_all_orders() const;
-
-        bool place_order(const orders::order_level &ol);
-        bool place_order(const orders::order &o);
-        bool place_orders(const orders::order_set &os);
-
-        void change_order_status(const orders::order_status_change &osc);
-
-    private:
-        order_sets_by_pair order_sets_by_pair_;
-        orders_by_id orders_by_id_;
-
-        dex dex_;
-        cex cex_;
-    };
-
-    class order_manager_2
-    {
-    public:
-        order_manager_2(const dex &dex, const cex &cex): dex_(dex), cex_(cex) {};
+        [[nodiscard]] const orders::orders_by_id &get_all_orders() const;
 
         void start();
         void poll();
+
+        st_order_id place_order(const orders::order_level &ol);
+        std::vector<st_order_id> place_order(const orders::order_group &os);
 
     private:
         dex dex_;

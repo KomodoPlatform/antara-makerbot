@@ -29,6 +29,7 @@ namespace antara
 
 namespace antara::orders
 {
+    // Order level
 
     bool order_level::operator==(const order_level &other) const
     {
@@ -37,15 +38,7 @@ namespace antara::orders
             && side == other.side;
     }
 
-    bool order::finished() const
-    {
-        return (status == orders::order_status::cancelled);
-    }
-
-    void order::change_status(const order_status_change &osc)
-    {
-        status = osc.status;
-    }
+    // Execution
 
     bool execution::operator==(const execution &other) const
     {
@@ -59,6 +52,18 @@ namespace antara::orders
     bool execution::operator!=(const execution &other) const
     {
         return !(*this == other);
+    }
+
+    // Order
+
+    bool order::finished() const
+    {
+        return (status == orders::order_status::cancelled);
+    }
+
+    void order::change_status(const order_status_change &osc)
+    {
+        status = osc.status;
     }
 
     const execution order::create_execution(const st_execution_id &id, const st_quantity &q, const maker &maker) const

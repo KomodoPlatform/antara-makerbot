@@ -18,7 +18,7 @@
 
 namespace antara
 {
-    st_order_id dex::place(const orders::order &o)
+    st_order_id dex::place(const orders::order_level &o)
     {
         return st_order_id{"A"};
     }

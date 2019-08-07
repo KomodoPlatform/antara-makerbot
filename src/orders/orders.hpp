@@ -32,7 +32,7 @@ namespace antara::orders
         bool operator==(const order_level &other) const;
     };
 
-    struct order_set
+    struct order_group
     {
         antara::pair pair;
         std::vector<order_level> levels;

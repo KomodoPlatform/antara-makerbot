@@ -27,7 +27,7 @@ namespace antara
     class dex
     {
     public:
-        st_order_id place(const orders::order &o);
+        st_order_id place(const orders::order_level &ol);
 
         std::vector<orders::order> get_live_orders();
         orders::order get_order_status(const st_order_id &id);
