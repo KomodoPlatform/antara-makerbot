@@ -84,6 +84,10 @@ namespace antara
         // when an order is finished, remove it's executions
         for (const auto& [id, order] : orders_) {
             if (order.finished()) {
+                std::vector<st_execution_id> ex_ids = order.execution_ids;
+                for (const auto& id : ex_ids) {
+                    executions_.erase(id.value());
+                }
                 orders_.erase(order.id.value());
             }
         }

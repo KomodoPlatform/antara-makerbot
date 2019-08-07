@@ -75,6 +75,8 @@ namespace antara::orders
         antara::side side;
         order_status status;
 
+        std::vector<st_execution_id> execution_ids;
+
         order(st_order_id &id, antara::pair &pair, st_price &price, st_quantity &quantity,
               st_quantity &filled, antara::side &side, order_status &status):
             id(id), pair(pair), price(price), quantity(quantity),
