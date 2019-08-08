@@ -22,7 +22,7 @@ namespace antara
 {
     pair pair::of (std::string a, std::string b)
     {
-        antara::pair pair = {{st_symbol{a}}, {st_symbol{b}}};
+        antara::pair pair = {{st_symbol{std::move(a)}}, {st_symbol{std::move(b)}}};
         return pair;
     }
 }
