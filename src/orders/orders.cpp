@@ -66,7 +66,7 @@ namespace antara::orders
         status = osc.status;
     }
 
-    const execution order::create_execution(const st_execution_id &id, const st_quantity &q, const maker &maker) const
+    execution order::create_execution(const st_execution_id &id, const st_quantity &q, const maker &maker) const
     {
         return execution{ id, pair, price, q, side, maker };
     }

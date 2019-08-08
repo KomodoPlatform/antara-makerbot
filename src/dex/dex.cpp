@@ -20,7 +20,7 @@
 
 namespace antara
 {
-    st_order_id dex::place(const orders::order_level &o)
+    st_order_id dex::place([[maybe_unused]] const orders::order_level &o)
     {
         throw mmbot::errors::not_implemented();
     }
@@ -32,7 +32,7 @@ namespace antara
         // return v;
     }
 
-    orders::order dex::get_order_status(const st_order_id &id)
+    orders::order dex::get_order_status([[maybe_unused]] const st_order_id &id)
     {
         throw mmbot::errors::not_implemented();
         // antara::pair pair = pair.of("B", "C");
@@ -48,14 +48,14 @@ namespace antara
         // return exs;
     }
 
-    std::vector<orders::execution> dex::get_executions(const st_order_id &id)
+    std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)
     {
         throw mmbot::errors::not_implemented();
         // auto exs = std::vector<orders::execution>();
         // return exs;
     }
 
-    std::vector<orders::execution> dex::get_executions(const std::vector<st_order_id> &ids)
+    std::vector<orders::execution> dex::get_executions([[maybe_unused]] const std::vector<st_order_id> &ids)
     {
         throw mmbot::errors::not_implemented();
         // auto exs = std::vector<orders::execution>();

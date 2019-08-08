@@ -60,6 +60,7 @@ namespace antara::orders
         antara::maker maker;
 
         bool operator==(const execution &other) const;
+
         bool operator!=(const execution &other) const;
     };
 
@@ -79,17 +80,19 @@ namespace antara::orders
 
         order(const st_order_id &id, const antara::pair &pair, const st_price &price,
               const st_quantity &quantity, const st_quantity &filled,
-              const antara::side &side, const order_status &status):
-            id(id), pair(pair), price(price), quantity(quantity),
-            filled(filled), side(side), status(status) {};
+              const antara::side &side, const order_status &status) :
+                id(id), pair(pair), price(price), quantity(quantity),
+                filled(filled), side(side), status(status)
+        {};
 
         bool operator==(const order_level &other) const;
 
-        bool finished() const;
+        [[nodiscard]] bool finished() const;
 
         void change_status(const order_status_change &osc);
 
-        const execution create_execution(const st_execution_id &id, const st_quantity &quantity, const maker &maker) const;
+        [[nodiscard]] execution
+        create_execution(const st_execution_id &id, const st_quantity &quantity, const maker &maker) const;
 
         void execute(const execution &ex);
     };
@@ -97,30 +100,31 @@ namespace antara::orders
     class order_builder
     {
     public:
-        order_builder(const st_order_id &id, const antara::pair &pair): id_(id), pair_(pair)
+        order_builder(const st_order_id &id, const antara::pair &pair) : id_(id), pair_(pair)
         {
-            this->price_ = st_price{0};
-            this->quantity_ = st_quantity{0};
-            this->filled_ = st_quantity{0};
-            this->side_ = antara::side::buy;
-            this->status_ = orders::order_status::live;
-        };
+
+        }
+
         order build();
 
-        order_builder& price(const st_price &price);
-        order_builder& quantity(const st_quantity &quantity);
-        order_builder& filled(const st_quantity &filled);
-        order_builder& side(const antara::side &side);
-        order_builder& status(const order_status &status);
+        order_builder &price(const st_price &price);
+
+        order_builder &quantity(const st_quantity &quantity);
+
+        order_builder &filled(const st_quantity &filled);
+
+        order_builder &side(const antara::side &side);
+
+        order_builder &status(const order_status &status);
 
     private:
         st_order_id id_;
         antara::pair pair_;
-        st_price price_;
-        st_quantity quantity_;
-        st_quantity filled_;
-        antara::side side_;
-        orders::order_status status_;
+        st_price price_{0};
+        st_quantity quantity_{0};
+        st_quantity filled_{0};
+        antara::side side_{antara::side::buy};
+        orders::order_status status_{orders::order_status::live};
     };
 
     using orders_by_id = std::unordered_map<std::string, orders::order>;
