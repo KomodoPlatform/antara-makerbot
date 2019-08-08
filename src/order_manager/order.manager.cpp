@@ -14,9 +14,10 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "order.manager.hpp"
-
 #include <algorithm>
+#include <iterator>
+
+#include "order.manager.hpp"
 
 namespace antara
 {
