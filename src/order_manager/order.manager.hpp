@@ -37,6 +37,8 @@ namespace antara
         void start();
         void poll();
 
+        void update_from_live();
+
         st_order_id place_order(const orders::order_level &ol);
         std::vector<st_order_id> place_order(const orders::order_group &os);
 

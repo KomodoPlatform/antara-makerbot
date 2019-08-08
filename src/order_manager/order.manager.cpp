@@ -33,11 +33,7 @@ namespace antara
 
     void order_manager::start()
     {
-        std::vector<orders::order> live = dex_.get_live_orders();
-
-        for (const auto& o : live) {
-            orders_.emplace(o.id.value(), o);
-        }
+        update_from_live();
 
         for (const auto& [id, o] : orders_) {
             st_order_id order_id = st_order_id{id};
@@ -57,12 +53,7 @@ namespace antara
         }
 
         // add new orders
-        auto live = dex_.get_live_orders();
-        std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
-                 [] (const auto &o) {
-                 return std::make_pair(o.id.value(), o);
-                 }
-            );
+        update_from_live();
 
         // get all their executions
         auto order_ids = std::vector<st_order_id>();
@@ -112,5 +103,15 @@ namespace antara
         }
 
         return order_ids;
+    }
+
+    void order_manager::update_from_live()
+    {
+        auto live = dex_.get_live_orders();
+        std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
+                      [] (const auto &o) {
+                          return std::make_pair(o.id.value(), o);
+                      }
+            );
     }
 }
