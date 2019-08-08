@@ -16,6 +16,8 @@
 
 #include "order.manager.hpp"
 
+#include <algorithm>
+
 namespace antara
 {
     const orders::order &order_manager::get_order(const st_order_id &id) const
@@ -43,7 +45,6 @@ namespace antara
                 executions_.emplace(ex.id.value(), ex);
             }
         }
-
     }
 
     void order_manager::poll()
@@ -55,22 +56,25 @@ namespace antara
         }
 
         // add new orders
-        for (const auto& o : dex_.get_live_orders()) {
-            orders_.emplace(o.id.value(), o);
-        }
+        auto live = dex_.get_live_orders();
+        std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
+                 [] (const auto &o) {
+                 return std::make_pair(o.id.value(), o);
+                 }
+            );
 
         // get all their executions
         auto order_ids = std::vector<st_order_id>();
-        for (const auto& [id, o] : orders_) {
-            order_ids.push_back(st_order_id{id});
-        }
+        std::transform(orders_.begin(), orders_.end(),
+                      std::back_inserter(order_ids),
+                      [] (const auto& pair) {
+                          return st_order_id{pair.first};
+                      }
+            );
 
         auto all_executions = dex_.get_executions(order_ids);
-
-        for (const auto& ex : dex_.get_recent_executions()) {
-            // add any executions for orders missed by a poll
-            all_executions.push_back(ex);
-        }
+        auto recent_executions = dex_.get_recent_executions();
+        std::copy(recent_executions.begin(), recent_executions.end(), std::back_inserter(all_executions));
 
         for (const auto& ex : all_executions) {
             if (executions_.find(ex.id.value()) != executions_.end()) {

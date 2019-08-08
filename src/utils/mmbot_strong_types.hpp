@@ -99,7 +99,6 @@ namespace antara
     {
         buy, sell, both
     };
-
 }
 
 namespace std

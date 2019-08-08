@@ -16,48 +16,56 @@
 
 #include "dex.hpp"
 
+#include <utils/exceptions.hpp>
+
 namespace antara
 {
     st_order_id dex::place(const orders::order_level &o)
     {
-        return st_order_id{"A"};
+        throw mmbot::errors::not_implemented();
     }
 
     std::vector<orders::order> dex::get_live_orders()
     {
-        auto v = std::vector<orders::order>();
-        return v;
+        throw mmbot::errors::not_implemented();
+        // auto v = std::vector<orders::order>();
+        // return v;
     }
 
     orders::order dex::get_order_status(const st_order_id &id)
     {
-        antara::pair pair = pair.of("B", "C");
-        auto b = orders::order_builder(st_order_id{"A"}, pair);
-        orders::order o = b.build();
-        return o;
+        throw mmbot::errors::not_implemented();
+        // antara::pair pair = pair.of("B", "C");
+        // auto b = orders::order_builder(st_order_id{"A"}, pair);
+        // orders::order o = b.build();
+        // return o;
     }
 
     std::vector<orders::execution> dex::get_executions()
     {
-        auto exs = std::vector<orders::execution>();
-        return exs;
+        throw mmbot::errors::not_implemented();
+        // auto exs = std::vector<orders::execution>();
+        // return exs;
     }
 
     std::vector<orders::execution> dex::get_executions(const st_order_id &id)
     {
-        auto exs = std::vector<orders::execution>();
-        return exs;
+        throw mmbot::errors::not_implemented();
+        // auto exs = std::vector<orders::execution>();
+        // return exs;
     }
 
     std::vector<orders::execution> dex::get_executions(const std::vector<st_order_id> &ids)
     {
-        auto exs = std::vector<orders::execution>();
-        return exs;
+        throw mmbot::errors::not_implemented();
+        // auto exs = std::vector<orders::execution>();
+        // return exs;
     }
 
     std::vector<orders::execution> dex::get_recent_executions()
     {
-        auto exs = std::vector<orders::execution>();
-        return exs;
+        throw mmbot::errors::not_implemented();
+        // auto exs = std::vector<orders::execution>();
+        // return exs;
     }
 }

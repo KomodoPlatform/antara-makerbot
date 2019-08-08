@@ -14,19 +14,21 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "cex.hpp"
+#pragma once
 
-#include <utils/exceptions.hpp>
+#include <stdexcept>
 
-namespace antara
+namespace antara::mmbot::errors
 {
-    void antara::cex::place_order(const orders::order_level &ol)
+    class not_implemented : public std::runtime_error
     {
-        throw mmbot::errors::not_implemented();
-    }
+    public:
+        not_implemented() noexcept : std::runtime_error("Function has not been implemented.") {}
 
-    void cex::mirror(const orders::execution &ex)
-    {
-        throw mmbot::errors::not_implemented();
-    }
+        ~not_implemented() noexcept final = default;
+        [[nodiscard]] const char *what() const noexcept final
+        {
+            return runtime_error::what();
+        }
+    };
 }
