@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <utility>
 #include <vector>
 #include <unordered_map>
 
@@ -78,10 +79,10 @@ namespace antara::orders
 
         std::vector<st_execution_id> execution_ids;
 
-        order(const st_order_id &id, const antara::pair &pair, const st_price &price,
+        order(st_order_id id, antara::pair pair, const st_price &price,
               const st_quantity &quantity, const st_quantity &filled,
               const antara::side &side, const order_status &status) :
-                id(id), pair(pair), price(price), quantity(quantity),
+                id(std::move(id)), pair(std::move(pair)), price(price), quantity(quantity),
                 filled(filled), side(side), status(status)
         {};
 
@@ -92,7 +93,7 @@ namespace antara::orders
         void change_status(const order_status_change &osc);
 
         [[nodiscard]] execution
-        create_execution(const st_execution_id &id, const st_quantity &quantity, const maker &maker) const;
+        create_execution(const st_execution_id &execution_id, const st_quantity &quantity, const maker &maker) const;
 
         void execute(const execution &ex);
     };
@@ -100,7 +101,7 @@ namespace antara::orders
     class order_builder
     {
     public:
-        order_builder(const st_order_id &id, const antara::pair &pair) : id_(id), pair_(pair)
+        order_builder(st_order_id id, antara::pair pair) : id_(std::move(id)), pair_(std::move(pair))
         {
 
         }

@@ -20,12 +20,12 @@
 
 namespace antara
 {
-    void antara::cex::place_order(const orders::order_level &ol)
+    void antara::cex::place_order([[maybe_unused]] const orders::order_level &ol)
     {
         throw mmbot::errors::not_implemented();
     }
 
-    void cex::mirror(const orders::execution &ex)
+    void cex::mirror([[maybe_unused]] const orders::execution &ex)
     {
         throw mmbot::errors::not_implemented();
     }
