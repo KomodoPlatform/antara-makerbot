@@ -59,6 +59,9 @@ FetchContent_Declare(
         URL https://bitbucket.org/sobjectizerteam/restinio/downloads/restinio-0.5.1.1-full.zip
 )
 
+FetchContent_Declare(trompeloeil
+        URL https://github.com/rollbear/trompeloeil/archive/master.zip)
+
 SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
 SET(JSON_BuildTests OFF CACHE BOOL "Override option" FORCE)
 
@@ -96,7 +99,7 @@ FetchContent_Declare(jl777-coins
 FetchContent_Declare(bcmath
         URL https://github.com/milerius/BCMath-for-Cpp/archive/master.zip)
 
-FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins abseil-cpp bcmath)
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins abseil-cpp bcmath trompeloeil)
 find_package(Threads)
 add_library(logurulog OBJECT)
 target_sources(logurulog PUBLIC ${loguru_SOURCE_DIR}/loguru.cpp)
