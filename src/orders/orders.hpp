@@ -77,8 +77,9 @@ namespace antara::orders
 
         std::vector<st_execution_id> execution_ids;
 
-        order(st_order_id &id, antara::pair &pair, st_price &price, st_quantity &quantity,
-              st_quantity &filled, antara::side &side, order_status &status):
+        order(const st_order_id &id, const antara::pair &pair, const st_price &price,
+              const st_quantity &quantity, const st_quantity &filled,
+              const antara::side &side, const order_status &status):
             id(id), pair(pair), price(price), quantity(quantity),
             filled(filled), side(side), status(status) {};
 
@@ -96,7 +97,14 @@ namespace antara::orders
     class order_builder
     {
     public:
-        order_builder(const st_order_id &id, const antara::pair &pair);
+        order_builder(const st_order_id &id, const antara::pair &pair): id_(id), pair_(pair)
+        {
+            this->price_ = st_price{0};
+            this->quantity_ = st_quantity{0};
+            this->filled_ = st_quantity{0};
+            this->side_ = antara::side::buy;
+            this->status_ = orders::order_status::live;
+        };
         order build();
 
         order_builder& price(const st_price &price);

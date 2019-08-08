@@ -46,7 +46,5 @@ namespace antara
 
         orders::orders_by_id orders_;
         orders::executions_by_id executions_;
-
-        orders::executions_by_id find_new_executions(std::vector<orders::order> orders);
     };
 }
