@@ -17,24 +17,25 @@
 #include "dex.hpp"
 
 #include <utils/exceptions.hpp>
+#include <utils/pretty_function.hpp>
 
 namespace antara
 {
     st_order_id dex::place([[maybe_unused]] const orders::order_level &o)
     {
-        throw mmbot::errors::not_implemented();
+        throw mmbot::errors::not_implemented(pretty_function);
     }
 
     std::vector<orders::order> dex::get_live_orders()
     {
-        throw mmbot::errors::not_implemented();
+        throw mmbot::errors::not_implemented(pretty_function);
         // auto v = std::vector<orders::order>();
         // return v;
     }
 
     orders::order dex::get_order_status([[maybe_unused]] const st_order_id &id)
     {
-        throw mmbot::errors::not_implemented();
+        throw mmbot::errors::not_implemented(pretty_function);
         // antara::pair pair = pair.of("B", "C");
         // auto b = orders::order_builder(st_order_id{"A"}, pair);
         // orders::order o = b.build();
@@ -43,28 +44,28 @@ namespace antara
 
     std::vector<orders::execution> dex::get_executions()
     {
-        throw mmbot::errors::not_implemented();
+        throw mmbot::errors::not_implemented(pretty_function);
         // auto exs = std::vector<orders::execution>();
         // return exs;
     }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)
     {
-        throw mmbot::errors::not_implemented();
+        throw mmbot::errors::not_implemented(pretty_function);
         // auto exs = std::vector<orders::execution>();
         // return exs;
     }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const std::vector<st_order_id> &ids)
     {
-        throw mmbot::errors::not_implemented();
+        throw mmbot::errors::not_implemented(pretty_function);
         // auto exs = std::vector<orders::execution>();
         // return exs;
     }
 
     std::vector<orders::execution> dex::get_recent_executions()
     {
-        throw mmbot::errors::not_implemented();
+        throw mmbot::errors::not_implemented(pretty_function);
         // auto exs = std::vector<orders::execution>();
         // return exs;
     }

@@ -24,6 +24,7 @@ namespace antara::mmbot::errors
     {
     public:
         not_implemented() noexcept : std::runtime_error("Function has not been implemented.") {}
+        not_implemented(std::string s) noexcept : std::runtime_error("Function has not been implemented: " + s) {}
 
         ~not_implemented() noexcept final = default;
         [[nodiscard]] const char *what() const noexcept final

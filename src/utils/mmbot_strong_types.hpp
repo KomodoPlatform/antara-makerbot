@@ -59,7 +59,8 @@ namespace antara
 
     using st_order_id = st::type<
             std::string,
-            struct order_id_tag
+            struct order_id_tag,
+            st::arithmetic
         >;
 
     using st_execution_id = st::type<

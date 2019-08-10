@@ -21,30 +21,54 @@
 
 namespace antara
 {
-    const orders::order &order_manager::get_order(const st_order_id &id) const
+    // template<class DexImpl>
+    // order_manager(DexImpl dex, cex cex) // -> order_manager<DexImpl>
+    // {
+    //     this->dex_ = dex;
+    //     this->cex_ = cex;
+    // }
+
+    template<class DexImpl>
+    const orders::order &order_manager<DexImpl>::get_order(const st_order_id &id) const
     {
         return orders_.at(id.value());
     }
 
-    const orders::orders_by_id &order_manager::get_all_orders() const
+    template<class DexImpl>
+    const orders::orders_by_id &order_manager<DexImpl>::get_all_orders() const
     {
         return orders_;
     }
 
-    void order_manager::start()
+    template<class DexImpl>
+    void order_manager<DexImpl>::start()
     {
         update_from_live();
 
-        for (const auto& [id, o] : orders_) {
-            st_order_id order_id = st_order_id{id};
-            auto exs = dex_.get_executions(order_id);
-            for (const auto& ex : exs) {
-                executions_.emplace(ex.id.value(), ex);
-            }
+        auto order_ids = std::vector<st_order_id>();
+        std::transform(orders_.begin(), orders_.end(),
+                      std::back_inserter(order_ids),
+                      [] (const auto& pair) {
+                          return st_order_id{pair.first};
+                      }
+            );
+
+        auto exs = dex_.get_executions(order_ids);
+        for (const auto& ex : exs) {
+            executions_.emplace(ex.id.value(), ex);
         }
+
+        // for (const auto& [id, o] : orders_) {
+        //     st_order_id order_id = st_order_id{id};
+        //     auto exs = dex_.get_executions(order_id);
+        //     for (const auto& ex : exs) {
+        //         executions_.emplace(ex.id.value(), ex);
+        //     }
+        // }
     }
 
-    void order_manager::poll()
+    template<class DexImpl>
+    void order_manager<DexImpl>::poll()
     {
         // update the orders we know about
         for (const auto& [id, o] : orders_) {
@@ -89,12 +113,14 @@ namespace antara
         }
     }
 
-    st_order_id order_manager::place_order(const orders::order_level &ol)
+    template<class DexImpl>
+    st_order_id order_manager<DexImpl>::place_order(const orders::order_level &ol)
     {
         return dex_.place(ol);
     }
 
-    std::vector<st_order_id> order_manager::place_order(const orders::order_group &os)
+    template<class DexImpl>
+    std::vector<st_order_id> order_manager<DexImpl>::place_order(const orders::order_group &os)
     {
         auto order_ids = std::vector<st_order_id>();
         for (const auto& ol : os.levels) {
@@ -105,7 +131,8 @@ namespace antara
         return order_ids;
     }
 
-    void order_manager::update_from_live()
+    template<class DexImpl>
+    void order_manager<DexImpl>::update_from_live()
     {
         auto live = dex_.get_live_orders();
         std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),

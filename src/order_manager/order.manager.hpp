@@ -26,10 +26,12 @@
 
 namespace antara
 {
+    template<class DexImpl>
     class order_manager
     {
     public:
-        order_manager(const dex &dex, const cex &cex): dex_(dex), cex_(cex) {};
+        order_manager(const DexImpl &dex, const cex &cex): dex_(dex), cex_(cex) {};
+        // order_manager(const DexImpl &dex, const cex &cex);
 
         [[nodiscard]] const orders::order &get_order(const st_order_id &id) const;
         [[nodiscard]] const orders::orders_by_id &get_all_orders() const;
@@ -43,7 +45,7 @@ namespace antara
         std::vector<st_order_id> place_order(const orders::order_group &os);
 
     private:
-        dex dex_;
+        DexImpl dex_;
         cex cex_;
 
         orders::orders_by_id orders_;
