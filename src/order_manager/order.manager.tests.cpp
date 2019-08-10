@@ -30,6 +30,9 @@ namespace antara::mmbot::tests
         MAKE_MOCK1(get_executions, std::vector<orders::execution>(const std::vector<st_order_id>&));
     };
 
+    using trompeloeil::_;
+    using trompeloeil::lt;
+
     TEST_CASE ("foo")
     {
         auto o_id = st_order_id{"id"};

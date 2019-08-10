@@ -34,38 +34,6 @@ namespace antara
         return orders_.at(id.value());
     }
 
-    template<class DexImpl>
-    const orders::orders_by_id &order_manager<DexImpl>::get_all_orders() const
-    {
-        return orders_;
-    }
-
-    template<class DexImpl>
-    void order_manager<DexImpl>::start()
-    {
-        update_from_live();
-
-        auto order_ids = std::vector<st_order_id>();
-        std::transform(orders_.begin(), orders_.end(),
-                      std::back_inserter(order_ids),
-                      [] (const auto& pair) {
-                          return st_order_id{pair.first};
-                      }
-            );
-
-        auto exs = dex_.get_executions(order_ids);
-        for (const auto& ex : exs) {
-            executions_.emplace(ex.id.value(), ex);
-        }
-
-        // for (const auto& [id, o] : orders_) {
-        //     st_order_id order_id = st_order_id{id};
-        //     auto exs = dex_.get_executions(order_id);
-        //     for (const auto& ex : exs) {
-        //         executions_.emplace(ex.id.value(), ex);
-        //     }
-        // }
-    }
 
     template<class DexImpl>
     void order_manager<DexImpl>::poll()
@@ -129,16 +97,5 @@ namespace antara
         }
 
         return order_ids;
-    }
-
-    template<class DexImpl>
-    void order_manager<DexImpl>::update_from_live()
-    {
-        auto live = dex_.get_live_orders();
-        std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
-                      [] (const auto &o) {
-                          return std::make_pair(o.id.value(), o);
-                      }
-            );
     }
 }
