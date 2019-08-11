@@ -61,7 +61,7 @@ namespace antara::mmbot::tests
         // antara::cex cex = antara::cex();
         cex_mock cex;
 
-        auto om = order_manager(&dex, &cex);
+        auto om = order_manager(dex, cex);
 
         auto o_list = std::vector<orders::order>();
         o_list.push_back(o);
@@ -129,7 +129,7 @@ namespace antara::mmbot::tests
         dex_mock dex;
         cex_mock cex;
 
-        auto om = order_manager(&dex, &cex);
+        auto om = order_manager(dex, cex);
 
 
 

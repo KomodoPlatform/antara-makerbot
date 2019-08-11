@@ -45,7 +45,7 @@ namespace antara::mmbot::tests
     };
 
     using namespace std::chrono_literals;
-    TEST_CASE_FIXTURE (http_server_tests_fixture, "test run http_server")
+    /*TEST_CASE_FIXTURE (http_server_tests_fixture, "test run http_server")
     {
         std::this_thread::sleep_for(1s);
         std::raise(SIGINT);
@@ -69,5 +69,5 @@ namespace antara::mmbot::tests
         resp = RestClient::get("localhost:8080/api/v1/getprice?base_currency=KMD&quote_currency=BTC"); //Well formed
         CHECK_EQ(resp.code, 200);
         std::raise(SIGINT);
-    }
+    }*/
 }
