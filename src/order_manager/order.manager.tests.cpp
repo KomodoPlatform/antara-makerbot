@@ -23,17 +23,31 @@
 
 namespace antara::mmbot::tests
 {
-    class dex_mock
+    class dex_mock : public dex
     {
     public:
-        MAKE_MOCK0(get_live_orders, std::vector<orders::order>());
-        MAKE_MOCK1(get_executions, std::vector<orders::execution>(const std::vector<st_order_id>&));
+        MAKE_MOCK1(place, st_order_id(const orders::order_level&), override);
+
+        MAKE_MOCK0(get_live_orders, std::vector<orders::order>(), override);
+        MAKE_MOCK1(get_order_status, orders::order(const st_order_id&), override);
+
+        MAKE_MOCK0(get_executions, std::vector<orders::execution>(), override);
+        MAKE_MOCK1(get_executions, std::vector<orders::execution>(const st_order_id&), override);
+        MAKE_MOCK1(get_executions, std::vector<orders::execution>(const std::unordered_set<st_order_id>&), override);
+        MAKE_MOCK0(get_recent_executions, std::vector<orders::execution>(), override);
+    };
+
+    class cex_mock : public cex
+    {
+    public:
+        MAKE_MOCK1(place_order, void(const orders::order_level&), override);
+        MAKE_MOCK1(mirror, void(const orders::execution&), override);
     };
 
     using trompeloeil::_;
     using trompeloeil::lt;
 
-    TEST_CASE ("foo")
+    TEST_CASE ("on start, the OM loads existing orders")
     {
         auto o_id = st_order_id{"id"};
         auto b = orders::order_builder(o_id, antara::pair::of("A", "B"));
@@ -44,9 +58,10 @@ namespace antara::mmbot::tests
         orders::execution e = o.create_execution(ex_id, ex_quantity, true);
 
         dex_mock dex;
-        antara::cex cex = antara::cex();
+        // antara::cex cex = antara::cex();
+        cex_mock cex;
 
-        auto om = order_manager<dex_mock>(dex, cex);
+        auto om = order_manager(&dex, &cex);
 
         auto o_list = std::vector<orders::order>();
         o_list.push_back(o);
@@ -54,8 +69,8 @@ namespace antara::mmbot::tests
         REQUIRE_CALL(dex, get_live_orders())
             .RETURN(o_list);
 
-        auto o_ids = std::vector<st_order_id>();
-        o_ids.push_back(o_id);
+        auto o_ids = std::unordered_set<st_order_id>();
+        o_ids.emplace(o_id);
 
         auto ex_list = std::vector<orders::execution>();
         ex_list.push_back(e);
@@ -65,12 +80,109 @@ namespace antara::mmbot::tests
 
         om.start();
 
-
         auto orders = om.get_all_orders();
 
         CHECK_EQ(1, orders.size());
     }
 
+    TEST_CASE ("the OM can poll the exchange for new orders and executions")
+    {
+        auto pair = antara::pair::of("A", "B");
+        st_price price = st_price(10);
+        st_quantity quantity = st_quantity(10);
+        antara::side side = antara::side::buy;
+        antara::maker maker = true;
+
+        // This order is already on the book
+        auto o1_id = st_order_id{"id_1"};
+        auto b1 = orders::order_builder(o1_id, pair);
+        orders::order o1 = b1.build();
+
+        auto e1_id = st_execution_id{"e_id_1"};
+        orders::execution e1 = { e1_id, pair, price, quantity, side, maker };
+        o1.add_execution_id(e1_id);
+
+
+
+        // This order we will learn about
+        auto o2_id = st_order_id{"id_2"};
+        auto b2 = orders::order_builder(o2_id, pair);
+        orders::order o2 = b2.build();
+
+        auto e2_id = st_execution_id{"e_id_2"};
+        orders::execution e2 = { e2_id, pair, price, quantity, side, maker };
+        o2.add_execution_id(e2_id);
+
+
+
+        // This order is lost
+        auto o3_id = st_order_id{"id_3"};
+        auto b3 = orders::order_builder(o3_id, pair);
+        orders::order o3 = b3.build();
+
+        auto e3_id = st_execution_id{"e_id_3"};
+        orders::execution e3 = { e3_id, pair, price, quantity, side, maker };
+        o3.add_execution_id(e3_id);
+
+
+
+        dex_mock dex;
+        cex_mock cex;
+
+        auto om = order_manager(&dex, &cex);
+
+
+
+        // We have one order we already know about
+        std::vector<orders::order> existing_orders;
+        existing_orders.push_back(o1);
+        om.add_orders(existing_orders);
+
+        std::vector<orders::execution> existing_executions;
+        existing_executions.push_back(e1);
+        om.add_executions(existing_executions);
+
+        REQUIRE_CALL(dex, get_order_status(o1_id))
+            .RETURN(o1);
+
+        // We have 2 present on the book
+        std::vector<orders::order> live_orders;
+        live_orders.push_back(o1);
+        live_orders.push_back(o2);
+        REQUIRE_CALL(dex, get_live_orders())
+            .RETURN(live_orders);
+
+        // Each order has one execution
+        std::unordered_set<st_order_id> live_order_ids;
+        live_order_ids.emplace(o1_id);
+        live_order_ids.emplace(o2_id);
+
+        std::vector<orders::execution> live_executions;
+        live_executions.push_back(e1);
+        live_executions.push_back(e2);
+
+        REQUIRE_CALL(dex, get_executions(live_order_ids))
+            .RETURN(live_executions);
+
+        std::vector<orders::execution> recent;
+        recent.push_back(e1);
+        recent.push_back(e2);
+        recent.push_back(e3);
+        // And there is an execution for an order we did'nt know
+        REQUIRE_CALL(dex, get_recent_executions())
+            .RETURN(recent);
+
+        REQUIRE_CALL(cex, mirror(e1));
+
+        // And there is an execution for an order we did'nt know
+        REQUIRE_CALL(cex, mirror(e2));
+            // .RETURN(ex_list);
+
+        // REQUIRE_CALL(cex, mirror(e3));
+            // .RETURN(ex_list);
+
+        om.poll();
+    }
 
     // TEST_CASE ("individual orders can be placed on the cex")
     // {

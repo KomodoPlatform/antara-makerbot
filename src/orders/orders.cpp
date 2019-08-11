@@ -76,6 +76,11 @@ namespace antara::orders
         this->filled = this->filled + ex.quantity;
     }
 
+    void order::add_execution_id(const st_execution_id &e_id)
+    {
+        this->execution_ids.emplace(e_id);
+    }
+
     // Order Builder
 
     order_builder& order_builder::price(const st_price &price)

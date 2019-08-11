@@ -23,7 +23,17 @@
 
 namespace antara
 {
-    class cex {
+    class abstract_cex
+    {
+    public:
+        virtual ~abstract_cex() = default;
+
+        virtual void place_order(const orders::order_level &ol) = 0;
+        virtual void mirror(const orders::execution &ex) = 0;
+    };
+
+    class cex : public abstract_cex
+    {
     public:
         void place_order(const orders::order_level &ol);
         void mirror(const orders::execution &ex);

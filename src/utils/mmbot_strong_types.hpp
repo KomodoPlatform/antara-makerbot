@@ -65,7 +65,8 @@ namespace antara
 
     using st_execution_id = st::type<
             std::string,
-            struct execution_id_tag
+            struct execution_id_tag,
+            st::arithmetic
         >;
 
     using st_quantity = st::type<
@@ -126,6 +127,15 @@ namespace std
         {
             return std::hash<std::string>{}(id.value());
         }
+    };
+
+    template<>
+    struct hash<antara::st_execution_id>
+    {
+        std::size_t operator()(const antara::st_execution_id &id) const
+            {
+                return std::hash<std::string>{}(id.value());
+            }
     };
 
     template<>

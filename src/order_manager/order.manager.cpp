@@ -16,31 +16,61 @@
 
 #include <algorithm>
 #include <iterator>
+#include <loguru.hpp>
+#include <iostream>
+#include <unordered_set>
 
 #include "order.manager.hpp"
 
 namespace antara
 {
-    // template<class DexImpl>
-    // order_manager(DexImpl dex, cex cex) // -> order_manager<DexImpl>
-    // {
-    //     this->dex_ = dex;
-    //     this->cex_ = cex;
-    // }
-
-    template<class DexImpl>
-    const orders::order &order_manager<DexImpl>::get_order(const st_order_id &id) const
+    const orders::order &order_manager::get_order(const st_order_id &id) const
     {
         return orders_.at(id.value());
     }
 
+    void order_manager::add_orders(const std::vector<orders::order> &orders)
+    {
+        for (const auto &o : orders) {
+            orders_.emplace(o.id.value(), o);
+        }
+    }
 
-    template<class DexImpl>
-    void order_manager<DexImpl>::poll()
+    void order_manager::add_executions(const std::vector<orders::execution> &executions)
+    {
+        for (const auto &e : executions) {
+            executions_.emplace(e.id.value(), e);
+        }
+    }
+
+    void order_manager::start()
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+
+        update_from_live();
+
+        auto order_ids = std::unordered_set<st_order_id>();
+        // std::transform(orders_.begin(), orders_.end(),
+        //               std::back_inserter(order_ids),
+        //               [](const auto &pair) {
+        //                   return st_order_id{pair.first};
+        //               }
+        //     );
+        for (const auto& [id, o] : orders_) {
+            order_ids.emplace(id);
+        }
+
+        auto exs = dex_->get_executions(order_ids);
+        for (const auto &ex : exs) {
+            executions_.emplace(ex.id.value(), ex);
+        }
+    }
+
+    void order_manager::poll()
     {
         // update the orders we know about
         for (const auto& [id, o] : orders_) {
-            auto order = dex_.get_order_status(st_order_id{id});
+            auto order = dex_->get_order_status(st_order_id{id});
             orders_.emplace(id, order);
         }
 
@@ -48,16 +78,21 @@ namespace antara
         update_from_live();
 
         // get all their executions
-        auto order_ids = std::vector<st_order_id>();
-        std::transform(orders_.begin(), orders_.end(),
-                      std::back_inserter(order_ids),
-                      [] (const auto& pair) {
-                          return st_order_id{pair.first};
-                      }
-            );
+        auto order_ids = std::unordered_set<st_order_id>();
+        for (const auto& [id, o] : orders_) {
+            order_ids.emplace(id);
+        }
 
-        auto all_executions = dex_.get_executions(order_ids);
-        auto recent_executions = dex_.get_recent_executions();
+        std::string msg;
+        for (const auto &id : order_ids) {
+            msg += id.value();
+        }
+        std::cout << msg << std::endl;
+        // VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        // DVLOG_F(loguru::Verbosity_ERROR, "order_ids: %s", msg);
+
+        auto all_executions = dex_->get_executions(order_ids);
+        auto recent_executions = dex_->get_recent_executions();
         std::copy(recent_executions.begin(), recent_executions.end(), std::back_inserter(all_executions));
 
         for (const auto& ex : all_executions) {
@@ -65,14 +100,14 @@ namespace antara
                 // can't find the exection, it's new
                 // for any that aren't in the ex object
                 // make a call to cex
-                cex_.mirror(ex);
+                cex_->mirror(ex);
             }
         }
 
         // when an order is finished, remove it's executions
         for (const auto& [id, order] : orders_) {
             if (order.finished()) {
-                std::vector<st_execution_id> ex_ids = order.execution_ids;
+                auto ex_ids = order.execution_ids;
                 for (const auto& id : ex_ids) {
                     executions_.erase(id.value());
                 }
@@ -81,19 +116,27 @@ namespace antara
         }
     }
 
-    template<class DexImpl>
-    st_order_id order_manager<DexImpl>::place_order(const orders::order_level &ol)
+    void order_manager::update_from_live()
     {
-        return dex_.place(ol);
+        auto live = dex_->get_live_orders();
+        std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
+                      [] (const auto &o) {
+                          return std::make_pair(o.id.value(), o);
+                      }
+            );
     }
 
-    template<class DexImpl>
-    std::vector<st_order_id> order_manager<DexImpl>::place_order(const orders::order_group &os)
+    st_order_id order_manager::place_order(const orders::order_level &ol)
     {
-        auto order_ids = std::vector<st_order_id>();
+        return dex_->place(ol);
+    }
+
+    std::unordered_set<st_order_id> order_manager::place_order(const orders::order_group &os)
+    {
+        auto order_ids = std::unordered_set<st_order_id>();
         for (const auto& ol : os.levels) {
-            auto id = dex_.place(ol);
-            order_ids.push_back(id);
+            auto id = dex_->place(ol);
+            order_ids.emplace(id);
         }
 
         return order_ids;

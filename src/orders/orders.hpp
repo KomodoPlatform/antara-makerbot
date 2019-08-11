@@ -18,6 +18,7 @@
 
 #include <utility>
 #include <vector>
+#include <unordered_set>
 #include <unordered_map>
 
 #include <utils/mmbot_strong_types.hpp>
@@ -77,7 +78,7 @@ namespace antara::orders
         antara::side side;
         order_status status;
 
-        std::vector<st_execution_id> execution_ids;
+        std::unordered_set<st_execution_id> execution_ids;
 
         order(st_order_id id, antara::pair pair, const st_price &price,
               const st_quantity &quantity, const st_quantity &filled,
@@ -96,6 +97,8 @@ namespace antara::orders
         create_execution(const st_execution_id &execution_id, const st_quantity &quantity, const maker &maker) const;
 
         void execute(const execution &ex);
+
+        void add_execution_id(const st_execution_id &e_id);
     };
 
     class order_builder

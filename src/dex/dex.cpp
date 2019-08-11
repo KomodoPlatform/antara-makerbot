@@ -56,7 +56,7 @@ namespace antara
         // return exs;
     }
 
-    std::vector<orders::execution> dex::get_executions([[maybe_unused]] const std::vector<st_order_id> &ids)
+    std::vector<orders::execution> dex::get_executions([[maybe_unused]] const std::unordered_set<st_order_id> &ids)
     {
         throw mmbot::errors::not_implemented(pretty_function);
         // auto exs = std::vector<orders::execution>();

@@ -18,7 +18,9 @@
 
 #include <vector>
 #include <unordered_map>
+#include <loguru.hpp>
 
+#include <utils/pretty_function.hpp>
 #include "utils/mmbot_strong_types.hpp"
 #include "orders/orders.hpp"
 #include "dex/dex.hpp"
@@ -26,66 +28,30 @@
 
 namespace antara
 {
-    template<class DexImpl>
     class order_manager
     {
     public:
-        order_manager(DexImpl &dex, cex &cex) : dex_(dex), cex_(cex)
-        {};
-        // order_manager(const DexImpl &dex, const cex &cex);
+        order_manager(abstract_dex *dex, abstract_cex *cex) : dex_(dex), cex_(cex) {};
 
         [[nodiscard]] const orders::order &get_order(const st_order_id &id) const;
-
         [[nodiscard]] const orders::orders_by_id &get_all_orders() const
         {
             return orders_;
         }
 
-        void start()
-        {
-            update_from_live();
+        void add_orders(const std::vector<orders::order> &o);
+        void add_executions(const std::vector<orders::execution> &e);
 
-            auto order_ids = std::vector<st_order_id>();
-            std::transform(orders_.begin(), orders_.end(),
-                           std::back_inserter(order_ids),
-                           [](const auto &pair) {
-                               return st_order_id{pair.first};
-                           }
-            );
-
-            auto exs = dex_.get_executions(order_ids);
-            for (const auto &ex : exs) {
-                executions_.emplace(ex.id.value(), ex);
-            }
-
-            // for (const auto& [id, o] : orders_) {
-            //     st_order_id order_id = st_order_id{id};
-            //     auto exs = dex_.get_executions(order_id);
-            //     for (const auto& ex : exs) {
-            //         executions_.emplace(ex.id.value(), ex);
-            //     }
-            // }
-        }
-
+        void start();
         void poll();
-
-        void update_from_live()
-        {
-            auto live = dex_.get_live_orders();
-            std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
-                           [] (const auto &o) {
-                               return std::make_pair(o.id.value(), o);
-                           }
-            );
-        }
+        void update_from_live();
 
         st_order_id place_order(const orders::order_level &ol);
-
-        std::vector<st_order_id> place_order(const orders::order_group &os);
+        std::unordered_set<st_order_id> place_order(const orders::order_group &os);
 
     private:
-        DexImpl &dex_;
-        cex &cex_;
+        abstract_dex *dex_;
+        abstract_cex *cex_;
 
         orders::orders_by_id orders_;
         orders::executions_by_id executions_;

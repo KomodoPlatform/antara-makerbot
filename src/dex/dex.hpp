@@ -17,6 +17,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_set>
 #include <unordered_map>
 
 #include <orders/orders.hpp>
@@ -24,7 +25,23 @@
 
 namespace antara
 {
-    class dex
+    class abstract_dex
+    {
+    public:
+        virtual ~abstract_dex() = default;
+
+        virtual st_order_id place(const orders::order_level &ol) = 0;
+
+        virtual std::vector<orders::order> get_live_orders() = 0;
+        virtual orders::order get_order_status(const st_order_id &id) = 0;
+
+        virtual std::vector<orders::execution> get_executions() = 0;
+        virtual std::vector<orders::execution> get_executions(const st_order_id &id) = 0;
+        virtual std::vector<orders::execution> get_executions(const std::unordered_set<st_order_id> &ids) = 0;
+        virtual std::vector<orders::execution> get_recent_executions() = 0;
+    };
+
+    class dex : public abstract_dex
     {
     public:
         st_order_id place(const orders::order_level &ol);
@@ -34,7 +51,7 @@ namespace antara
 
         std::vector<orders::execution> get_executions();
         std::vector<orders::execution> get_executions(const st_order_id &id);
-        std::vector<orders::execution> get_executions(const std::vector<st_order_id> &ids);
+        std::vector<orders::execution> get_executions(const std::unordered_set<st_order_id> &ids);
         std::vector<orders::execution> get_recent_executions();
     };
 }
