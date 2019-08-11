@@ -49,32 +49,28 @@ namespace antara
             struct spread_tag,
             st::arithmetic,
             st::addable_with<double>
-        >;
+    >;
 
     using st_price = st::type<
             absl::uint128,
             struct price_tag,
             st::arithmetic
-        >;
+    >;
 
-    using st_order_id = st::type<
-            std::string,
-            struct order_id_tag,
-            st::arithmetic
-        >;
+    using st_order_id = std::string;
 
     using st_execution_id = st::type<
             std::string,
             struct execution_id_tag,
             st::arithmetic
-        >;
+    >;
 
     using st_quantity = st::type<
             double,
             struct quantity_tag,
             st::arithmetic,
             st::addable_with<double>
-        >;
+    >;
 
     using maker = bool;
 
@@ -94,7 +90,7 @@ namespace antara
 
         bool operator==(const pair &rhs) const;
 
-        static pair of (std::string a, std::string b);
+        static pair of(std::string a, std::string b);
     };
 
     enum side
@@ -120,22 +116,22 @@ namespace std
         }
     };
 
-    template<>
+    /*template<>
     struct hash<antara::st_order_id>
     {
         std::size_t operator()(const antara::st_order_id &id) const
         {
             return std::hash<std::string>{}(id.value());
         }
-    };
+    };*/
 
     template<>
     struct hash<antara::st_execution_id>
     {
         std::size_t operator()(const antara::st_execution_id &id) const
-            {
-                return std::hash<std::string>{}(id.value());
-            }
+        {
+            return std::hash<std::string>{}(id.value());
+        }
     };
 
     template<>
@@ -143,7 +139,7 @@ namespace std
     {
         std::size_t operator()(const antara::st_symbol &symbol) const
         {
-           return std::hash<std::string>()(symbol.value());
+            return std::hash<std::string>()(symbol.value());
         }
     };
 }

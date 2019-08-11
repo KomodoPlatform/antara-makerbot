@@ -26,13 +26,13 @@ namespace antara
 {
     const orders::order &order_manager::get_order(const st_order_id &id) const
     {
-        return orders_.at(id.value());
+        return orders_.at(id);
     }
 
     void order_manager::add_orders(const std::vector<orders::order> &orders)
     {
         for (const auto &o : orders) {
-            orders_.emplace(o.id.value(), o);
+            orders_.emplace(o.id, o);
         }
     }
 
@@ -85,7 +85,7 @@ namespace antara
 
         std::string msg;
         for (const auto &id : order_ids) {
-            msg += id.value();
+            msg += id;
         }
         std::cout << msg << std::endl;
         // VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
@@ -111,7 +111,7 @@ namespace antara
                 for (const auto& id : ex_ids) {
                     executions_.erase(id.value());
                 }
-                orders_.erase(order.id.value());
+                orders_.erase(order.id);
             }
         }
     }
@@ -121,7 +121,7 @@ namespace antara
         auto live = dex_->get_live_orders();
         std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
                       [] (const auto &o) {
-                          return std::make_pair(o.id.value(), o);
+                          return std::make_pair(o.id, o);
                       }
             );
     }
