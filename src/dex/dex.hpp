@@ -44,14 +44,14 @@ namespace antara
     class dex : public abstract_dex
     {
     public:
-        st_order_id place(const orders::order_level &ol);
+        st_order_id place(const orders::order_level &ol) override;
 
-        std::vector<orders::order> get_live_orders();
-        orders::order get_order_status(const st_order_id &id);
+        std::vector<orders::order> get_live_orders() override;
+        orders::order get_order_status(const st_order_id &id) override;
 
-        std::vector<orders::execution> get_executions();
-        std::vector<orders::execution> get_executions(const st_order_id &id);
-        std::vector<orders::execution> get_executions(const std::unordered_set<st_order_id> &ids);
-        std::vector<orders::execution> get_recent_executions();
+        std::vector<orders::execution> get_executions() override;
+        std::vector<orders::execution> get_executions(const st_order_id &id) override;
+        std::vector<orders::execution> get_executions(const std::unordered_set<st_order_id> &ids) override;
+        std::vector<orders::execution> get_recent_executions() override;
     };
 }

@@ -56,7 +56,7 @@ namespace antara
         //                   return st_order_id{pair.first};
         //               }
         //     );
-        for (const auto& [id, o] : orders_) {
+        for (const auto&[id, o] : orders_) {
             order_ids.emplace(id);
         }
 
@@ -69,7 +69,7 @@ namespace antara
     void order_manager::poll()
     {
         // update the orders we know about
-        for (const auto& [id, o] : orders_) {
+        for (const auto&[id, o] : orders_) {
             auto order = dex_.get_order_status(st_order_id{id});
             orders_.emplace(id, order);
         }
@@ -79,7 +79,7 @@ namespace antara
 
         // get all their executions
         auto order_ids = std::unordered_set<st_order_id>();
-        for (const auto& [id, o] : orders_) {
+        for (const auto&[id, o] : orders_) {
             order_ids.emplace(id);
         }
 
@@ -95,7 +95,7 @@ namespace antara
         auto recent_executions = dex_.get_recent_executions();
         std::copy(recent_executions.begin(), recent_executions.end(), std::back_inserter(all_executions));
 
-        for (const auto& ex : all_executions) {
+        for (const auto &ex : all_executions) {
             if (executions_.find(ex.id) != executions_.end()) {
                 // can't find the exection, it's new
                 // for any that aren't in the ex object
@@ -105,11 +105,11 @@ namespace antara
         }
 
         // when an order is finished, remove it's executions
-        for (const auto& [id, order] : orders_) {
+        for (auto&&[id, order] : orders_) {
             if (order.finished()) {
                 auto ex_ids = order.execution_ids;
-                for (const auto& id : ex_ids) {
-                    executions_.erase(id);
+                for (auto &&current_id : ex_ids) {
+                    executions_.erase(current_id);
                 }
                 orders_.erase(order.id);
             }
@@ -120,10 +120,10 @@ namespace antara
     {
         auto live = dex_.get_live_orders();
         std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
-                      [] (const auto &o) {
-                          return std::make_pair(o.id, o);
-                      }
-            );
+                       [](const auto &o) {
+                           return std::make_pair(o.id, o);
+                       }
+        );
     }
 
     st_order_id order_manager::place_order(const orders::order_level &ol)
@@ -134,7 +134,7 @@ namespace antara
     std::unordered_set<st_order_id> order_manager::place_order(const orders::order_group &os)
     {
         auto order_ids = std::unordered_set<st_order_id>();
-        for (const auto& ol : os.levels) {
+        for (const auto &ol : os.levels) {
             auto id = dex_.place(ol);
             order_ids.emplace(id);
         }

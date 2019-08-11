@@ -26,7 +26,7 @@ namespace antara
     class abstract_cex
     {
     public:
-        virtual ~abstract_cex() = default;
+        virtual ~abstract_cex() noexcept = default;
 
         virtual void place_order(const orders::order_level &ol) = 0;
         virtual void mirror(const orders::execution &ex) = 0;
@@ -35,7 +35,7 @@ namespace antara
     class cex : public abstract_cex
     {
     public:
-        void place_order(const orders::order_level &ol);
-        void mirror(const orders::execution &ex);
+        void place_order(const orders::order_level &ol) override;
+        void mirror(const orders::execution &ex) override;
     };
 }
