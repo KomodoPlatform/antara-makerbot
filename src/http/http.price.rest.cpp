@@ -51,7 +51,7 @@ namespace antara::mmbot::http::rest
         nlohmann::json answer_json;
         try {
             price = price_service_.get_price(currency_pair);
-            answer_json = {"price", get_price_as_string_decimal(mmbot_config_, currency_pair.quote.symbol, price)};
+            answer_json = {{"price", get_price_as_string_decimal(mmbot_config_, currency_pair.quote.symbol, price)}};
         }
         catch (const antara::mmbot::errors::pair_not_available& e) {
             nlohmann::json error_json = {"errors", e.what()};
