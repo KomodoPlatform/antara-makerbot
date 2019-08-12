@@ -27,5 +27,7 @@ Retrieves the median of the price of a base / quote currency pair
 ### Error Response
 
 **Code** : `400 Bad request` (Ill-formed request)
+
 **Code** : `422 Unprocessable Entity` (Wrong Argument)
+
 **Code** : `500 Internal Server Error` (Unexistent Base or Quote, throw pair not available)
