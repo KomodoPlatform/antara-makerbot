@@ -36,24 +36,20 @@ namespace antara
 
 
         [[nodiscard]] const orders::order &get_order(const st_order_id &id) const;
-
         [[nodiscard]] const orders::orders_by_id &get_all_orders() const
         {
             return orders_;
         }
 
         void add_orders(const std::vector<orders::order> &o);
-
         void add_executions(const std::vector<orders::execution> &e);
 
         void start();
-
         void poll();
 
         void update_from_live();
 
         st_order_id place_order(const orders::order_level &ol);
-
         std::unordered_set<st_order_id> place_order(const orders::order_group &os);
 
     private:

@@ -58,7 +58,6 @@ namespace antara::mmbot::tests
         orders::execution e = o.create_execution(ex_id, ex_quantity, true);
 
         dex_mock dex;
-        // antara::cex cex = antara::cex();
         cex_mock cex;
 
         auto om = order_manager(dex, cex);
@@ -172,14 +171,10 @@ namespace antara::mmbot::tests
         REQUIRE_CALL(dex, get_recent_executions())
             .RETURN(recent);
 
-        REQUIRE_CALL(cex, mirror(e1));
-
         // And there is an execution for an order we did'nt know
         REQUIRE_CALL(cex, mirror(e2));
-            // .RETURN(ex_list);
 
-        // REQUIRE_CALL(cex, mirror(e3));
-            // .RETURN(ex_list);
+        REQUIRE_CALL(cex, mirror(e3));
 
         om.poll();
     }

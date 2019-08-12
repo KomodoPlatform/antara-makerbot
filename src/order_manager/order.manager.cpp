@@ -17,7 +17,6 @@
 #include <algorithm>
 #include <iterator>
 #include <loguru.hpp>
-#include <iostream>
 #include <unordered_set>
 
 #include "order.manager.hpp"
@@ -50,12 +49,6 @@ namespace antara
         update_from_live();
 
         auto order_ids = std::unordered_set<st_order_id>();
-        // std::transform(orders_.begin(), orders_.end(),
-        //               std::back_inserter(order_ids),
-        //               [](const auto &pair) {
-        //                   return st_order_id{pair.first};
-        //               }
-        //     );
         for (const auto&[id, o] : orders_) {
             order_ids.emplace(id);
         }
@@ -83,20 +76,20 @@ namespace antara
             order_ids.emplace(id);
         }
 
-        std::string msg;
-        for (const auto &id : order_ids) {
-            msg += id;
-        }
-        std::cout << msg << std::endl;
-        // VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        // DVLOG_F(loguru::Verbosity_ERROR, "order_ids: %s", msg);
-
-        auto all_executions = dex_.get_executions(order_ids);
+        auto live_executions = dex_.get_executions(order_ids);
         auto recent_executions = dex_.get_recent_executions();
-        std::copy(recent_executions.begin(), recent_executions.end(), std::back_inserter(all_executions));
+        auto all_executions = std::unordered_map<st_execution_id, orders::execution>();
 
-        for (const auto &ex : all_executions) {
-            if (executions_.find(ex.id) != executions_.end()) {
+        for (const auto &e : live_executions) {
+            all_executions.emplace(e.id, e);
+        }
+
+        for (const auto &e : recent_executions) {
+            all_executions.emplace(e.id, e);
+        }
+
+        for (const auto& [id, ex] : all_executions) {
+            if (executions_.find(id) == executions_.end()) {
                 // can't find the exection, it's new
                 // for any that aren't in the ex object
                 // make a call to cex
@@ -122,8 +115,7 @@ namespace antara
         std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
                        [](const auto &o) {
                            return std::make_pair(o.id, o);
-                       }
-        );
+                       });
     }
 
     st_order_id order_manager::place_order(const orders::order_level &ol)
