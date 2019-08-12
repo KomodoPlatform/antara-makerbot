@@ -19,7 +19,7 @@
 #include <utils/exceptions.hpp>
 #include <utils/pretty_function.hpp>
 
-namespace antara
+namespace antara::mmbot
 {
     st_order_id dex::place([[maybe_unused]] const orders::order_level &o)
     {

@@ -74,9 +74,15 @@ namespace antara
     {
         st_symbol symbol;
 
-        bool operator==(const asset &rhs) const;
+        bool operator==(const asset &rhs) const
+        {
+            return symbol.value() == rhs.symbol.value();
+        }
 
-        bool operator!=(const asset &rhs) const;
+        bool operator!=(const asset &rhs) const
+        {
+            return !(*this == rhs);
+        }
     };
 
     struct pair
@@ -84,7 +90,10 @@ namespace antara
         asset quote;
         asset base;
 
-        bool operator==(const pair &rhs) const;
+        bool operator==(const pair &rhs) const
+        {
+            return base == rhs.base && quote == rhs.quote;
+        }
 
         static pair of(std::string a, std::string b);
     };

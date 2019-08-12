@@ -26,7 +26,7 @@
 #include "dex/dex.hpp"
 #include "cex/cex.hpp"
 
-namespace antara
+namespace antara::mmbot
 {
     class order_manager
     {

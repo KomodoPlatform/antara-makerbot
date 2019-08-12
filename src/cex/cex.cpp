@@ -18,9 +18,9 @@
 
 #include <utils/exceptions.hpp>
 
-namespace antara
+namespace antara::mmbot
 {
-    void antara::cex::place_order([[maybe_unused]] const orders::order_level &ol)
+    void cex::place_order([[maybe_unused]] const orders::order_level &ol)
     {
         throw mmbot::errors::not_implemented();
     }

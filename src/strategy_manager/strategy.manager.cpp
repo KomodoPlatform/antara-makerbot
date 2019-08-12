@@ -19,24 +19,8 @@
 
 #include "strategy.manager.hpp"
 
-namespace antara
+namespace antara::mmbot
 {
-
-    bool asset::operator==(const asset &other) const
-    {
-        return symbol.value() == other.symbol.value();
-    }
-
-    bool asset::operator!=(const asset &other) const
-    {
-        return !(*this == other);
-    }
-
-    bool pair::operator==(const pair &rhs) const
-    {
-        return base == rhs.base && quote == rhs.quote;
-    }
-
     bool market_making_strategy::operator==(const market_making_strategy &other) const
     {
         return pair == other.pair
@@ -45,7 +29,7 @@ namespace antara
                && side == other.side;
     }
 
-    void antara::strategy_manager::add_strategy(const antara::pair &pair, const market_making_strategy &strat)
+    void strategy_manager::add_strategy(const antara::pair &pair, const market_making_strategy &strat)
     {
         registry_strategies_.emplace(pair, strat);
     }

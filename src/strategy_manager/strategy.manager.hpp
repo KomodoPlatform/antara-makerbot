@@ -21,7 +21,7 @@
 #include <utils/mmbot_strong_types.hpp>
 #include <orders/orders.hpp>
 
-namespace antara
+namespace antara::mmbot
 {
     struct market_making_strategy
     {
@@ -35,14 +35,14 @@ namespace antara
     class strategy_manager
     {
     public:
-        using registry_strategies = std::unordered_map<antara::pair, antara::market_making_strategy>;
+        using registry_strategies = std::unordered_map<antara::pair, market_making_strategy>;
         strategy_manager() = default;
 
-        void add_strategy(const antara::pair& pair, const antara::market_making_strategy& strat);
+        void add_strategy(const antara::pair& pair, const market_making_strategy& strat);
 
-        void add_strategy(const antara::market_making_strategy& strat);
+        void add_strategy(const market_making_strategy& strat);
 
-        [[nodiscard]] const antara::market_making_strategy &get_strategy(const antara::pair &pair) const;
+        [[nodiscard]] const market_making_strategy &get_strategy(const antara::pair &pair) const;
 
         [[nodiscard]] const registry_strategies &get_strategies() const;
 

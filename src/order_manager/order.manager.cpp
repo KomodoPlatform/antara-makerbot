@@ -21,7 +21,7 @@
 
 #include "order.manager.hpp"
 
-namespace antara
+namespace antara::mmbot
 {
     const orders::order &order_manager::get_order(const st_order_id &id) const
     {

@@ -21,7 +21,7 @@
 
 #include <orders/orders.hpp>
 
-namespace antara
+namespace antara::mmbot
 {
     class abstract_cex
     {

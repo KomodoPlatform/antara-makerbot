@@ -27,7 +27,7 @@ namespace antara
     }
 }
 
-namespace antara::orders
+namespace antara::mmbot::orders
 {
     // Order level
 

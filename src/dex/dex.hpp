@@ -23,7 +23,7 @@
 #include <orders/orders.hpp>
 #include <utils/mmbot_strong_types.hpp>
 
-namespace antara
+namespace antara::mmbot
 {
     class abstract_dex
     {

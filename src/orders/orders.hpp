@@ -23,7 +23,7 @@
 
 #include <utils/mmbot_strong_types.hpp>
 
-namespace antara::orders
+namespace antara::mmbot::orders
 {
     struct order_level
     {
