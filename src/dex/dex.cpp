@@ -29,44 +29,30 @@ namespace antara
     std::vector<orders::order> dex::get_live_orders()
     {
         throw mmbot::errors::not_implemented(pretty_function);
-        // auto v = std::vector<orders::order>();
-        // return v;
     }
 
     orders::order dex::get_order_status([[maybe_unused]] const st_order_id &id)
     {
         throw mmbot::errors::not_implemented(pretty_function);
-        // antara::pair pair = pair.of("B", "C");
-        // auto b = orders::order_builder(st_order_id{"A"}, pair);
-        // orders::order o = b.build();
-        // return o;
     }
 
     std::vector<orders::execution> dex::get_executions()
     {
         throw mmbot::errors::not_implemented(pretty_function);
-        // auto exs = std::vector<orders::execution>();
-        // return exs;
     }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)
     {
         throw mmbot::errors::not_implemented(pretty_function);
-        // auto exs = std::vector<orders::execution>();
-        // return exs;
     }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const std::unordered_set<st_order_id> &ids)
     {
         throw mmbot::errors::not_implemented(pretty_function);
-        // auto exs = std::vector<orders::execution>();
-        // return exs;
     }
 
     std::vector<orders::execution> dex::get_recent_executions()
     {
         throw mmbot::errors::not_implemented(pretty_function);
-        // auto exs = std::vector<orders::execution>();
-        // return exs;
     }
 }

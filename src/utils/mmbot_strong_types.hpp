@@ -112,24 +112,6 @@ namespace std
         }
     };
 
-    /*template<>
-    struct hash<antara::st_order_id>
-    {
-        std::size_t operator()(const antara::st_order_id &id) const
-        {
-            return std::hash<std::string>{}(id.value());
-        }
-    };*/
-
-    /*template<>
-    struct hash<antara::st_execution_id>
-    {
-        std::size_t operator()(const antara::st_execution_id &id) const
-        {
-            return std::hash<std::string>{}(id.value());
-        }
-    };*/
-
     template<>
     struct hash<antara::st_symbol>
     {
