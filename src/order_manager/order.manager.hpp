@@ -18,47 +18,45 @@
 
 #include <vector>
 #include <unordered_map>
-#include <utils/mmbot_strong_types.hpp>
-#include <orders/orders.hpp>
+#include <loguru.hpp>
+
+#include <utils/pretty_function.hpp>
+#include "utils/mmbot_strong_types.hpp"
+#include "orders/orders.hpp"
+#include "dex/dex.hpp"
+#include "cex/cex.hpp"
 
 namespace antara::mmbot
 {
-    struct market_making_strategy
-    {
-        antara::pair pair;
-        antara::st_spread spread;
-        antara::st_quantity quantity;
-        antara::side side;
-        bool operator==(const market_making_strategy &other) const;
-    };
-
-    class strategy_manager
+    class order_manager
     {
     public:
-        using registry_strategies = std::unordered_map<antara::pair, market_making_strategy>;
-        strategy_manager() = default;
+        order_manager(abstract_dex& dex, abstract_cex& cex) : dex_(dex), cex_(cex)
+        {}
 
-        void add_strategy(const antara::pair& pair, const market_making_strategy& strat);
 
-        void add_strategy(const market_making_strategy& strat);
+        [[nodiscard]] const orders::order &get_order(const st_order_id &id) const;
+        [[nodiscard]] const orders::orders_by_id &get_all_orders() const
+        {
+            return orders_;
+        }
 
-        [[nodiscard]] const market_making_strategy &get_strategy(const antara::pair &pair) const;
+        void add_orders(const std::vector<orders::order> &o);
+        void add_executions(const std::vector<orders::execution> &e);
 
-        [[nodiscard]] const registry_strategies &get_strategies() const;
+        void start();
+        void poll();
 
-        static orders::order_level make_bid(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
+        void update_from_live();
 
-        static orders::order_level make_ask(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
-
-        static orders::order_group create_order_group(
-            antara::pair pair, const market_making_strategy &strat, antara::st_price mid);
+        st_order_id place_order(const orders::order_level &ol);
+        std::unordered_set<st_order_id> place_order(const orders::order_group &os);
 
     private:
+        abstract_dex& dex_;
+        abstract_cex& cex_;
 
-        registry_strategies registry_strategies_;
+        orders::orders_by_id orders_;
+        orders::executions_by_id executions_;
     };
-
 }
-

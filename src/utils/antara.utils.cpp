@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 #include <sstream>
-#include <fmt/format.h>
 #include "bcmath_stl.h"
 #include "antara.utils.hpp"
 

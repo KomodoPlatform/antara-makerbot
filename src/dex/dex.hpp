@@ -17,48 +17,41 @@
 #pragma once
 
 #include <vector>
+#include <unordered_set>
 #include <unordered_map>
-#include <utils/mmbot_strong_types.hpp>
+
 #include <orders/orders.hpp>
+#include <utils/mmbot_strong_types.hpp>
 
 namespace antara::mmbot
 {
-    struct market_making_strategy
-    {
-        antara::pair pair;
-        antara::st_spread spread;
-        antara::st_quantity quantity;
-        antara::side side;
-        bool operator==(const market_making_strategy &other) const;
-    };
-
-    class strategy_manager
+    class abstract_dex
     {
     public:
-        using registry_strategies = std::unordered_map<antara::pair, market_making_strategy>;
-        strategy_manager() = default;
+        virtual ~abstract_dex() = default;
 
-        void add_strategy(const antara::pair& pair, const market_making_strategy& strat);
+        virtual st_order_id place(const orders::order_level &ol) = 0;
 
-        void add_strategy(const market_making_strategy& strat);
+        virtual std::vector<orders::order> get_live_orders() = 0;
+        virtual orders::order get_order_status(const st_order_id &id) = 0;
 
-        [[nodiscard]] const market_making_strategy &get_strategy(const antara::pair &pair) const;
-
-        [[nodiscard]] const registry_strategies &get_strategies() const;
-
-        static orders::order_level make_bid(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
-
-        static orders::order_level make_ask(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
-
-        static orders::order_group create_order_group(
-            antara::pair pair, const market_making_strategy &strat, antara::st_price mid);
-
-    private:
-
-        registry_strategies registry_strategies_;
+        virtual std::vector<orders::execution> get_executions() = 0;
+        virtual std::vector<orders::execution> get_executions(const st_order_id &id) = 0;
+        virtual std::vector<orders::execution> get_executions(const std::unordered_set<st_order_id> &ids) = 0;
+        virtual std::vector<orders::execution> get_recent_executions() = 0;
     };
 
-}
+    class dex : public abstract_dex
+    {
+    public:
+        st_order_id place(const orders::order_level &ol) override;
 
+        std::vector<orders::order> get_live_orders() override;
+        orders::order get_order_status(const st_order_id &id) override;
+
+        std::vector<orders::execution> get_executions() override;
+        std::vector<orders::execution> get_executions(const st_order_id &id) override;
+        std::vector<orders::execution> get_executions(const std::unordered_set<st_order_id> &ids) override;
+        std::vector<orders::execution> get_recent_executions() override;
+    };
+}

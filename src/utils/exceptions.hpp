@@ -16,26 +16,20 @@
 
 #pragma once
 
-#include <vector>
-#include <unordered_map>
+#include <stdexcept>
 
-#include <orders/orders.hpp>
-
-namespace antara::mmbot
+namespace antara::mmbot::errors
 {
-    class abstract_cex
+    class not_implemented : public std::runtime_error
     {
     public:
-        virtual ~abstract_cex() noexcept = default;
+        not_implemented() noexcept : std::runtime_error("Function has not been implemented.") {}
+        not_implemented(std::string s) noexcept : std::runtime_error("Function has not been implemented: " + std::move(s)) {}
 
-        virtual void place_order(const orders::order_level &ol) = 0;
-        virtual void mirror(const orders::execution &ex) = 0;
-    };
-
-    class cex : public abstract_cex
-    {
-    public:
-        void place_order(const orders::order_level &ol) override;
-        void mirror(const orders::execution &ex) override;
+        ~not_implemented() noexcept final = default;
+        [[nodiscard]] const char *what() const noexcept final
+        {
+            return runtime_error::what();
+        }
     };
 }

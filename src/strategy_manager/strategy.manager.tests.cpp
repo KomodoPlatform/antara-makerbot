@@ -34,7 +34,7 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("strats can be added and retreived")
     {
-        auto sm = antara::strategy_manager();
+        auto sm = strategy_manager();
 
         antara::pair pair = {{st_symbol{"A"}},
                              {st_symbol{"B"}}};
@@ -42,7 +42,7 @@ namespace antara::mmbot::tests
         st_quantity quantity = st_quantity{5};
         antara::side side = antara::side::sell;
 
-        auto strat = antara::market_making_strategy{pair, spread, quantity, side};
+        auto strat = market_making_strategy{pair, spread, quantity, side};
         CHECK_EQ(0, sm.get_strategies().size());
 
         sm.add_strategy(strat);
@@ -60,10 +60,10 @@ namespace antara::mmbot::tests
         auto quantity = antara::st_quantity{10.0};
         auto bid_price = antara::st_price{9};
 
-        auto sm = antara::strategy_manager();
+        auto sm = strategy_manager();
 
-        auto expected = antara::orders::order_level{bid_price, quantity, antara::side::buy};
-        auto actual = antara::strategy_manager::make_bid(mid, spread, quantity);
+        auto expected = orders::order_level{bid_price, quantity, antara::side::buy};
+        auto actual = strategy_manager::make_bid(mid, spread, quantity);
 
         //CHECK_EQ(expected, actual);
     }
@@ -76,10 +76,10 @@ namespace antara::mmbot::tests
 
         antara::st_price ask_price = antara::st_price{11};
 
-        antara::strategy_manager sm = antara::strategy_manager();
+        strategy_manager sm = strategy_manager();
 
-        auto expected = antara::orders::order_level{ask_price, quantity, antara::side::sell};
-        auto actual = antara::strategy_manager::make_ask(mid, spread, quantity);
+        auto expected = orders::order_level{ask_price, quantity, antara::side::sell};
+        auto actual = strategy_manager::make_ask(mid, spread, quantity);
 
         //CHECK_EQ(expected, actual);
     }

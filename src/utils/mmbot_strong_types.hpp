@@ -57,6 +57,10 @@ namespace antara
             st::arithmetic
     >;
 
+    using st_order_id = std::string;
+
+    using st_execution_id = std::string;
+
     using st_quantity = st::type<
             double,
             struct quantity_tag,
@@ -64,13 +68,21 @@ namespace antara
             st::addable_with<double>
     >;
 
+    using maker = bool;
+
     struct asset
     {
         st_symbol symbol;
 
-        bool operator==(const asset &rhs) const;
+        bool operator==(const asset &rhs) const
+        {
+            return symbol.value() == rhs.symbol.value();
+        }
 
-        bool operator!=(const asset &rhs) const;
+        bool operator!=(const asset &rhs) const
+        {
+            return !(*this == rhs);
+        }
     };
 
     struct pair
@@ -78,14 +90,18 @@ namespace antara
         asset quote;
         asset base;
 
-        bool operator==(const pair &rhs) const;
+        bool operator==(const pair &rhs) const
+        {
+            return base == rhs.base && quote == rhs.quote;
+        }
+
+        static pair of(std::string a, std::string b);
     };
 
     enum side
     {
         buy, sell, both
     };
-
 }
 
 namespace std
@@ -110,8 +126,7 @@ namespace std
     {
         std::size_t operator()(const antara::st_symbol &symbol) const
         {
-           return std::hash<std::string>()(symbol.value());
+            return std::hash<std::string>()(symbol.value());
         }
     };
-
 }

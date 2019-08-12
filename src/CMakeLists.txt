@@ -1,14 +1,17 @@
 add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE
+        app/mmbot.application.cpp
+        cex/cex.cpp
         config/config.cpp
-        strategy_manager/strategy.manager.cpp
+        dex/dex.cpp
+        http/http.price.rest.cpp
+        http/http.server.cpp
+        order_manager/order.manager.cpp
         orders/orders.cpp
         price/coinpaprika.price.platform.cpp
         price/service.price.platform.cpp
-        http/http.server.cpp
-        http/http.price.rest.cpp
-        utils/antara.utils.cpp
-        app/mmbot.application.cpp)
+        strategy_manager/strategy.manager.cpp
+        utils/antara.utils.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)
 target_include_directories(mmbot_shared_deps INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(mmbot_shared_deps INTERFACE absl::numeric mmbot::bcmath mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type Cpp-Taskflow mmbot::restinio
@@ -25,12 +28,14 @@ target_sources(mmbot-test PUBLIC
         cex/cex.tests.cpp
         config/config.tests.cpp
         strategy_manager/strategy.manager.tests.cpp
+        order_manager/order.manager.tests.cpp
+        orders/orders.tests.cpp
         price/coinpaprika.price.platform.tests.cpp
         price/factory.price.plaftorm.tests.cpp
         price/service.price.platform.tests.cpp
         http/http.server.tests.cpp
         utils/antara.utils.tests.cpp)
-target_link_libraries(mmbot-test PRIVATE doctest PUBLIC mmbot_shared_deps)
+target_link_libraries(mmbot-test PRIVATE doctest trompeloeil PUBLIC mmbot_shared_deps)
 target_enable_coverage(mmbot-test)
 target_enable_tsan(mmbot-test)
 target_enable_ubsan(mmbot-test)

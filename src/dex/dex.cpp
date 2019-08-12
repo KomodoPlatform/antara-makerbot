@@ -14,28 +14,45 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include "dex.hpp"
 
-#include <vector>
-#include <unordered_map>
-
-#include <orders/orders.hpp>
+#include <utils/exceptions.hpp>
+#include <utils/pretty_function.hpp>
 
 namespace antara::mmbot
 {
-    class abstract_cex
+    st_order_id dex::place([[maybe_unused]] const orders::order_level &o)
     {
-    public:
-        virtual ~abstract_cex() noexcept = default;
+        throw mmbot::errors::not_implemented(pretty_function);
+    }
 
-        virtual void place_order(const orders::order_level &ol) = 0;
-        virtual void mirror(const orders::execution &ex) = 0;
-    };
-
-    class cex : public abstract_cex
+    std::vector<orders::order> dex::get_live_orders()
     {
-    public:
-        void place_order(const orders::order_level &ol) override;
-        void mirror(const orders::execution &ex) override;
-    };
+        throw mmbot::errors::not_implemented(pretty_function);
+    }
+
+    orders::order dex::get_order_status([[maybe_unused]] const st_order_id &id)
+    {
+        throw mmbot::errors::not_implemented(pretty_function);
+    }
+
+    std::vector<orders::execution> dex::get_executions()
+    {
+        throw mmbot::errors::not_implemented(pretty_function);
+    }
+
+    std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)
+    {
+        throw mmbot::errors::not_implemented(pretty_function);
+    }
+
+    std::vector<orders::execution> dex::get_executions([[maybe_unused]] const std::unordered_set<st_order_id> &ids)
+    {
+        throw mmbot::errors::not_implemented(pretty_function);
+    }
+
+    std::vector<orders::execution> dex::get_recent_executions()
+    {
+        throw mmbot::errors::not_implemented(pretty_function);
+    }
 }
