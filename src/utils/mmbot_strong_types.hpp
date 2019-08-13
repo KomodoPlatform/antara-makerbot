@@ -57,6 +57,8 @@ namespace antara
             st::arithmetic
     >;
 
+    st_price operator*(st_price price, st_spread spread);
+
     using st_order_id = std::string;
 
     using st_execution_id = std::string;
