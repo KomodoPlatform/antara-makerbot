@@ -72,6 +72,7 @@ namespace antara
     st_price
     generate_st_price_from_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str) noexcept
     {
+        extract_if_scientific(price_str);
         price_str = format_str_api_price(cfg, symbol, price_str);
         if (price_str.length() <= 20) {
             return st_price{std::stoull(price_str)};
@@ -84,6 +85,27 @@ namespace antara
         }
         value += std::stoull(low_str);
         return st_price{value};
+    }
+
+    void extract_if_scientific(std::string &price_str)
+    {
+        if (auto pos = price_str.find('e'); pos != std::string::npos) {
+            auto nb_decimals = price_str.substr(pos + 2);
+            int skip_zero = std::stoi(nb_decimals) - 1;
+            auto tmp_str = price_str.substr(0, price_str.size() - nb_decimals.size() - 2);
+            if (auto dot_pos = tmp_str.find('.'); dot_pos != std::string::npos) {
+                tmp_str += '*';
+                std::iter_swap(tmp_str.begin() + dot_pos, tmp_str.begin() + (tmp_str.size() - 1));
+                tmp_str.erase(dot_pos, 1);
+                tmp_str.pop_back();
+            }
+           for (int idx = 0; idx < skip_zero; ++idx) {
+               tmp_str.insert(tmp_str.begin(), '0');
+           }
+           tmp_str.insert(tmp_str.begin(), '.');
+           tmp_str.insert(tmp_str.begin(), '0');
+           price_str = tmp_str;
+        }
     }
 
     bool my_json_sax::null()

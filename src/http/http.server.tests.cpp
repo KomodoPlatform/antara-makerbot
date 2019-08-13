@@ -68,6 +68,8 @@ namespace antara::mmbot::tests
         CHECK_EQ(resp.code, 422); //! Unprocessable entity
         resp = RestClient::get("localhost:8080/api/v1/getprice?base_currency=KMD&quote_currency=BTC"); //Well formed
         CHECK_EQ(resp.code, 200);
+        resp = RestClient::get("localhost:8080/api/v1/getprice?base_currency=DOGE&quote_currency=BTC"); //Well formed
+        CHECK_EQ(resp.code, 200);
         resp = RestClient::get("localhost:8080/api/v1/getprice?base_currency=KMDD&quote_currency=BTC"); //Wrong base_currency throw pair not available (internal error)
         CHECK_EQ(resp.code, 500);
         std::raise(SIGINT);
