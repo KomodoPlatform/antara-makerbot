@@ -33,6 +33,7 @@ namespace antara
 
     std::string format_str_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str);
 
+    void extract_if_scientific(std::string &price_str);
     std::string unformat_str_to_representation_price(const mmbot::config &cfg, const st_symbol &symbol,
                                                      std::string price_str);
 

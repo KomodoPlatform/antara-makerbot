@@ -19,8 +19,8 @@
 
 int main()
 {
-    loguru::add_file("mmbot.everything.log", loguru::Append, loguru::Verbosity_MAX);
-    loguru::add_file("mmbot.latest.readable.log", loguru::Truncate, loguru::Verbosity_INFO);
+    loguru::add_file("logs/mmbot.everything.log", loguru::Append, loguru::Verbosity_MAX);
+    loguru::add_file("logs/mmbot.latest.readable.log", loguru::Truncate, loguru::Verbosity_INFO);
     loguru::set_thread_name("main thread");
     loguru::set_fatal_handler([](const loguru::Message& message){
         VLOG_F(loguru::Verbosity_FATAL, "err occured: %s", message.message);

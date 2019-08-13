@@ -81,4 +81,11 @@ namespace antara::tests
         auto price = generate_st_price_from_api_price(cfg, st_symbol{"BTC"}, "17999.204999999998");
         CHECK_EQ("17999.20500000", get_price_as_string_decimal(cfg, st_symbol{"BTC"}, price));
     }
+
+    TEST_CASE("antara price with scientific notation")
+    {
+        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        auto price = generate_st_price_from_api_price(cfg, st_symbol{"DOGE"}, "2.5319564650362795e-7");
+        CHECK_EQ("0.00000025", get_price_as_string_decimal(cfg, st_symbol{"DOGE"}, price));
+    }
 }
