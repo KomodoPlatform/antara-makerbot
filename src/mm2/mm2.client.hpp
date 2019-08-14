@@ -57,12 +57,13 @@ namespace antara::mmbot
             if (ec) {
                 VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
             }
+            std::this_thread::sleep_for(5s);
         }
 
         ~mm2_client()
         {
             VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-            auto ec = background_.stop(reproc::cleanup::kill, reproc::infinite, reproc::cleanup::terminate, reproc::milliseconds(0));
+            auto ec = background_.stop(reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill, reproc::infinite);
             if (ec) {
                 VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
             }
@@ -70,6 +71,6 @@ namespace antara::mmbot
 
     private:
         [[maybe_unused]] const antara::mmbot::config &mmbot_cfg_;
-        reproc::process background_{reproc::cleanup::kill, reproc::infinite, reproc::cleanup::terminate, reproc::milliseconds(0)};
+        reproc::process background_{reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill, reproc::infinite};
     };
 }
