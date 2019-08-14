@@ -57,7 +57,12 @@ namespace antara::mmbot
             if (ec) {
                 VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
             }
-            std::this_thread::sleep_for(5s);
+            ec = background_.wait(5s);
+            if (ec != reproc::error::wait_timeout) {
+                VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
+            } else {
+                VLOG_SCOPE_F(loguru::Verbosity_INFO, "mm2 successfully launched");
+            }
         }
 
         ~mm2_client()

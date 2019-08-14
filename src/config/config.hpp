@@ -64,7 +64,7 @@ namespace antara::mmbot
         using st_http_port = unsigned short;
         st_http_port http_port;
         is_base_ercs_registry precision_registry;
-        std::string mm2_rpc_password;
+        std::string mm2_rpc_password{""};
     };
 
     void from_json(const nlohmann::json &j, cex_config &cfg);
