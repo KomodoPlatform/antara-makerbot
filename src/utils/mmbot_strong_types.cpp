@@ -19,9 +19,11 @@
 
 namespace antara
 {
-    st_price operator*(st_price price, st_spread spread)
+    st_price operator*(const st_price &price, const st_spread &spread)
     {
-        return st_price{(price.value() * absl::uint128(spread.value() * 1000)) / 1000};
-        // return st_price{0};
+        // This means that spreads are accurate to 0.001 or 0.1%
+        // Necessary for the conversion from double to uint128
+        const int dp = 1000;
+        return st_price{(price.value() * absl::uint128(spread.value() * dp)) / dp};
     }
 }
