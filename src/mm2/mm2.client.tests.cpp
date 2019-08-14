@@ -30,7 +30,7 @@ namespace antara::mmbot::tests
         nlohmann::json json_data = {{"method",   "version"},
                                     {"userpass", cfg.mm2_rpc_password}};
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
-                CHECK_EQ(200, resp.code);
+        CHECK_EQ(200, resp.code);
         DVLOG_F(loguru::Verbosity_INFO, "body: %s", resp.body.c_str());
     }
 
