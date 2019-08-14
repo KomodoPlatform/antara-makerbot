@@ -1,6 +1,7 @@
 add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE
         app/mmbot.application.cpp
+        mm2/mm2.client.cpp
         cex/cex.cpp
         config/config.cpp
         dex/dex.cpp
@@ -25,6 +26,7 @@ target_link_libraries(mmbot PUBLIC mmbot_shared_deps)
 add_executable(mmbot-test)
 target_sources(mmbot-test PUBLIC
         mmbot.tests.cpp
+        mm2/mm2.client.tests.cpp
         cex/cex.tests.cpp
         config/config.tests.cpp
         strategy_manager/strategy.manager.tests.cpp
