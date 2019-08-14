@@ -128,7 +128,7 @@ namespace antara::mmbot::tests
                             {
                                 "coinbase", cex_config{st_endpoint{"https://api.pro.coinbase.com"}, st_key{"<your public key here>"}, st_key{""}}
                             }
-                    }, config::price_infos_registry{{"coinpaprika", price_config{st_endpoint{"https://api.coinpaprika.com/v1"}, std::nullopt}}}, 8080,{}};
+                    }, config::price_infos_registry{{"coinpaprika", price_config{st_endpoint{"https://api.coinpaprika.com/v1"}, std::nullopt}}}, 8080,{}, ""};
                     REQUIRE_EQ(load_configuration<config>(std::move(path), "mmbot_example_config.json"), mmbot_cfg);
                 }
                 AND_THEN("We clear the directory that we create for this test") {
