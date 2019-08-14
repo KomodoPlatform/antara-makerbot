@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <future>
 #include <string>
 #include <thread>
 #include <reproc++/reproc.hpp>
