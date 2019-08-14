@@ -18,44 +18,59 @@
 
 #include <string>
 #include <thread>
+#include <restclient-cpp/restclient.h>
 #include <reproc++/reproc.hpp>
-#include <config/config.hpp>
 #include <reproc++/sink.hpp>
+#include "http/http.endpoints.hpp"
+#include "config/config.hpp"
 
 namespace antara::mmbot
 {
+    namespace mm2
+    {
+        struct electrum_servers
+        {
+            std::string url;
+            std::optional<std::string> protocol{"TCP"};
+            std::optional<bool> disable_cert_verifications{false};
+        };
+
+        struct electrum_request
+        {
+            std::string coin_name;
+            std::vector<electrum_servers> servers;
+            bool with_tx_history{true};
+        };
+
+        struct electrum_answer
+        {
+            std::string address;
+            std::string balance;
+            std::string result;
+            int rpc_result_code;
+        };
+
+        void to_json(nlohmann::json &j, const electrum_servers &cfg);
+
+        void to_json(nlohmann::json &j, const electrum_request &cfg);
+
+        void from_json(const nlohmann::json &j, electrum_answer &answer);
+    }
+
+
     class mm2_client
     {
     public:
-        explicit mm2_client(const antara::mmbot::config &cfg) : mmbot_cfg_(cfg)
-        {
-            VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-            using namespace std::literals;
-            std::array<std::string, 1> args = {(std::filesystem::current_path() / "assets/mm2").string()};
-            auto path = (std::filesystem::current_path() / "assets/").string();
-            auto ec = background_.start(args, std::addressof(path));
-            if (ec) {
-                VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
-            }
-            ec = background_.wait(5s);
-            if (ec != reproc::error::wait_timeout) {
-                VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
-            } else {
-                VLOG_SCOPE_F(loguru::Verbosity_INFO, "mm2 successfully launched");
-            }
-            sink_thread_ = std::thread(
-                    [this]() { this->background_.drain(reproc::stream::out, reproc::sink::discard()); });
-        }
+        explicit mm2_client(const antara::mmbot::config &cfg);
 
-        ~mm2_client() noexcept
+        ~mm2_client() noexcept;
+
+        mm2::electrum_answer rpc_electrum(mm2::electrum_request &&request);;
+    private:
+        nlohmann::json template_request(std::string method_name) noexcept
         {
-            VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-            auto ec = background_.stop(reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill,
-                                       reproc::infinite);
-            if (ec) {
-                VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
-            }
-            sink_thread_.join();
+            return {{"method",   method_name},
+                    {"userpass", this->mmbot_cfg_.mm2_rpc_password}};
         }
 
     private:
