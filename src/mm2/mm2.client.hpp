@@ -25,26 +25,6 @@
 
 namespace antara::mmbot
 {
-
-    class thread_safe_string_sink
-    {
-    public:
-        thread_safe_string_sink(std::string &out, std::mutex &mutex)
-                : out_(out), mutex_(mutex)
-        {}
-
-        bool operator()(const uint8_t *buffer, unsigned int size)
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            out_.append(reinterpret_cast<const char *>(buffer), size);
-            return true;
-        }
-
-    private:
-        std::string &out_;
-        std::mutex &mutex_;
-    };
-
     class mm2_client
     {
     public:
