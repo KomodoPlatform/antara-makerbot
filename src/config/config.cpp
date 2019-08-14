@@ -70,17 +70,32 @@ namespace antara::mmbot
 
     mmbot::config load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept
     {
-        auto cfg = load_configuration<mmbot::config>(std::forward<std::filesystem::path>(config_path), std::move(filename));
+        auto cfg = load_configuration<mmbot::config>(std::forward<std::filesystem::path>(config_path),
+                                                     std::move(filename));
+        fill_with_coins_cfg(config_path, cfg);
+        auto full_path = config_path / "MM2.json";
+        std::ifstream ifs(full_path);
+        DCHECK_F(ifs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
+        nlohmann::json coins_json_data;
+        ifs >> coins_json_data;
+        coins_json_data.at("rpc_password").get_to(cfg.mm2_rpc_password);
+        return cfg;
+    }
+
+    void fill_with_coins_cfg(const std::filesystem::path &config_path, config &cfg)
+    {
         auto full_path = config_path / "coins.json";
         std::ifstream ifs(full_path);
         DCHECK_F(ifs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
         nlohmann::json coins_json_data;
         ifs >> coins_json_data;
         for (auto &&current_element: coins_json_data) {
-            std::size_t nb_decimals = 8u;
-            if (current_element.find("etomic") != current_element.end() && current_element.find("decimals") == current_element.end()) {
+            size_t nb_decimals = 8u;
+            if (current_element.find("etomic") != current_element.end() &&
+                current_element.find("decimals") == current_element.end()) {
                 nb_decimals = 18;
-            } else if (current_element.find("etomic") != current_element.end() && current_element.find("decimals") != current_element.end()) {
+            } else if (current_element.find("etomic") != current_element.end() &&
+                       current_element.find("decimals") != current_element.end()) {
                 nb_decimals = current_element["decimals"].get<int>();
             }
             cfg.precision_registry.emplace(current_element["coin"].get<std::string>(),
@@ -88,14 +103,13 @@ namespace antara::mmbot
         }
         cfg.precision_registry.emplace("EUR", 2u);
         cfg.precision_registry.emplace("USD", 2u);
-        return cfg;
     }
 
     bool config::operator==(const config &rhs) const
     {
         return cex_registry == rhs.cex_registry &&
                price_registry == rhs.price_registry &&
-               http_port == rhs.http_port;
+               http_port == rhs.http_port && mm2_rpc_password == rhs.mm2_rpc_password;
     }
 
     bool config::operator!=(const config &rhs) const

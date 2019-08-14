@@ -78,6 +78,8 @@ FetchContent_Declare(
 )
 
 set(BUILD_TESTING OFF CACHE BOOL "Override option" FORCE)
+set(REPROC++ ON CACHE BOOL "" FORCE)
+
 FetchContent_Declare(
         abseil-cpp
         URL https://github.com/abseil/abseil-cpp/archive/master.zip
@@ -99,7 +101,21 @@ FetchContent_Declare(jl777-coins
 FetchContent_Declare(bcmath
         URL https://github.com/milerius/BCMath-for-Cpp/archive/master.zip)
 
-FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins abseil-cpp bcmath trompeloeil)
+FetchContent_Declare(reproc
+        URL https://github.com/DaanDeMeyer/reproc/archive/master.zip)
+
+if (APPLE)
+    FetchContent_Declare(mm2
+            URL https://github.com/KomodoPlatform/atomicDEX-API/releases/download/2.0.1009/mm2-b08da3aa9-Darwin.zip)
+elseif (LINUX)
+    FetchContent_Declare(mm2
+            URL https://github.com/KomodoPlatform/atomicDEX-API/releases/download/2.0.1009/mm2-b08da3aa9-Linux.zip)
+else()
+    FetchContent_Declare(mm2
+            URL https://github.com/KomodoPlatform/atomicDEX-API/releases/download/2.0.1009/mm2-b08da3aa9-Windows_NT.zip)
+endif ()
+
+FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins abseil-cpp bcmath trompeloeil mm2 reproc)
 find_package(Threads)
 add_library(logurulog OBJECT)
 target_sources(logurulog PUBLIC ${loguru_SOURCE_DIR}/loguru.cpp)
@@ -137,8 +153,12 @@ add_library(mmbot::restinio ALIAS restiniofull)
 
 if (UNIX)
     configure_file(${jl777-coins_SOURCE_DIR}/coins ${CMAKE_BINARY_DIR}/bin/assets/coins.json COPYONLY)
+    configure_file(${jl777-coins_SOURCE_DIR}/coins ${CMAKE_BINARY_DIR}/bin/assets/coins COPYONLY)
+    configure_file(${mm2_SOURCE_DIR}/mm2 ${CMAKE_BINARY_DIR}/bin/assets/mm2 COPYONLY)
 else ()
     configure_file(${jl777-coins_SOURCE_DIR}/coins ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/assets/coins.json COPYONLY)
+    configure_file(${jl777-coins_SOURCE_DIR}/coins ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/assets/coins COPYONLY)
+    configure_file(${mm2_SOURCE_DIR}/mm2.exe ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/assets/mm2.exe COPYONLY)
 endif ()
 
 add_library(bcmath STATIC)

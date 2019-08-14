@@ -14,7 +14,7 @@ target_sources(mmbot_shared_deps INTERFACE
         utils/antara.utils.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)
 target_include_directories(mmbot_shared_deps INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(mmbot_shared_deps INTERFACE absl::numeric mmbot::bcmath mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type Cpp-Taskflow mmbot::restinio
+target_link_libraries(mmbot_shared_deps INTERFACE absl::numeric mmbot::bcmath mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type Cpp-Taskflow mmbot::restinio reproc++
         $<$<AND:$<PLATFORM_ID:Linux>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
         $<$<PLATFORM_ID:Darwin>:c++fs>)
 
@@ -47,6 +47,8 @@ set_target_properties(mmbot-test mmbot
 
 if (UNIX)
     configure_file(${PROJECT_SOURCE_DIR}/assets/mmbot_config.json ${CMAKE_BINARY_DIR}/bin/assets/mmbot_config.json COPYONLY)
+    configure_file(${PROJECT_SOURCE_DIR}/assets/MM2.json ${CMAKE_BINARY_DIR}/bin/assets/MM2.json COPYONLY)
 else ()
     configure_file(${PROJECT_SOURCE_DIR}/assets/mmbot_config.json ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/assets/mmbot_config.json COPYONLY)
+    configure_file(${PROJECT_SOURCE_DIR}/assets/MM2.json ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/assets/MM2.json COPYONLY)
 endif ()
