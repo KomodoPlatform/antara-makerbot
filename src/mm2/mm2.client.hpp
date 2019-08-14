@@ -21,6 +21,7 @@
 #include <thread>
 #include <reproc++/reproc.hpp>
 #include <config/config.hpp>
+#include <reproc++/sink.hpp>
 
 namespace antara::mmbot
 {
@@ -63,19 +64,25 @@ namespace antara::mmbot
             } else {
                 VLOG_SCOPE_F(loguru::Verbosity_INFO, "mm2 successfully launched");
             }
+            sink_thread_ = std::thread(
+                    [this]() { this->background_.drain(reproc::stream::out, reproc::sink::discard()); });
         }
 
-        ~mm2_client()
+        ~mm2_client() noexcept
         {
             VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-            auto ec = background_.stop(reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill, reproc::infinite);
+            auto ec = background_.stop(reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill,
+                                       reproc::infinite);
             if (ec) {
                 VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
             }
+            sink_thread_.join();
         }
 
     private:
         [[maybe_unused]] const antara::mmbot::config &mmbot_cfg_;
-        reproc::process background_{reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill, reproc::infinite};
+        reproc::process background_{reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill,
+                                    reproc::infinite};
+        std::thread sink_thread_;
     };
 }
