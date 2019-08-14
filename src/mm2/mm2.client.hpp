@@ -51,7 +51,7 @@ namespace antara::mmbot
         {
             VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
             using namespace std::literals;
-            std::array<std::string, 1> args = {std::filesystem::current_path() / "assets/mm2"};
+            std::array<std::string, 1> args = {(std::filesystem::current_path() / "assets/mm2").string()};
             auto path = (std::filesystem::current_path() / "assets/").string();
             auto ec = background_.start(args, std::addressof(path));
             if (ec) {
