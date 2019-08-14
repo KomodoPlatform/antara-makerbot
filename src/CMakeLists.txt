@@ -2,6 +2,7 @@ add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE
         app/mmbot.application.cpp
         cex/cex.cpp
+        cex/fake.cex.cpp
         config/config.cpp
         dex/dex.cpp
         http/http.price.rest.cpp

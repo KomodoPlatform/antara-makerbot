@@ -14,19 +14,27 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "cex.hpp"
+#pragma once
 
-#include <utils/exceptions.hpp>
+#include <functional>
+#include <map>
+#include <unordered_map>
+#include <vector>
+
+#include <orders/orders.hpp>
+#include "cex.hpp"
 
 namespace antara::mmbot
 {
-    void fake_cex::place_order([[maybe_unused]] const orders::order_level &ol)
+    class fake_cex : public abstract_cex
     {
-        throw mmbot::errors::not_implemented();
-    }
+    public:
+        void place_order(const orders::order_level &ol) override;
+        void place_order(const orders::order &o, std::function<void(orders::execution)> cb);
 
-    void fake_cex::mirror([[maybe_unused]] const orders::execution &ex)
-    {
-        throw mmbot::errors::not_implemented();
-    }
+        void mirror(const orders::execution &ex) override;
+
+    private:
+        std::map<st_order_id, std::function<void(orders::execution)>> cbs_;
+    };
 }
