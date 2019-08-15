@@ -65,7 +65,7 @@ namespace antara::mmbot
 
         ~mm2_client() noexcept;
 
-        mm2::electrum_answer rpc_electrum(mm2::electrum_request &&request);;
+        mm2::electrum_answer rpc_electrum(mm2::electrum_request &&request);
     private:
         nlohmann::json template_request(std::string method_name) noexcept
         {

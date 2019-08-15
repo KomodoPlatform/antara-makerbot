@@ -42,5 +42,11 @@ namespace antara::mmbot::tests
                                                 {"electrum3.cipig.net:10018"}}};
         auto answer = mm2.rpc_electrum(std::move(request));
         CHECK_EQ(200, answer.rpc_result_code);
+
+
+        mm2::electrum_request bad_request{"KMDD", {{"electrum2.cipig.net:10018"}, {"electrum1.cipig.net:10018"},
+                                                   {"electrum3.cipig.net:10018"}}};
+        answer = mm2.rpc_electrum(std::move(bad_request));
+        CHECK_EQ(-1, answer.rpc_result_code);
     }
 }
