@@ -14,20 +14,39 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "fake.cex.hpp"
-
 #include <utils/exceptions.hpp>
+
+#include "fake.cex.hpp"
 
 namespace antara::mmbot
 {
+    void fake_cex::add_book(const orders::order_book &book)
+    {
+        order_books_.emplace(book.pair, book);
+    }
+
+    orders::order_book fake_cex::get_book(const antara::pair &pair)
+    {
+        return order_books_.at(pair);
+    }
+
     void fake_cex::place_order([[maybe_unused]] const orders::order_level &ol)
     {
         throw mmbot::errors::not_implemented();
     }
 
-    void fake_cex::place_order(const orders::order &o, std::function<void(orders::execution)> cb)
+    void fake_cex::place_order(const orders::order &o)
     {
-        throw mmbot::errors::not_implemented();
+        auto pair = o.pair;
+        orders::order_book book(pair);
+
+        if (order_books_.find(pair) == order_books_.end()) {
+            book = orders::order_book(pair);
+        } else {
+            book = order_books_.at(pair);
+        }
+
+        book.add_order(o);
     }
 
     void fake_cex::mirror([[maybe_unused]] const orders::execution &ex)

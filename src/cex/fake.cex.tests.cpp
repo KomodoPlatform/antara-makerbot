@@ -14,35 +14,43 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <doctest/doctest.h>
+#include <doctest/trompeloeil.hpp>
+#include <trompeloeil.hpp>
 
-#include <functional>
-#include <map>
-#include <unordered_map>
-#include <vector>
+#include <utils/mmbot_strong_types.hpp>
+#include "fake.cex.hpp"
 
-#include <orders/orders.hpp>
-#include "cex.hpp"
-
-namespace antara::mmbot
+namespace antara::mmbot::tests
 {
-    class fake_cex : public abstract_cex
+    TEST_CASE ("an execution cb can be registered for executions")
     {
-        using order_books_by_pair = std::unordered_map<antara::pair, orders::order_book>;
+        auto id = st_order_id{"ID"};
+        orders::order_builder b = orders::order_builder(id, antara::pair::of("A", "B"));
+        orders::order o = b.build();
 
-    public:
-        fake_cex() = default;
+        auto cex = fake_cex();
+        cex.place_order(o);
+    }
 
-        void add_book(const orders::order_book &book);
+    TEST_CASE ("We can add an order to the cex and it is put in the book")
+    {
+        // Order
+        antara::pair pair = antara::pair::of("A", "B");
 
-        orders::order_book get_book(const antara::pair &pair);
+        auto o_id = st_order_id{"o_id"};
+        auto b = orders::order_builder(o_id, pair);
+        orders::order o = b.build();
 
-        void place_order(const orders::order_level &ol) override;
-        void place_order(const orders::order &o);
+        // Order book
+        auto book = orders::order_book(pair);
 
-        void mirror(const orders::execution &ex) override;
+        // CEX
+        auto cex = fake_cex();
 
-    private:
-        order_books_by_pair order_books_;
-    };
+        cex.add_book(book);
+        cex.place_order(o);
+
+
+    }
 }

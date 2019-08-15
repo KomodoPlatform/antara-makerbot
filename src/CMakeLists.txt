@@ -27,6 +27,7 @@ add_executable(mmbot-test)
 target_sources(mmbot-test PUBLIC
         mmbot.tests.cpp
         cex/cex.tests.cpp
+        cex/fake.cex.tests.cpp
         config/config.tests.cpp
         strategy_manager/strategy.manager.tests.cpp
         order_manager/order.manager.tests.cpp
