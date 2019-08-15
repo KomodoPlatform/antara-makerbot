@@ -50,6 +50,13 @@ namespace antara::mmbot
         std::optional<antara::st_key> price_api_key{std::nullopt};
     };
 
+    struct additional_coin_info
+    {
+        std::size_t nb_decimals;
+        bool is_mm2_compatible;
+        bool is_electrum_compatible;
+    };
+
     struct config
     {
         bool operator==(const config &rhs) const;
@@ -58,22 +65,25 @@ namespace antara::mmbot
 
         using cex_infos_registry = std::unordered_map<std::string, cex_config>;
         using price_infos_registry = std::unordered_map<std::string, price_config>;
-        using is_base_ercs_registry = std::unordered_map<std::string, std::size_t>;
+        using additional_coin_infos_registry = std::unordered_map<std::string, additional_coin_info>;
         cex_infos_registry cex_registry;
         price_infos_registry price_registry;
         using st_http_port = unsigned short;
         st_http_port http_port;
-        is_base_ercs_registry precision_registry;
+        additional_coin_infos_registry registry_additional_coin_infos;
         std::string mm2_rpc_password{""};
     };
 
     void from_json(const nlohmann::json &j, cex_config &cfg);
+
     void to_json(nlohmann::json &j, const cex_config &cfg);
 
     void to_json(nlohmann::json &j, const price_config &cfg);
+
     void from_json(const nlohmann::json &j, price_config &cfg);
 
     void to_json(nlohmann::json &j, const config &cfg);
+
     void from_json(const nlohmann::json &j, config &cfg);
 
     namespace details
@@ -147,5 +157,6 @@ namespace antara::mmbot
     }
 
     mmbot::config load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept;
+
     void fill_with_coins_cfg(const std::filesystem::path &config_path, config &cfg);
 }

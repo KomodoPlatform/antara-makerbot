@@ -90,19 +90,26 @@ namespace antara::mmbot
         nlohmann::json coins_json_data;
         ifs >> coins_json_data;
         for (auto &&current_element: coins_json_data) {
-            size_t nb_decimals = 8u;
+            additional_coin_info additional_infos{8u, false, false};
+            auto current_coin = current_element["coin"].get<std::string>();
             if (current_element.find("etomic") != current_element.end() &&
                 current_element.find("decimals") == current_element.end()) {
-                nb_decimals = 18;
+                additional_infos.nb_decimals = 18;
             } else if (current_element.find("etomic") != current_element.end() &&
                        current_element.find("decimals") != current_element.end()) {
-                nb_decimals = current_element["decimals"].get<int>();
+                additional_infos.nb_decimals = current_element["decimals"].get<int>();
             }
-            cfg.precision_registry.emplace(current_element["coin"].get<std::string>(),
-                                           nb_decimals);
+            additional_infos.is_mm2_compatible = current_element.find("mm2") != current_element.end();
+            auto current_path = std::filesystem::current_path() / "assets/electrums" / current_coin;
+            if (additional_infos.is_mm2_compatible &&
+                std::filesystem::exists(current_path)) {
+                additional_infos.is_electrum_compatible = true;
+            }
+            cfg.registry_additional_coin_infos.emplace(current_element["coin"].get<std::string>(),
+                                                       additional_infos);
         }
-        cfg.precision_registry.emplace("EUR", 2u);
-        cfg.precision_registry.emplace("USD", 2u);
+        cfg.registry_additional_coin_infos.emplace("EUR", additional_coin_info{2u, false, false});
+        cfg.registry_additional_coin_infos.emplace("USD", additional_coin_info{2u, false, false});
     }
 
     bool config::operator==(const config &rhs) const
