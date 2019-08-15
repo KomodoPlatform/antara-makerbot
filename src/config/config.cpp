@@ -90,7 +90,7 @@ namespace antara::mmbot
         nlohmann::json coins_json_data;
         ifs >> coins_json_data;
         for (auto &&current_element: coins_json_data) {
-            additional_coin_info additional_infos{8u, false, false};
+            additional_coin_info additional_infos{8u, false, false, {}};
             auto current_coin = current_element["coin"].get<std::string>();
             if (current_element.find("etomic") != current_element.end() &&
                 current_element.find("decimals") == current_element.end()) {
@@ -105,11 +105,27 @@ namespace antara::mmbot
                 std::filesystem::exists(current_path)) {
                 additional_infos.is_electrum_compatible = true;
             }
-            cfg.registry_additional_coin_infos.emplace(current_element["coin"].get<std::string>(),
+            if (additional_infos.is_electrum_compatible) {
+                extract_from_electrum_file(config_path, current_coin, additional_infos);
+            }
+            cfg.registry_additional_coin_infos.emplace(current_coin,
                                                        additional_infos);
         }
-        cfg.registry_additional_coin_infos.emplace("EUR", additional_coin_info{2u, false, false});
-        cfg.registry_additional_coin_infos.emplace("USD", additional_coin_info{2u, false, false});
+        cfg.registry_additional_coin_infos.emplace("EUR", additional_coin_info{2u, false, false, {}});
+        cfg.registry_additional_coin_infos.emplace("USD", additional_coin_info{2u, false, false, {}});
+    }
+
+    void extract_from_electrum_file(const std::filesystem::path &path, const std::string &coin,
+                                    additional_coin_info &additional_info)
+    {
+        auto full_path = path / "electrums" / coin;
+        std::ifstream ifs(full_path);
+        DCHECK_F(ifs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
+        nlohmann::json electrum_json_data;
+        ifs >> electrum_json_data;
+        for (auto &&current_element: electrum_json_data) {
+            additional_info.urls_electrum.emplace_back(current_element.at("url").get<std::string>());
+        }
     }
 
     bool config::operator==(const config &rhs) const
