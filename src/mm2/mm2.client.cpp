@@ -14,7 +14,6 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <memory>
 #include "mm2.client.hpp"
 
 namespace antara::mmbot::mm2
@@ -52,7 +51,7 @@ namespace antara::mmbot
         using namespace std::literals;
         std::array<std::string, 1> args = {(std::filesystem::current_path() / "assets/mm2").string()};
         auto path = (std::filesystem::current_path() / "assets/").string();
-        auto ec = background_.start(args, std::addressof(path));
+        auto ec = background_.start(args, path.c_str());
         if (ec) {
             VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
         }
