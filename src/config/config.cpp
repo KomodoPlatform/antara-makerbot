@@ -124,7 +124,26 @@ namespace antara::mmbot
         nlohmann::json electrum_json_data;
         ifs >> electrum_json_data;
         for (auto &&current_element: electrum_json_data) {
-            additional_info.urls_electrum.emplace_back(current_element.at("url").get<std::string>());
+            electrum_server srv;
+            current_element.at("url").get_to(srv.url);
+            if (current_element.find("protocol") != current_element.end()) {
+                srv.protocol = current_element.at("protocol").get<std::string>();
+            }
+            if (current_element.find("disable_cert_verification") != current_element.end()) {
+                srv.disable_cert_verification = current_element.at("disable_cert_verification").get<bool>();
+            }
+            additional_info.servers_electrum.emplace_back(std::move(srv));
+        }
+    }
+
+    void to_json(nlohmann::json &j, const electrum_server &cfg)
+    {
+        j["url"] = cfg.url;
+        if (cfg.protocol.has_value()) {
+            j["protocol"] = cfg.protocol.value();
+        }
+        if (cfg.disable_cert_verification.has_value()) {
+            j["disable_cert_verification"] = cfg.disable_cert_verification.value();
         }
     }
 
