@@ -45,7 +45,7 @@ namespace antara::mmbot::mm2
 }
 namespace antara::mmbot
 {
-    mm2_client::mm2_client(const antara::mmbot::config &cfg) : mmbot_cfg_(cfg)
+    mm2_client::mm2_client(const antara::mmbot::config &cfg, bool should_enable_coins) : mmbot_cfg_(cfg)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         using namespace std::literals;
@@ -63,6 +63,9 @@ namespace antara::mmbot
         }
         sink_thread_ = std::thread(
                 [this]() { this->background_.drain(reproc::stream::out, reproc::sink::discard()); });
+        if (should_enable_coins) {
+            enable_tests_coins();
+        }
     }
 
     mm2_client::~mm2_client() noexcept

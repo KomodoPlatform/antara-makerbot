@@ -37,7 +37,7 @@ namespace antara::mmbot::tests
     TEST_CASE ("mm2 rpc electrum")
     {
         auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        antara::mmbot::mm2_client mm2(cfg);
+        antara::mmbot::mm2_client mm2(cfg, false);
         mm2::electrum_request request{"MORTY", {{"electrum2.cipig.net:10018"}, {"electrum1.cipig.net:10018"},
                                                 {"electrum3.cipig.net:10018"}}};
         auto answer = mm2.rpc_electrum(std::move(request));

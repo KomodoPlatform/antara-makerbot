@@ -55,6 +55,7 @@ namespace antara::mmbot
         std::size_t nb_decimals;
         bool is_mm2_compatible;
         bool is_electrum_compatible;
+        std::vector<std::string> urls_electrum;
     };
 
     struct config
@@ -159,4 +160,7 @@ namespace antara::mmbot
     mmbot::config load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept;
 
     void fill_with_coins_cfg(const std::filesystem::path &config_path, config &cfg);
+
+    void extract_from_electrum_file(const std::filesystem::path &path, const std::string &coin,
+                                    additional_coin_info &additional_info);
 }
