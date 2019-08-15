@@ -117,4 +117,10 @@ namespace antara::mmbot::orders
     {
         return order(id_, pair_, price_, quantity_, filled_, side_, status_);
     }
+
+    void order_book::add_order(const order &o)
+    {
+        // TODO
+        return;
+    }
 }

@@ -131,18 +131,22 @@ namespace antara::mmbot::orders
     using orders_by_id = std::unordered_map<std::string, orders::order>;
     using executions_by_id = std::unordered_map<std::string, orders::execution>;
 
+    using orders_by_price = std::map<st_price, std::vector<order>>;
+
     class order_book
     {
-        using orders_by_price = std::map<st_price, std::vector<order>>;
-
     public:
+        antara::pair pair;
+
+        order_book(antara::pair pair) : pair(std::move(pair)) {};
+
         [[nodiscard]] const orders_by_price &get_bids(const antara::pair &pair) const;
         [[nodiscard]] const orders_by_price &get_asks(const antara::pair &pair) const;
 
         void add_order(const order &o);
 
     private:
-        std::vector<order> bids_;
-        std::vector<order> asks_;
+        std::map<st_price, std::vector<order>> bids_;
+        std::map<st_price, std::vector<order>> asks_;
     };
 }
