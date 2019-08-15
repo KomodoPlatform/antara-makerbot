@@ -64,7 +64,7 @@ namespace antara::mmbot
         sink_thread_ = std::thread(
                 [this]() { this->background_.drain(reproc::stream::out, reproc::sink::discard()); });
         if (should_enable_coins) {
-            enable_coins();
+            enable_tests_coins();
         }
     }
 

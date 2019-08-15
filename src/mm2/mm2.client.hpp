@@ -76,13 +76,13 @@ namespace antara::mmbot
                     {"userpass", this->mmbot_cfg_.mm2_rpc_password}};
         }
 
-        bool enable_coins()
+        bool enable_tests_coins()
         {
             VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
             bool res = true;
             for (auto&&[current_coin, current_coin_data] : mmbot_cfg_.registry_additional_coin_infos) {
                 if (current_coin_data.is_mm2_compatible) {
-                    if (current_coin_data.is_electrum_compatible && current_coin != "NMC") {
+                    if (current_coin_data.is_electrum_compatible && (current_coin == "RICK" || current_coin == "MORTY")) {
                         std::vector<mm2::electrum_servers> servers;
                         std::for_each(begin(current_coin_data.urls_electrum), end(current_coin_data.urls_electrum),
                                   [&servers](const std::string &current_url) {
@@ -91,8 +91,6 @@ namespace antara::mmbot
                         mm2::electrum_request request{current_coin, servers};
                         auto answer = rpc_electrum(std::move(request));
                         res &= answer.rpc_result_code == 200;
-                    } else {
-                        //! TODO: use enable
                     }
                 }
             }
