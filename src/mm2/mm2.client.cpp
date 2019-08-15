@@ -18,17 +18,6 @@
 
 namespace antara::mmbot::mm2
 {
-    void to_json(nlohmann::json &j, const electrum_servers &cfg)
-    {
-        j["url"] = cfg.url;
-        if (cfg.protocol.has_value()) {
-            j["protocol"] = cfg.protocol.value();
-        }
-        if (cfg.disable_cert_verifications.has_value()) {
-            j["disable_cert_verification"] = cfg.disable_cert_verifications.value();
-        }
-    }
-
     void to_json(nlohmann::json &j, const electrum_request &cfg)
     {
         j["coin"] = cfg.coin_name;

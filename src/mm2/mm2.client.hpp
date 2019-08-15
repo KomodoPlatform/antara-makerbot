@@ -29,17 +29,10 @@ namespace antara::mmbot
 {
     namespace mm2
     {
-        struct electrum_servers
-        {
-            std::string url;
-            std::optional<std::string> protocol{"TCP"};
-            std::optional<bool> disable_cert_verifications{false};
-        };
-
         struct electrum_request
         {
             std::string coin_name;
-            std::vector<electrum_servers> servers;
+            std::vector<electrum_server> servers;
             bool with_tx_history{true};
         };
 
@@ -50,8 +43,6 @@ namespace antara::mmbot
             std::string result;
             int rpc_result_code;
         };
-
-        void to_json(nlohmann::json &j, const electrum_servers &cfg);
 
         void to_json(nlohmann::json &j, const electrum_request &cfg);
 
@@ -83,11 +74,9 @@ namespace antara::mmbot
             for (auto&&[current_coin, current_coin_data] : mmbot_cfg_.registry_additional_coin_infos) {
                 if (current_coin_data.is_mm2_compatible) {
                     if (current_coin_data.is_electrum_compatible && (current_coin == "RICK" || current_coin == "MORTY")) {
-                        std::vector<mm2::electrum_servers> servers;
-                        std::for_each(begin(current_coin_data.urls_electrum), end(current_coin_data.urls_electrum),
-                                  [&servers](const std::string &current_url) {
-                            servers.emplace_back(mm2::electrum_servers{current_url});
-                        });
+                        std::vector<electrum_server> servers;
+                        std::copy(begin(current_coin_data.servers_electrum), end(current_coin_data.servers_electrum),
+                                  std::back_inserter(servers));
                         mm2::electrum_request request{current_coin, servers};
                         auto answer = rpc_electrum(std::move(request));
                         res &= answer.rpc_result_code == 200;

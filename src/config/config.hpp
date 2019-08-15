@@ -50,12 +50,21 @@ namespace antara::mmbot
         std::optional<antara::st_key> price_api_key{std::nullopt};
     };
 
+    struct electrum_server
+    {
+        std::string url;
+        std::optional<std::string> protocol{"TCP"};
+        std::optional<bool> disable_cert_verification{false};
+    };
+
+    void to_json(nlohmann::json &j, const electrum_server &cfg);
+
     struct additional_coin_info
     {
         std::size_t nb_decimals;
         bool is_mm2_compatible;
         bool is_electrum_compatible;
-        std::vector<std::string> urls_electrum;
+        std::vector<electrum_server> servers_electrum;
     };
 
     struct config
