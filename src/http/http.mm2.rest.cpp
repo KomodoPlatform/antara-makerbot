@@ -34,20 +34,20 @@ namespace antara::mmbot::http::rest
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2");
-        const auto qp = restinio::parse_query(req->header().query());
-        if (qp.size() != 2) {
+        const auto query_params = restinio::parse_query(req->header().query());
+        if (query_params.size() != 2) {
             DVLOG_F(loguru::Verbosity_ERROR,
                     "Not enough parameters, require base_currency and quote_currency parameters");
             return req->create_response(restinio::status_bad_request()).done();
         }
-        if (!qp.has("base_currency") || !qp.has("quote_currency")) {
+        if (!query_params.has("base_currency") || !query_params.has("quote_currency")) {
             DVLOG_F(loguru::Verbosity_ERROR, "Wrong parameters, require base_asset and quote_asset parameters");
             return req->create_response(restinio::status_unprocessable_entity()).done();
         }
 
         nlohmann::json answer_json;
         antara::mmbot::mm2::orderbook_request orderbook_request{
-                antara::pair::of(std::string(qp["quote_currency"]), std::string(qp["base_currency"]))};
+                antara::pair::of(std::string(query_params["quote_currency"]), std::string(query_params["base_currency"]))};
         auto orderbook_answer = mm2_client_.rpc_orderbook(std::move(orderbook_request));
         answer_json = nlohmann::json::parse(orderbook_answer.result);
         auto final_status = restinio::http_status_line_t(

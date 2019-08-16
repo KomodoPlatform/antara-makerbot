@@ -35,18 +35,18 @@ namespace antara::mmbot::http::rest
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/getprice");
-        const auto qp = restinio::parse_query(req->header().query());
-        if (qp.size() != 2) {
+        const auto query_params = restinio::parse_query(req->header().query());
+        if (query_params.size() != 2) {
             DVLOG_F(loguru::Verbosity_ERROR,
                     "Not enough parameters, require base_currency and quote_currency parameters");
             return req->create_response(restinio::status_bad_request()).done();
         }
-        if (!qp.has("base_currency") || !qp.has("quote_currency")) {
+        if (!query_params.has("base_currency") || !query_params.has("quote_currency")) {
             DVLOG_F(loguru::Verbosity_ERROR, "Wrong parameters, require base_asset and quote_asset parameters");
             return req->create_response(restinio::status_unprocessable_entity()).done();
         }
-        antara::pair currency_pair{asset{st_symbol{std::string(qp["quote_currency"])}},
-                                   asset{st_symbol{std::string(qp["base_currency"])}}};
+        antara::pair currency_pair{asset{st_symbol{std::string(query_params["quote_currency"])}},
+                                   asset{st_symbol{std::string(query_params["base_currency"])}}};
         st_price price{0ull};
         nlohmann::json answer_json;
         try {
