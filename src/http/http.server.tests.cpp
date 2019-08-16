@@ -40,7 +40,8 @@ namespace antara::mmbot::tests
         antara::mmbot::config mmbot_config_{
                 mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json")};
         price_service_platform price_service_{mmbot_config_};
-        antara::mmbot::http_server server_{mmbot_config_, price_service_};
+        mm2_client mm2_client_{mmbot_config_};
+        antara::mmbot::http_server server_{mmbot_config_, price_service_, mm2_client_};
         std::thread server_thread_;
     };
 
@@ -71,6 +72,20 @@ namespace antara::mmbot::tests
         resp = RestClient::get("localhost:8080/api/v1/getprice?base_currency=DOGE&quote_currency=BTC"); //Well formed
         CHECK_EQ(resp.code, 200);
         resp = RestClient::get("localhost:8080/api/v1/getprice?base_currency=KMDD&quote_currency=BTC"); //Wrong base_currency throw pair not available (internal error)
+        CHECK_EQ(resp.code, 500);
+        std::raise(SIGINT);
+    }
+
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 get orderbook")
+    {
+        std::this_thread::sleep_for(1s);
+        auto resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/getorderbook");
+        CHECK_EQ(resp.code, 400); //! Bad request
+        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/getorderbook?wrong_option=0&wrong_option2=1");
+        CHECK_EQ(resp.code, 422); //! Unprocessable entity
+        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/getorderbook?base_currency=RICK&quote_currency=MORTY"); //Well formed
+        CHECK_EQ(resp.code, 200);
+        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/getorderbook?base_currency=BTC&quote_currency=MORTY"); //Well formed but BTC not enabled.
         CHECK_EQ(resp.code, 500);
         std::raise(SIGINT);
     }
