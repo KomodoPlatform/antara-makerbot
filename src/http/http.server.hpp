@@ -21,6 +21,7 @@
 #include <config/config.hpp>
 #include "price/service.price.platform.hpp"
 #include "http.price.rest.hpp"
+#include "mm2/mm2.client.hpp"
 
 namespace antara::mmbot
 {
@@ -43,6 +44,7 @@ namespace antara::mmbot
 
     private:
         const mmbot::config &mmbot_cfg_;
+        mmbot::mm2_client mm2_client_{mmbot_cfg_};
         http::rest::price price_rest_callbook;
     };
 }

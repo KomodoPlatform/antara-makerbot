@@ -88,4 +88,30 @@ namespace antara::mmbot
             return {"", "", error.what(), -1};
         }
     }
+
+    bool mm2_client::enable_tests_coins()
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        bool res = true;
+        for (auto&&[current_coin, current_coin_data] : mmbot_cfg_.registry_additional_coin_infos) {
+            if (current_coin_data.is_mm2_compatible) {
+                if (current_coin_data.is_electrum_compatible && (current_coin == "RICK" || current_coin == "MORTY")) {
+                    std::vector<electrum_server> servers;
+                    std::copy(begin(current_coin_data.servers_electrum), end(current_coin_data.servers_electrum),
+                              std::back_inserter(servers));
+                    mm2::electrum_request request{current_coin, servers};
+                    auto answer = rpc_electrum(std::move(request));
+                    res &= answer.rpc_result_code == 200;
+                }
+            }
+        }
+        return res;
+    }
+
+    nlohmann::json mm2_client::template_request(std::string method_name) noexcept
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        return {{"method",   method_name},
+                {"userpass", this->mmbot_cfg_.mm2_rpc_password}};
+    }
 }
