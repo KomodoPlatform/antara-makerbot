@@ -42,12 +42,12 @@ namespace antara::mmbot::tests
             //! wrong rel
             mm2::orderbook_request bad_request({antara::pair::of("KMDD", "MORTY")});
             answer = mm2.rpc_orderbook(std::move(bad_request));
-            CHECK_EQ(-1, answer.rpc_result_code);
+            CHECK_EQ(500, answer.rpc_result_code);
 
             //! wrong base
             mm2::orderbook_request another_bad_request({antara::pair::of("MORTY", "KMDD")});
             answer = mm2.rpc_orderbook(std::move(another_bad_request));
-            CHECK_EQ(-1, answer.rpc_result_code);
+            CHECK_EQ(500, answer.rpc_result_code);
         }
     }
 
@@ -64,6 +64,6 @@ namespace antara::mmbot::tests
         mm2::electrum_request bad_request{"KMDD", {{"electrum2.cipig.net:10018"}, {"electrum1.cipig.net:10018"},
                                                    {"electrum3.cipig.net:10018"}}};
         answer = mm2.rpc_electrum(std::move(bad_request));
-        CHECK_EQ(-1, answer.rpc_result_code);
+        CHECK_EQ(500, answer.rpc_result_code);
     }
 }

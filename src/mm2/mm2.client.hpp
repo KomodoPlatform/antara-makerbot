@@ -124,14 +124,14 @@ namespace antara::mmbot
         RpcReturnType rpc_process_call(const RestClient::Response& resp)
         {
             RpcReturnType answer;
-            if (resp.code == -1) {
+            DVLOG_F(loguru::Verbosity_INFO, "resp: %s", resp.body.c_str());
+            if (resp.code != 200) {
                 answer.rpc_result_code = resp.code;
                 answer.result = resp.body;
                 return answer;
             }
             try {
                 auto json_answer = nlohmann::json::parse(resp.body);
-                DVLOG_F(loguru::Verbosity_INFO, "resp: %s", resp.body.c_str());
                 mm2::from_json(json_answer, answer);
                 answer.rpc_result_code = resp.code;
                 return answer;
