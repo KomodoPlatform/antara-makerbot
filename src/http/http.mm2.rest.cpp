@@ -44,12 +44,10 @@ namespace antara::mmbot::http::rest
             DVLOG_F(loguru::Verbosity_ERROR, "Wrong parameters, require base_asset and quote_asset parameters");
             return req->create_response(restinio::status_unprocessable_entity()).done();
         }
-
-        nlohmann::json answer_json;
         antara::mmbot::mm2::orderbook_request orderbook_request{
                 antara::pair::of(std::string(query_params["quote_currency"]), std::string(query_params["base_currency"]))};
         auto orderbook_answer = mm2_client_.rpc_orderbook(std::move(orderbook_request));
-        answer_json = nlohmann::json::parse(orderbook_answer.result);
+        auto answer_json = nlohmann::json::parse(orderbook_answer.result);
         auto final_status = restinio::http_status_line_t(
                 static_cast<restinio::http_status_code_t>(orderbook_answer.rpc_result_code), "");
         return req->create_response(final_status).set_body(answer_json.dump()).done();
