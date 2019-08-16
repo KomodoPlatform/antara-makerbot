@@ -16,36 +16,25 @@
 
 #pragma once
 
-#include <memory>
 #include <restinio/all.hpp>
-#include <config/config.hpp>
-#include "price/service.price.platform.hpp"
-#include "http.price.rest.hpp"
+#include <restinio/common_types.hpp>
+#include "config/config.hpp"
 #include "mm2/mm2.client.hpp"
-#include "http.mm2.rest.hpp"
 
-namespace antara::mmbot
+namespace antara::mmbot::http::rest
 {
-    struct http_server_traits : public restinio::default_single_thread_traits_t
-    {
-        using request_handler_t = restinio::router::express_router_t<>;
-    };
-
-    class http_server
+    class mm2
     {
     public:
-        using router = std::unique_ptr<restinio::router::express_router_t<>>;
+        mm2(const config &cfg, mm2_client &mm2_client) noexcept;
 
-        explicit http_server(const mmbot::config &mmbot_cfg, price_service_platform& price_service, mmbot::mm2_client& mm2_client);
+        ~mm2() noexcept;
 
-        void run();
-
-    private:
-        router create_routes();
+        restinio::request_handling_status_t
+        get_orderbook(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
     private:
-        const mmbot::config &mmbot_cfg_;
-        http::rest::price price_rest_callbook_;
-        http::rest::mm2 mm2_rest_callbook_;
+        [[maybe_unused]] const config &mmbot_config_;
+        mm2_client &mm2_client_;
     };
 }

@@ -14,27 +14,26 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <price/exceptions.price.platform.hpp>
-#include <utils/antara.utils.hpp>
-#include "http.price.rest.hpp"
+#include "http.mm2.rest.hpp"
 
 namespace antara::mmbot::http::rest
 {
-    price::price(const config& cfg, price_service_platform &price_service) noexcept : price_service_(price_service), mmbot_config_(cfg)
+
+    mm2::mm2(const config &cfg, mm2_client &mm2_client) noexcept : mmbot_config_(cfg), mm2_client_(mm2_client)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
 
-    price::~price() noexcept
+    mm2::~mm2() noexcept
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
 
     restinio::request_handling_status_t
-    price::get_price(const restinio::request_handle_t& req, const restinio::router::route_params_t &)
+    mm2::get_orderbook(const restinio::request_handle_t &req, const restinio::router::route_params_t &)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/getprice");
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2");
         const auto query_params = restinio::parse_query(req->header().query());
         if (query_params.size() != 2) {
             DVLOG_F(loguru::Verbosity_ERROR,
@@ -45,18 +44,12 @@ namespace antara::mmbot::http::rest
             DVLOG_F(loguru::Verbosity_ERROR, "Wrong parameters, require base_asset and quote_asset parameters");
             return req->create_response(restinio::status_unprocessable_entity()).done();
         }
-        antara::pair currency_pair{asset{st_symbol{std::string(query_params["quote_currency"])}},
-                                   asset{st_symbol{std::string(query_params["base_currency"])}}};
-        st_price price{0ull};
-        nlohmann::json answer_json;
-        try {
-            price = price_service_.get_price(currency_pair);
-            answer_json = {{"price", get_price_as_string_decimal(mmbot_config_, currency_pair.quote.symbol, price)}};
-        }
-        catch (const antara::mmbot::errors::pair_not_available& e) {
-            nlohmann::json error_json = {"errors", e.what()};
-            req->create_response(restinio::status_internal_server_error()).set_body(error_json.dump()).done();
-        }
-        return req->create_response(restinio::status_ok()).set_body(answer_json.dump()).done();
+        antara::mmbot::mm2::orderbook_request orderbook_request{
+                antara::pair::of(std::string(query_params["quote_currency"]), std::string(query_params["base_currency"]))};
+        auto orderbook_answer = mm2_client_.rpc_orderbook(std::move(orderbook_request));
+        auto answer_json = nlohmann::json::parse(orderbook_answer.result);
+        auto final_status = restinio::http_status_line_t(
+                static_cast<restinio::http_status_code_t>(orderbook_answer.rpc_result_code), "");
+        return req->create_response(final_status).set_body(answer_json.dump()).done();
     }
 }

@@ -134,6 +134,7 @@ namespace antara::mmbot
                 auto json_answer = nlohmann::json::parse(resp.body);
                 mm2::from_json(json_answer, answer);
                 answer.rpc_result_code = resp.code;
+                answer.result = resp.body;
                 return answer;
             }
             catch (const std::exception &error) {
