@@ -20,6 +20,7 @@ namespace antara::mmbot::mm2
 {
     void to_json(nlohmann::json &j, const electrum_request &cfg)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         j["coin"] = cfg.coin_name;
         j["servers"] = cfg.servers;
         j["tx_history"] = cfg.with_tx_history;
@@ -27,9 +28,61 @@ namespace antara::mmbot::mm2
 
     void from_json(const nlohmann::json &j, electrum_answer &answer)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         j.at("address").get_to(answer.address);
         j.at("balance").get_to(answer.balance);
         j.at("result").get_to(answer.result);
+    }
+
+    void to_json(nlohmann::json &j, const orderbook_request &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        j["base"] = cfg.trading_pair.base.symbol.value();
+        j["rel"] = cfg.trading_pair.quote.symbol.value();
+    }
+
+    void from_json(const nlohmann::json &j, order_contents &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        std::string coin;
+        j.at("coin").get_to(coin);
+        cfg.coin.symbol = st_symbol{coin};
+        j.at("address").get_to(cfg.address);
+        j.at("price").get_to(cfg.price);
+        j.at("numutxos").get_to(cfg.num_utxos);
+        j.at("avevolume").get_to(cfg.ave_volume);
+        j.at("maxvolume").get_to(cfg.max_volume);
+        j.at("depth").get_to(cfg.depth);
+        j.at("pubkey").get_to(cfg.pub_key);
+        j.at("age").get_to(cfg.age);
+        j.at("zcredits").get_to(cfg.zcredits);
+    }
+
+    void from_json(const nlohmann::json &j, orderbook_bids &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        from_json(j, cfg.bids_contents);
+    }
+
+    void from_json(const nlohmann::json &j, orderbook_asks &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        from_json(j, cfg.ask_contents);
+    }
+
+    void from_json(const nlohmann::json &j, orderbook_answer &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        j.at("askdepth").get_to(cfg.ask_depth);
+        j.at("biddepth").get_to(cfg.bid_depth);
+        j.at("netid").get_to(cfg.net_id);
+        j.at("numasks").get_to(cfg.num_asks);
+        j.at("numbids").get_to(cfg.num_bids);
+        j.at("timestamp").get_to(cfg.timestamp);
+        j.at("bids").get_to(cfg.bids);
+        j.at("asks").get_to(cfg.asks);
+        cfg.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
+        cfg.rel = antara::asset{st_symbol{j.at("rel").get<std::string>()}};
     }
 }
 namespace antara::mmbot
@@ -75,18 +128,17 @@ namespace antara::mmbot
         mm2::to_json(json_data, request);
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
-        try {
-            auto json_answer = nlohmann::json::parse(resp.body);
-            DVLOG_F(loguru::Verbosity_INFO, "resp: %s", resp.body.c_str());
-            mm2::electrum_answer answer;
-            mm2::from_json(json_answer, answer);
-            answer.rpc_result_code = resp.code;
-            return answer;
-        }
-        catch (const std::exception &error) {
-            DVLOG_F(loguru::Verbosity_ERROR, "err: %s", error.what());
-            return {"", "", error.what(), -1};
-        }
+        return rpc_process_call<mm2::electrum_answer>(resp);
+    }
+
+    mm2::orderbook_answer mm2_client::rpc_orderbook(mm2::orderbook_request&& request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("orderbook");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::orderbook_answer>(resp);
     }
 
     bool mm2_client::enable_tests_coins()
