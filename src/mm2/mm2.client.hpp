@@ -47,6 +47,62 @@ namespace antara::mmbot
         void to_json(nlohmann::json &j, const electrum_request &cfg);
 
         void from_json(const nlohmann::json &j, electrum_answer &answer);
+
+        struct orderbook_request
+        {
+            antara::pair trading_pair;
+        };
+
+        struct order_contents
+        {
+            antara::asset coin;
+            std::string address;
+            st_price price_as_integer;
+            double price;
+            std::size_t num_utxos;
+            double ave_volume;
+            double max_volume;
+            double depth;
+            std::string pub_key;
+            int age;
+            int zcredits;
+        };
+
+        struct orderbook_asks
+        {
+            order_contents ask_contents;
+        };
+
+        struct orderbook_bids
+        {
+            order_contents bids_contents;
+        };
+
+        struct orderbook_answer
+        {
+            std::size_t ask_depth;
+            std::vector<orderbook_asks> asks;
+            antara::asset base;
+            std::size_t bid_depth;
+            std::vector<orderbook_bids> bids;
+            int net_id;
+            std::size_t num_asks;
+            std::size_t num_bids;
+            antara::asset rel;
+            int timestamp;
+            int rpc_result_code;
+            std::string result;
+        };
+
+        void to_json(nlohmann::json &j, const orderbook_request& cfg);
+
+        void from_json(const nlohmann::json &j, order_contents& cfg);
+
+        void from_json(const nlohmann::json &j, orderbook_bids& cfg);
+
+        void from_json(const nlohmann::json &j, orderbook_asks& cfg);
+
+        void from_json(const nlohmann::json &j, orderbook_answer& cfg);
     }
 
 
@@ -58,12 +114,35 @@ namespace antara::mmbot
         ~mm2_client() noexcept;
 
         mm2::electrum_answer rpc_electrum(mm2::electrum_request &&request);
-
+        mm2::orderbook_answer rpc_orderbook(mm2::orderbook_request &&request);
     private:
         nlohmann::json template_request(std::string method_name) noexcept;
 
         bool enable_tests_coins();
 
+        template<typename RpcReturnType>
+        RpcReturnType rpc_process_call(const RestClient::Response& resp)
+        {
+            RpcReturnType answer;
+            if (resp.code == -1) {
+                answer.rpc_result_code = resp.code;
+                answer.result = resp.body;
+                return answer;
+            }
+            try {
+                auto json_answer = nlohmann::json::parse(resp.body);
+                DVLOG_F(loguru::Verbosity_INFO, "resp: %s", resp.body.c_str());
+                mm2::from_json(json_answer, answer);
+                answer.rpc_result_code = resp.code;
+                return answer;
+            }
+            catch (const std::exception &error) {
+                DVLOG_F(loguru::Verbosity_ERROR, "err: %s", error.what());
+                answer.rpc_result_code = -1;
+                answer.result = error.what();
+                return answer;
+            }
+        }
     private:
         [[maybe_unused]] const antara::mmbot::config &mmbot_cfg_;
         reproc::process background_{reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill,
