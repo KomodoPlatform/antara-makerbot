@@ -28,7 +28,7 @@ namespace antara::mmbot::tests
     public:
         http_server_tests_fixture()
         {
-            server_thread_ = std::thread(&http_server::run, server_);
+            server_thread_ = std::thread([this](){this->server_.run();});
         }
 
         ~http_server_tests_fixture()
