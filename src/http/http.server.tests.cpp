@@ -37,11 +37,17 @@ namespace antara::mmbot::tests
         }
 
     private:
-        antara::mmbot::config mmbot_config_{
-                mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json")};
-        price_service_platform price_service_{mmbot_config_};
-        mm2_client mm2_client_{mmbot_config_};
-        antara::mmbot::http_server server_{mmbot_config_, price_service_, mm2_client_};
+        struct tmp_magic
+                {
+                    tmp_magic() {
+                        mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+                    }
+                };
+
+        tmp_magic magic;
+        price_service_platform price_service_;
+        mm2_client mm2_client_;
+        antara::mmbot::http_server server_{price_service_, mm2_client_};
         std::thread server_thread_;
     };
 

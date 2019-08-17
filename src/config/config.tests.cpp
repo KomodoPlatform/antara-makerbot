@@ -21,14 +21,15 @@ namespace antara::mmbot::tests
 {
     TEST_CASE("load full config json")
     {
-        auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        const auto& cfg = get_mmbot_config();
         CHECK(!cfg.registry_additional_coin_infos.empty());
-        CHECK_EQ(cfg.registry_additional_coin_infos["ETH"].nb_decimals, 18u);
-        CHECK_FALSE(cfg.registry_additional_coin_infos["ORE"].is_mm2_compatible);
-        CHECK_EQ(cfg.registry_additional_coin_infos["ZIL"].nb_decimals, 18u);
-        CHECK(cfg.registry_additional_coin_infos["BTC"].is_mm2_compatible);
-        CHECK_FALSE(cfg.registry_additional_coin_infos["ETH"].is_electrum_compatible);
-        CHECK(cfg.registry_additional_coin_infos["BTC"].is_electrum_compatible);
+        CHECK_EQ(cfg.registry_additional_coin_infos.at("ETH").nb_decimals, 18u);
+        CHECK_FALSE(cfg.registry_additional_coin_infos.at("ORE").is_mm2_compatible);
+        CHECK_EQ(cfg.registry_additional_coin_infos.at("ZIL").nb_decimals, 18u);
+        CHECK(cfg.registry_additional_coin_infos.at("BTC").is_mm2_compatible);
+        CHECK_FALSE(cfg.registry_additional_coin_infos.at("ETH").is_electrum_compatible);
+        CHECK(cfg.registry_additional_coin_infos.at("BTC").is_electrum_compatible);
     }
     TEST_CASE ("mmbot cfg from json")
     {

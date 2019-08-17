@@ -20,7 +20,7 @@
 
 namespace antara::mmbot::http::rest
 {
-    price::price(const config& cfg, price_service_platform &price_service) noexcept : price_service_(price_service), mmbot_config_(cfg)
+    price::price(price_service_platform &price_service) noexcept : price_service_(price_service)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
@@ -51,7 +51,7 @@ namespace antara::mmbot::http::rest
         nlohmann::json answer_json;
         try {
             price = price_service_.get_price(currency_pair);
-            answer_json = {{"price", get_price_as_string_decimal(mmbot_config_, currency_pair.quote.symbol, price)}};
+            answer_json = {{"price", get_price_as_string_decimal(get_mmbot_config(), currency_pair.quote.symbol, price)}};
         }
         catch (const antara::mmbot::errors::pair_not_available& e) {
             nlohmann::json error_json = {"errors", e.what()};

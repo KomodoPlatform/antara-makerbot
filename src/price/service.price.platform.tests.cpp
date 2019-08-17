@@ -23,8 +23,8 @@ namespace antara::mmbot::tests
     //! BDD
     SCENARIO("price service functionnality") {
         GIVEN("a price service with a good configuration") {
-            auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-            price_service_platform price_service{cfg};
+            load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+            price_service_platform price_service{};
             WHEN("give a valid asset pair") {
                 antara::pair currency_pair{{st_symbol{"EUR"}},
                                            {st_symbol{"KMD"}}};
@@ -65,7 +65,8 @@ namespace antara::mmbot::tests
         GIVEN("a price service with a wrong configuration (bad endpoint)") {
             config cfg{};
             cfg.price_registry["coinpaprika"] = price_config{st_endpoint{"wrong"}};
-            price_service_platform price_service{cfg};
+            set_mmbot_config(cfg);
+            price_service_platform price_service{};
             WHEN("give a valid asset pair") {
                 antara::pair currency_pair{{st_symbol{"EUR"}},
                                            {st_symbol{"KMD"}}};
@@ -78,7 +79,8 @@ namespace antara::mmbot::tests
         }
         GIVEN("a price service with a wrong configuration (empty") {
             config cfg{};
-            price_service_platform price_service{cfg};
+            set_mmbot_config(cfg);
+            price_service_platform price_service{};
             WHEN("give a valid asset pair") {
                 antara::pair currency_pair{{st_symbol{"EUR"}},
                                            {st_symbol{"KMD"}}};

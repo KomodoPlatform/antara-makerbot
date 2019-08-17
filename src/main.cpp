@@ -26,6 +26,7 @@ int main()
         VLOG_F(loguru::Verbosity_FATAL, "err occured: %s", message.message);
         std::exit(1);
     });
+    antara::mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
     antara::mmbot::application app;
     return app.run();
 }

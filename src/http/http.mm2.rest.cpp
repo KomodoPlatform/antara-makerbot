@@ -18,8 +18,7 @@
 
 namespace antara::mmbot::http::rest
 {
-
-    mm2::mm2(const config &cfg, mm2_client &mm2_client) noexcept : mmbot_config_(cfg), mm2_client_(mm2_client)
+    mm2::mm2(mm2_client &mm2_client) noexcept : mm2_client_(mm2_client)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }

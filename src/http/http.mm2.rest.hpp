@@ -26,7 +26,7 @@ namespace antara::mmbot::http::rest
     class mm2
     {
     public:
-        mm2(const config &cfg, mm2_client &mm2_client) noexcept;
+        mm2(mm2_client &mm2_client) noexcept;
 
         ~mm2() noexcept;
 
@@ -37,7 +37,6 @@ namespace antara::mmbot::http::rest
         my_balance(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
     private:
-        [[maybe_unused]] const config &mmbot_config_;
         mm2_client &mm2_client_;
     };
 }

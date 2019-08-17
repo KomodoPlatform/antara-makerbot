@@ -166,10 +166,12 @@ namespace antara::mmbot
         return details::load_config<TConfig>(full_path);
     }
 
-    mmbot::config load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept;
+    void load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept;
 
     void fill_with_coins_cfg(const std::filesystem::path &config_path, config &cfg);
 
     void extract_from_electrum_file(const std::filesystem::path &path, const std::string &coin,
                                     additional_coin_info &additional_info);
+    const mmbot::config& get_mmbot_config() noexcept;
+    void set_mmbot_config(config& cfg) noexcept;
 }
