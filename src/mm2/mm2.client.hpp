@@ -103,6 +103,23 @@ namespace antara::mmbot
         void from_json(const nlohmann::json &j, orderbook_asks& cfg);
 
         void from_json(const nlohmann::json &j, orderbook_answer& cfg);
+
+        struct balance_request
+        {
+            antara::asset coin;
+        };
+
+        struct balance_answer
+        {
+            int rpc_result_code;
+            std::string result;
+            std::string address;
+            std::string balance;
+            antara::asset coin;
+        };
+
+        void to_json(nlohmann::json &j, const balance_request& cfg);
+        void from_json(const nlohmann::json &j, balance_answer& cfg);
     }
 
 
@@ -115,6 +132,7 @@ namespace antara::mmbot
 
         mm2::electrum_answer rpc_electrum(mm2::electrum_request &&request);
         mm2::orderbook_answer rpc_orderbook(mm2::orderbook_request &&request);
+        mm2::balance_answer rpc_balance(mm2::balance_request &&request);
     private:
         nlohmann::json template_request(std::string method_name) noexcept;
 

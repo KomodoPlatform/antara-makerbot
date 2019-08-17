@@ -33,7 +33,7 @@ namespace antara::mmbot::http::rest
     mm2::get_orderbook(const restinio::request_handle_t &req, const restinio::router::route_params_t &)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2");
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/getorderbook");
         const auto query_params = restinio::parse_query(req->header().query());
         if (query_params.size() != 2) {
             DVLOG_F(loguru::Verbosity_ERROR,
@@ -50,6 +50,29 @@ namespace antara::mmbot::http::rest
         auto answer_json = nlohmann::json::parse(orderbook_answer.result);
         auto final_status = restinio::http_status_line_t(
                 static_cast<restinio::http_status_code_t>(orderbook_answer.rpc_result_code), "");
+        return req->create_response(final_status).set_body(answer_json.dump()).done();
+    }
+
+    restinio::request_handling_status_t
+    mm2::my_balance(const restinio::request_handle_t &req, const restinio::router::route_params_t &)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/my_balance");
+        const auto query_params = restinio::parse_query(req->header().query());
+        if (query_params.size() != 1) {
+            DVLOG_F(loguru::Verbosity_ERROR,
+                    "Not enough parameters, require currency parameters");
+            return req->create_response(restinio::status_bad_request()).done();
+        }
+        if (!query_params.has("currency")) {
+            DVLOG_F(loguru::Verbosity_ERROR, "Wrong parameters, require currency parameters");
+            return req->create_response(restinio::status_unprocessable_entity()).done();
+        }
+        antara::mmbot::mm2::balance_request balance_request{antara::asset{st_symbol{std::string(query_params["currency"])}}};
+        auto balance_answer = mm2_client_.rpc_balance(std::move(balance_request));
+        auto answer_json = nlohmann::json::parse(balance_answer.result);
+        auto final_status = restinio::http_status_line_t(
+                static_cast<restinio::http_status_code_t>(balance_answer.rpc_result_code), "");
         return req->create_response(final_status).set_body(answer_json.dump()).done();
     }
 }

@@ -89,4 +89,18 @@ namespace antara::mmbot::tests
         CHECK_EQ(resp.code, 500);
         std::raise(SIGINT);
     }
+
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 my balance")
+    {
+        std::this_thread::sleep_for(1s);
+        auto resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/my_balance");
+        CHECK_EQ(resp.code, 400); //! Bad request
+        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/my_balance?wrong_option=0");
+        CHECK_EQ(resp.code, 422); //! Unprocessable entity
+        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/my_balance?currency=RICK"); //Well formed
+        CHECK_EQ(resp.code, 200);
+        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/my_balance?currency=BTC"); //Well formed but BTC not enabled.
+        CHECK_EQ(resp.code, 500);
+        std::raise(SIGINT);
+    }
 }

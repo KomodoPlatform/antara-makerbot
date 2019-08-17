@@ -42,6 +42,11 @@ namespace antara::mmbot
         {
             return this->mm2_rest_callbook_.get_orderbook(std::forward<decltype(params)>(params)...);
         });
+        
+        http_router->http_get("/api/v1/legacy/mm2/my_balance", [this](auto&&... params)
+        {
+            return this->mm2_rest_callbook_.my_balance(std::forward<decltype(params)>(params)...);
+        });
 
         http_router->non_matched_request_handler(
                 [](auto req) {
