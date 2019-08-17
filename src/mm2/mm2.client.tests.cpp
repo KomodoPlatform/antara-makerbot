@@ -49,6 +49,18 @@ namespace antara::mmbot::tests
             answer = mm2.rpc_orderbook(std::move(another_bad_request));
             CHECK_EQ(500, answer.rpc_result_code);
         }
+
+        SUBCASE("mm2 rpc my_balance")
+        {
+            mm2::balance_request request({antara::asset{st_symbol{"RICK"}}});
+            auto answer = mm2.rpc_balance(std::move(request));
+            CHECK_EQ(200, answer.rpc_result_code);
+
+            //! Non enable coin
+            mm2::balance_request bad_request({antara::asset{st_symbol{"BTC"}}});
+            answer = mm2.rpc_balance(std::move(bad_request));
+            CHECK_EQ(500, answer.rpc_result_code);
+        }
     }
 
     TEST_CASE ("mm2 rpc electrum")

@@ -4,17 +4,17 @@
 
 Retrieves the median of the price of a base / quote currency pair
 
-**URL** : `/api/v1/getprice?base_currency=:currency&quote_currency=:quote_currency`
+**URL**: `/api/v1/getprice?base_currency=:currency&quote_currency=:quote_currency`
 
-**Method** : `GET`
+**Method**: `GET`
 
-**Auth required** : No
+**Auth required**: No
 
-**Permissions required** : None
+**Permissions required**: None
 
 ### Success Response
 
-**Code** : `200 OK`
+**Code**: `200 OK`
 
 **Content examples**
 
@@ -26,27 +26,29 @@ Retrieves the median of the price of a base / quote currency pair
 
 ### Error Response
 
-**Code** : `400 Bad request` (Ill-formed request)
+**Code**: `400 Bad request` (Ill-formed request)
 
-**Code** : `422 Unprocessable Entity` (Wrong Argument)
+**Code**: `422 Unprocessable Entity` (Wrong Argument)
 
-**Code** : `500 Internal Server Error` (Unexistent Base or Quote, throw pair not available)
+**Code**: `500 Internal Server Error` (Unexistent Base or Quote, throw pair not available)
 
 ## mm2 get orderbook with an base currency and quote currency
 
 Retrieves the order book for the given asset pair
 
-**URL** : `/api/v1/legacy/mm2/getorderbook?base_currency=:currency&quote_currency=:quote_currency`
+**URL**: `/api/v1/legacy/mm2/getorderbook?base_currency=:currency&quote_currency=:quote_currency`
 
-**Method** : `GET`
+**Method**: `GET`
 
-**Auth required** : No
+**Auth required**: No
 
-**Permissions required** : None
+**Permissions required**: None
+
+**Prerequisites**: `:currency and :quote_currency` should be enabled through `electrum` or `enable` rpc call.
 
 ### Success Response
 
-**Code** : `200 OK`
+**Code**: `200 OK`
 
 **Content examples**
 
@@ -117,8 +119,44 @@ Retrieves the order book for the given asset pair
 
 ### Error Response
 
-**Code** : `400 Bad request` (Ill-formed request)
+**Code**: `400 Bad request` (Ill-formed request)
 
-**Code** : `422 Unprocessable Entity` (Wrong Argument)
+**Code**: `422 Unprocessable Entity` (Wrong Argument)
 
-**Code** : `500 Internal Server Error` (Unexistent Base or Quote, Or `mm2` return 500 error code + message)
+**Code**: `500 Internal Server Error` (Unexistent Base or Quote, Or `mm2` return 500 error code + message)
+
+## mm2 get balance from a specific currency
+
+Retrieve the balance of the given currency
+
+**URL**: `/api/v1/legacy/mm2/my_balance?currency=:coin`
+
+**Method**: `GET`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+**Prerequisites**: `:coin` should be enabled through `electrum` or `enable` rpc call.
+
+### Success Response
+
+**Code**: `200 OK`
+
+**Content examples**
+
+```json
+{
+  "address":"RRGKTckWwrZWq73vNekoLxqCJLHS4UKTyk",
+  "balance":"0",
+  "coin":"RICK"
+}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `422 Unprocessable Entity` (Wrong Argument)
+
+**Code**: `500 Internal Server Error` (Unexistent currency, Or `mm2` return 500 error code + message)

@@ -84,6 +84,18 @@ namespace antara::mmbot::mm2
         cfg.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
         cfg.rel = antara::asset{st_symbol{j.at("rel").get<std::string>()}};
     }
+
+    void to_json(nlohmann::json &j, const balance_request &cfg)
+    {
+        j["coin"] = cfg.coin.symbol.value();
+    }
+
+    void from_json(const nlohmann::json &j, balance_answer &cfg)
+    {
+        j.at("address").get_to(cfg.address);
+        j.at("balance").get_to(cfg.balance);
+        cfg.coin = antara::asset{st_symbol{j.at("coin").get<std::string>()}};
+    }
 }
 namespace antara::mmbot
 {
@@ -139,6 +151,16 @@ namespace antara::mmbot
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::orderbook_answer>(resp);
+    }
+
+    mm2::balance_answer mm2_client::rpc_balance(mm2::balance_request &&request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("my_balance");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::balance_answer>(resp);
     }
 
     bool mm2_client::enable_tests_coins()
