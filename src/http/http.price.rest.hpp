@@ -24,7 +24,7 @@ namespace antara::mmbot::http::rest
     class price
     {
     public:
-        explicit price(const config& cfg, price_service_platform &price_service) noexcept;
+        explicit price(price_service_platform &price_service) noexcept;
 
         ~price() noexcept;
 
@@ -32,6 +32,5 @@ namespace antara::mmbot::http::rest
 
     private:
         price_service_platform &price_service_;
-        const config& mmbot_config_;
     };
 }

@@ -33,14 +33,15 @@ namespace antara::mmbot
                     this->coin_id_translation_.at(currency_pair.base.symbol.value()) +
                     "&quote_currency_id=" + this->coin_id_translation_.at(currency_pair.quote.symbol.value()) +
                     "&amount=1";
-            auto final_uri = mmbot_config_.price_registry.at("coinpaprika").price_endpoint.value() + path;
+            const auto& mmbot_config = get_mmbot_config();
+            auto final_uri = mmbot_config.price_registry.at("coinpaprika").price_endpoint.value() + path;
             DVLOG_F(loguru::Verbosity_INFO, "request: %s", final_uri.c_str());
             auto response = RestClient::get(final_uri);
             DVLOG_F(loguru::Verbosity_INFO, "response: %s\nstatus: %d", response.body.c_str(), response.code);
             if (response.code == 200) {
                 antara::my_json_sax sx;
                 nlohmann::json::sax_parse(response.body, &sx);
-                auto price = generate_st_price_from_api_price(mmbot_config_, currency_pair.quote.symbol, sx.float_as_string);
+                auto price = generate_st_price_from_api_price(mmbot_config, currency_pair.quote.symbol, sx.float_as_string);
                 return price;
             } else if (response.code == 429 && nb_try_in_a_row < 10) {
                 using namespace std::chrono_literals;

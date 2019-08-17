@@ -24,11 +24,11 @@ namespace antara::mmbot::tests
 {
     TEST_CASE ("test launch mm2 in background")
     {
-        auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        antara::mmbot::mm2_client mm2(cfg);
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        antara::mmbot::mm2_client mm2;
 
         nlohmann::json json_data = {{"method",   "version"},
-                                    {"userpass", cfg.mm2_rpc_password}};
+                                    {"userpass", get_mmbot_config().mm2_rpc_password}};
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         CHECK_EQ(200, resp.code);
         DVLOG_F(loguru::Verbosity_INFO, "body: %s", resp.body.c_str());
@@ -65,8 +65,8 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("mm2 rpc electrum")
     {
-        auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        antara::mmbot::mm2_client mm2(cfg, false);
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        antara::mmbot::mm2_client mm2(false);
         mm2::electrum_request request{"MORTY", {{"electrum2.cipig.net:10018"}, {"electrum1.cipig.net:10018"},
                                                 {"electrum3.cipig.net:10018"}}};
         auto answer = mm2.rpc_electrum(std::move(request));

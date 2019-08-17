@@ -126,7 +126,7 @@ namespace antara::mmbot
     class mm2_client
     {
     public:
-        explicit mm2_client(const antara::mmbot::config &cfg, bool should_enable_coins = true);
+        explicit mm2_client(bool should_enable_coins = true);
 
         ~mm2_client() noexcept;
 
@@ -163,7 +163,6 @@ namespace antara::mmbot
             }
         }
     private:
-        [[maybe_unused]] const antara::mmbot::config &mmbot_cfg_;
         reproc::process background_{reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill,
                                     reproc::infinite};
         std::thread sink_thread_;

@@ -22,8 +22,8 @@ namespace antara::tests
 {
     TEST_CASE("antara price format bitcoin normal price")
     {
-        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-
+        mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        const auto& cfg = antara::mmbot::get_mmbot_config();
         auto formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "1.15000000");
         CHECK_EQ("115000000", formatted_price);
         CHECK_EQ("1.15000000", unformat_str_to_representation_price(cfg, st_symbol{"BTC"}, formatted_price));
@@ -38,7 +38,8 @@ namespace antara::tests
 
     TEST_CASE("antara price format bitcoin erc coin normal price")
     {
-        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        const auto& cfg = antara::mmbot::get_mmbot_config();
         auto formatted_price = format_str_api_price(cfg, st_symbol{"ZIL"}, "0.010089534999000000");
         CHECK_EQ("10089534999000000", formatted_price);
         CHECK_EQ("0.010089534999000000", unformat_str_to_representation_price(cfg, st_symbol{"ZIL"}, formatted_price));
@@ -46,8 +47,8 @@ namespace antara::tests
 
     TEST_CASE("antara price as string decimal with normal coin lot of decimals")
     {
-        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-
+        mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        const auto& cfg = antara::mmbot::get_mmbot_config();
         auto formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "0.0000972439793401814");
         CHECK_EQ("9724", formatted_price);
 
@@ -58,7 +59,8 @@ namespace antara::tests
 
     TEST_CASE("antara price as string decimal with fiat")
     {
-        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        const auto& cfg = antara::mmbot::get_mmbot_config();
         auto formatted_price = format_str_api_price(cfg, st_symbol{"EUR"}, "0.92");
         CHECK_EQ("92", formatted_price);
         formatted_price = format_str_api_price(cfg, st_symbol{"EUR"}, "0.922222");
@@ -68,7 +70,8 @@ namespace antara::tests
 
     TEST_CASE("antara price with more than 20 digits")
     {
-        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        const auto& cfg = antara::mmbot::get_mmbot_config();
         auto price = generate_st_price_from_api_price(cfg, st_symbol{"ZIL"}, "12345678.010089534999123456");
         CHECK_EQ("12345678.010089534999123456", get_price_as_string_decimal(cfg, st_symbol{"ZIL"}, price));
         price = generate_st_price_from_api_price(cfg, st_symbol{"ZIL"}, "12345678.010089534999000000");
@@ -77,14 +80,16 @@ namespace antara::tests
 
     TEST_CASE("antara price with to much decimal than expected")
     {
-        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        const auto& cfg = antara::mmbot::get_mmbot_config();
         auto price = generate_st_price_from_api_price(cfg, st_symbol{"BTC"}, "17999.204999999998");
         CHECK_EQ("17999.20500000", get_price_as_string_decimal(cfg, st_symbol{"BTC"}, price));
     }
 
     TEST_CASE("antara price with scientific notation")
     {
-        auto cfg = mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        const auto& cfg = antara::mmbot::get_mmbot_config();
         auto price = generate_st_price_from_api_price(cfg, st_symbol{"DOGE"}, "2.5319564650362795e-7");
         CHECK_EQ("0.00000025", get_price_as_string_decimal(cfg, st_symbol{"DOGE"}, price));
     }

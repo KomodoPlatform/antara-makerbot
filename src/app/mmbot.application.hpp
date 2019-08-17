@@ -27,10 +27,8 @@ namespace antara::mmbot
         ~application() noexcept;
         int run();
     private:
-        antara::mmbot::config mmbot_config_{
-                mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json")};
-        price_service_platform price_service_{mmbot_config_};
-        mm2_client mm2_client_{mmbot_config_};
-        antara::mmbot::http_server server_{mmbot_config_, price_service_, mm2_client_};
+        price_service_platform price_service_;
+        mm2_client mm2_client_;
+        antara::mmbot::http_server server_{price_service_, mm2_client_};
     };
 }

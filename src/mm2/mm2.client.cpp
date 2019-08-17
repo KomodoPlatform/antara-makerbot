@@ -99,7 +99,7 @@ namespace antara::mmbot::mm2
 }
 namespace antara::mmbot
 {
-    mm2_client::mm2_client(const antara::mmbot::config &cfg, bool should_enable_coins) : mmbot_cfg_(cfg)
+    mm2_client::mm2_client(bool should_enable_coins)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         using namespace std::literals;
@@ -167,7 +167,8 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         bool res = true;
-        for (auto&&[current_coin, current_coin_data] : mmbot_cfg_.registry_additional_coin_infos) {
+        const auto& mmbot_config = get_mmbot_config();
+        for (auto&&[current_coin, current_coin_data] : mmbot_config.registry_additional_coin_infos) {
             if (current_coin_data.is_mm2_compatible) {
                 if (current_coin_data.is_electrum_compatible && (current_coin == "RICK" || current_coin == "MORTY")) {
                     std::vector<electrum_server> servers;
@@ -186,6 +187,6 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         return {{"method",   method_name},
-                {"userpass", this->mmbot_cfg_.mm2_rpc_password}};
+                {"userpass", get_mmbot_config().mm2_rpc_password}};
     }
 }
