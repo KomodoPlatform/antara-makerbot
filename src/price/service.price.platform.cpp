@@ -23,11 +23,12 @@
 
 namespace antara::mmbot
 {
-    price_service_platform::price_service_platform(const config &cfg) noexcept : mmbot_config_(cfg)
+    price_service_platform::price_service_platform() noexcept
     {
+        const auto& cfg = antara::mmbot::get_mmbot_config();
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         for (auto[platform_name, platform_cfg]: cfg.price_registry) {
-            auto current_price_platform_ptr = factory_price_platform::create(platform_name, cfg);
+            auto current_price_platform_ptr = factory_price_platform::create(platform_name);
             if (current_price_platform_ptr != nullptr) {
                 registry_platform_price_.emplace(platform_name, std::move(current_price_platform_ptr));
             }
@@ -77,7 +78,7 @@ namespace antara::mmbot
         all_price_json["prices"] = nlohmann::json::array();
         for (auto &&[current_pair, current_price] : res) {
             auto current_object = nlohmann::json::object();
-            std::string current_price_str = antara::get_price_as_string_decimal(mmbot_config_, current_pair.base.symbol, current_price);
+            std::string current_price_str = antara::get_price_as_string_decimal(get_mmbot_config(), current_pair.base.symbol, current_price);
             current_object[current_pair.base.symbol.value() + "/" + current_pair.quote.symbol.value()] = current_price_str;
             all_price_json["prices"].push_back(std::move(current_object));
         }

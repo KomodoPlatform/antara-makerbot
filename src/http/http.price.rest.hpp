@@ -24,14 +24,13 @@ namespace antara::mmbot::http::rest
     class price
     {
     public:
-        explicit price(const config& cfg, price_service_platform &price_service) noexcept;
+        explicit price(price_service_platform &price_service) noexcept;
 
         ~price() noexcept;
 
         restinio::request_handling_status_t get_price(const restinio::request_handle_t& req, const restinio::router::route_params_t &);
 
     private:
-        [[maybe_unused]] price_service_platform &price_service_;
-        const config& mmbot_config_;
+        price_service_platform &price_service_;
     };
 }

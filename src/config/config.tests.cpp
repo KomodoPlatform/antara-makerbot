@@ -21,10 +21,15 @@ namespace antara::mmbot::tests
 {
     TEST_CASE("load full config json")
     {
-        auto cfg = load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        CHECK(!cfg.precision_registry.empty());
-        CHECK_EQ(cfg.precision_registry["ETH"], 18u);
-        CHECK_EQ(cfg.precision_registry["ZIL"], 18u);
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        const auto& cfg = get_mmbot_config();
+        CHECK(!cfg.registry_additional_coin_infos.empty());
+        CHECK_EQ(cfg.registry_additional_coin_infos.at("ETH").nb_decimals, 18u);
+        CHECK_FALSE(cfg.registry_additional_coin_infos.at("ORE").is_mm2_compatible);
+        CHECK_EQ(cfg.registry_additional_coin_infos.at("ZIL").nb_decimals, 18u);
+        CHECK(cfg.registry_additional_coin_infos.at("BTC").is_mm2_compatible);
+        CHECK_FALSE(cfg.registry_additional_coin_infos.at("ETH").is_electrum_compatible);
+        CHECK(cfg.registry_additional_coin_infos.at("BTC").is_electrum_compatible);
     }
     TEST_CASE ("mmbot cfg from json")
     {
@@ -128,7 +133,7 @@ namespace antara::mmbot::tests
                             {
                                 "coinbase", cex_config{st_endpoint{"https://api.pro.coinbase.com"}, st_key{"<your public key here>"}, st_key{""}}
                             }
-                    }, config::price_infos_registry{{"coinpaprika", price_config{st_endpoint{"https://api.coinpaprika.com/v1"}, std::nullopt}}}, 8080,{}};
+                    }, config::price_infos_registry{{"coinpaprika", price_config{st_endpoint{"https://api.coinpaprika.com/v1"}, std::nullopt}}}, 8080,{}, ""};
                     REQUIRE_EQ(load_configuration<config>(std::move(path), "mmbot_example_config.json"), mmbot_cfg);
                 }
                 AND_THEN("We clear the directory that we create for this test") {

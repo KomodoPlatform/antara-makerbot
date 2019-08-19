@@ -14,19 +14,29 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <cstdlib>
-#include "app/mmbot.application.hpp"
+#pragma once
 
-int main()
+#include <restinio/all.hpp>
+#include <restinio/common_types.hpp>
+#include "config/config.hpp"
+#include "mm2/mm2.client.hpp"
+
+namespace antara::mmbot::http::rest
 {
-    loguru::add_file("logs/mmbot.everything.log", loguru::Append, loguru::Verbosity_MAX);
-    loguru::add_file("logs/mmbot.latest.readable.log", loguru::Truncate, loguru::Verbosity_INFO);
-    loguru::set_thread_name("main thread");
-    loguru::set_fatal_handler([](const loguru::Message& message){
-        VLOG_F(loguru::Verbosity_FATAL, "err occured: %s", message.message);
-        std::exit(1);
-    });
-    antara::mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
-    antara::mmbot::application app;
-    return app.run();
+    class mm2
+    {
+    public:
+        mm2(mm2_client &mm2_client) noexcept;
+
+        ~mm2() noexcept;
+
+        restinio::request_handling_status_t
+        get_orderbook(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
+        restinio::request_handling_status_t
+        my_balance(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
+    private:
+        mm2_client &mm2_client_;
+    };
 }

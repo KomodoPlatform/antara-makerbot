@@ -18,6 +18,7 @@
 
 namespace antara::mmbot
 {
+    static config mmbot_cfg;
     void from_json(const nlohmann::json &j, cex_config &cfg)
     {
         cfg.cex_endpoint = st_endpoint{j.at("cex_endpoint").get<std::string>()};
@@ -68,34 +69,99 @@ namespace antara::mmbot
         j["http_port"] = cfg.http_port;
     }
 
-    mmbot::config load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept
+    void load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept
     {
-        auto cfg = load_configuration<mmbot::config>(std::forward<std::filesystem::path>(config_path), std::move(filename));
+        mmbot_cfg = load_configuration<mmbot::config>(std::forward<std::filesystem::path>(config_path),
+                                                     std::move(filename));
+        fill_with_coins_cfg(config_path, mmbot_cfg);
+        auto full_path = config_path / "MM2.json";
+        std::ifstream ifs(full_path);
+        DCHECK_F(ifs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
+        nlohmann::json coins_json_data;
+        ifs >> coins_json_data;
+        coins_json_data.at("rpc_password").get_to(mmbot_cfg.mm2_rpc_password);
+    }
+
+    void fill_with_coins_cfg(const std::filesystem::path &config_path, config &cfg)
+    {
         auto full_path = config_path / "coins.json";
         std::ifstream ifs(full_path);
         DCHECK_F(ifs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
         nlohmann::json coins_json_data;
         ifs >> coins_json_data;
         for (auto &&current_element: coins_json_data) {
-            std::size_t nb_decimals = 8u;
-            if (current_element.find("etomic") != current_element.end() && current_element.find("decimals") == current_element.end()) {
-                nb_decimals = 18;
-            } else if (current_element.find("etomic") != current_element.end() && current_element.find("decimals") != current_element.end()) {
-                nb_decimals = current_element["decimals"].get<int>();
+            additional_coin_info additional_infos{8u, false, false, {}};
+            auto current_coin = current_element["coin"].get<std::string>();
+            if (current_element.find("etomic") != current_element.end() &&
+                current_element.find("decimals") == current_element.end()) {
+                additional_infos.nb_decimals = 18;
+            } else if (current_element.find("etomic") != current_element.end() &&
+                       current_element.find("decimals") != current_element.end()) {
+                additional_infos.nb_decimals = current_element["decimals"].get<int>();
             }
-            cfg.precision_registry.emplace(current_element["coin"].get<std::string>(),
-                                           nb_decimals);
+            additional_infos.is_mm2_compatible = current_element.find("mm2") != current_element.end();
+            auto current_path = std::filesystem::current_path() / "assets/electrums" / current_coin;
+            if (additional_infos.is_mm2_compatible &&
+                std::filesystem::exists(current_path)) {
+                additional_infos.is_electrum_compatible = true;
+            }
+            if (additional_infos.is_electrum_compatible) {
+                extract_from_electrum_file(config_path, current_coin, additional_infos);
+            }
+            cfg.registry_additional_coin_infos.emplace(current_coin,
+                                                       additional_infos);
         }
-        cfg.precision_registry.emplace("EUR", 2u);
-        cfg.precision_registry.emplace("USD", 2u);
-        return cfg;
+        cfg.registry_additional_coin_infos.emplace("EUR", additional_coin_info{2u, false, false, {}});
+        cfg.registry_additional_coin_infos.emplace("USD", additional_coin_info{2u, false, false, {}});
+    }
+
+    void extract_from_electrum_file(const std::filesystem::path &path, const std::string &coin,
+                                    additional_coin_info &additional_info)
+    {
+        auto full_path = path / "electrums" / coin;
+        std::ifstream ifs(full_path);
+        DCHECK_F(ifs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
+        nlohmann::json electrum_json_data;
+        ifs >> electrum_json_data;
+        for (auto &&current_element: electrum_json_data) {
+            electrum_server srv;
+            current_element.at("url").get_to(srv.url);
+            if (current_element.find("protocol") != current_element.end()) {
+                srv.protocol = current_element.at("protocol").get<std::string>();
+            }
+            if (current_element.find("disable_cert_verification") != current_element.end()) {
+                srv.disable_cert_verification = current_element.at("disable_cert_verification").get<bool>();
+            }
+            additional_info.servers_electrum.emplace_back(std::move(srv));
+        }
+    }
+
+    void to_json(nlohmann::json &j, const electrum_server &cfg)
+    {
+        j["url"] = cfg.url;
+        if (cfg.protocol.has_value()) {
+            j["protocol"] = cfg.protocol.value();
+        }
+        if (cfg.disable_cert_verification.has_value()) {
+            j["disable_cert_verification"] = cfg.disable_cert_verification.value();
+        }
+    }
+
+    const mmbot::config &get_mmbot_config() noexcept
+    {
+        return mmbot_cfg;
+    }
+
+    void set_mmbot_config(config& cfg) noexcept
+    {
+        mmbot_cfg = cfg;
     }
 
     bool config::operator==(const config &rhs) const
     {
         return cex_registry == rhs.cex_registry &&
                price_registry == rhs.price_registry &&
-               http_port == rhs.http_port;
+               http_port == rhs.http_port && mm2_rpc_password == rhs.mm2_rpc_password;
     }
 
     bool config::operator!=(const config &rhs) const

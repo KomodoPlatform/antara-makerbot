@@ -50,6 +50,23 @@ namespace antara::mmbot
         std::optional<antara::st_key> price_api_key{std::nullopt};
     };
 
+    struct electrum_server
+    {
+        std::string url;
+        std::optional<std::string> protocol{"TCP"};
+        std::optional<bool> disable_cert_verification{false};
+    };
+
+    void to_json(nlohmann::json &j, const electrum_server &cfg);
+
+    struct additional_coin_info
+    {
+        std::size_t nb_decimals;
+        bool is_mm2_compatible;
+        bool is_electrum_compatible;
+        std::vector<electrum_server> servers_electrum;
+    };
+
     struct config
     {
         bool operator==(const config &rhs) const;
@@ -58,21 +75,25 @@ namespace antara::mmbot
 
         using cex_infos_registry = std::unordered_map<std::string, cex_config>;
         using price_infos_registry = std::unordered_map<std::string, price_config>;
-        using is_base_ercs_registry = std::unordered_map<std::string, std::size_t>;
+        using additional_coin_infos_registry = std::unordered_map<std::string, additional_coin_info>;
         cex_infos_registry cex_registry;
         price_infos_registry price_registry;
         using st_http_port = unsigned short;
         st_http_port http_port;
-        is_base_ercs_registry precision_registry;
+        additional_coin_infos_registry registry_additional_coin_infos;
+        std::string mm2_rpc_password{""};
     };
 
     void from_json(const nlohmann::json &j, cex_config &cfg);
+
     void to_json(nlohmann::json &j, const cex_config &cfg);
 
     void to_json(nlohmann::json &j, const price_config &cfg);
+
     void from_json(const nlohmann::json &j, price_config &cfg);
 
     void to_json(nlohmann::json &j, const config &cfg);
+
     void from_json(const nlohmann::json &j, config &cfg);
 
     namespace details
@@ -145,5 +166,12 @@ namespace antara::mmbot
         return details::load_config<TConfig>(full_path);
     }
 
-    mmbot::config load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept;
+    void load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept;
+
+    void fill_with_coins_cfg(const std::filesystem::path &config_path, config &cfg);
+
+    void extract_from_electrum_file(const std::filesystem::path &path, const std::string &coin,
+                                    additional_coin_info &additional_info);
+    const mmbot::config& get_mmbot_config() noexcept;
+    void set_mmbot_config(config& cfg) noexcept;
 }

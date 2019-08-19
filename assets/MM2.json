@@ -1,0 +1,7 @@
+{
+  "gui":"CLI",
+  "netid":9999,
+  "rpc_password":"YOUR_PASSWORD_HERE",
+  "passphrase":"YOUR_PASSPHRASE_HERE",
+  "userhome":"mm2_local_data"
+}

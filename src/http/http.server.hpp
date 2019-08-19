@@ -21,6 +21,8 @@
 #include <config/config.hpp>
 #include "price/service.price.platform.hpp"
 #include "http.price.rest.hpp"
+#include "mm2/mm2.client.hpp"
+#include "http.mm2.rest.hpp"
 
 namespace antara::mmbot
 {
@@ -34,7 +36,7 @@ namespace antara::mmbot
     public:
         using router = std::unique_ptr<restinio::router::express_router_t<>>;
 
-        explicit http_server(const mmbot::config &mmbot_cfg, price_service_platform& price_service);
+        explicit http_server(price_service_platform& price_service, mmbot::mm2_client& mm2_client);
 
         void run();
 
@@ -42,7 +44,7 @@ namespace antara::mmbot
         router create_routes();
 
     private:
-        const mmbot::config &mmbot_cfg_;
-        http::rest::price price_rest_callbook;
+        http::rest::price price_rest_callbook_;
+        http::rest::mm2 mm2_rest_callbook_;
     };
 }

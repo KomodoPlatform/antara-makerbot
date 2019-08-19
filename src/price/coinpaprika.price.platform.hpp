@@ -24,7 +24,7 @@ namespace antara::mmbot
     class coinpaprika_price_platform : public abstract_price_platform
     {
     public:
-        explicit coinpaprika_price_platform(const config &cfg) : abstract_price_platform(cfg)
+        explicit coinpaprika_price_platform() : abstract_price_platform()
         {
 
         }
