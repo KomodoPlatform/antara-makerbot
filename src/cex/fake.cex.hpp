@@ -37,7 +37,7 @@ namespace antara::mmbot
         const orders::order_book &get_book(const antara::pair &pair) const;
 
         void place_order(const orders::order_level &ol) override;
-        const orders::order &place_order(const orders::order &o);
+        void place_order(const orders::order &o);
 
         void mirror(const orders::execution &ex) override;
 

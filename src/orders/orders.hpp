@@ -143,7 +143,7 @@ namespace antara::mmbot::orders
         [[nodiscard]] const orders_by_price &get_bids() const;
         [[nodiscard]] const orders_by_price &get_asks() const;
 
-        void &add_order(const order &o);
+        void add_order(const order &o);
 
     private:
         std::map<st_price, std::vector<order>> bids_;

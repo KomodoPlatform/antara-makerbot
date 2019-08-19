@@ -36,7 +36,7 @@ namespace antara::mmbot
         throw mmbot::errors::not_implemented();
     }
 
-    const orders::order &fake_cex::place_order(const orders::order &o)
+    void fake_cex::place_order(const orders::order &o)
     {
         auto pair = o.pair;
 
@@ -46,8 +46,9 @@ namespace antara::mmbot
         }
 
         auto &book = order_books_.at(pair);
+        book.add_order(o);
 
-        return book.add_order(o);
+        return;
     }
 
     void fake_cex::mirror([[maybe_unused]] const orders::execution &ex)

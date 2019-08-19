@@ -128,7 +128,7 @@ namespace antara::mmbot::orders
         return asks_;
     }
 
-    void &order_book::add_order(const order &o)
+    void order_book::add_order(const order &o)
     {
         // auto side = o.side == antara::side::buy ? bids_ : asks_ ;
         auto &side = bids_;
