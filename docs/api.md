@@ -182,6 +182,6 @@ Retrieve the version of mm2
 
 ```json
 {
-  "result":"2.0.1009_mm2_b08da3aa9_Darwin",
+  "result":"2.0.1009_mm2_b08da3aa9_Darwin"
 }
 ```
