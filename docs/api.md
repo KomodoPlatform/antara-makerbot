@@ -160,3 +160,28 @@ Retrieve the balance of the given currency
 **Code**: `422 Unprocessable Entity` (Wrong Argument)
 
 **Code**: `500 Internal Server Error` (Unexistent currency, Or `mm2` return 500 error code + message)
+
+## mm2 get version
+
+Retrieve the version of mm2
+
+**URL**: `/api/v1/legacy/mm2/version`
+
+**Method**: `GET`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+
+### Success Response
+
+**Code**: `200 OK`
+
+**Content examples**
+
+```json
+{
+  "result":"2.0.1009_mm2_b08da3aa9_Darwin",
+}
+```

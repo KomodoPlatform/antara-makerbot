@@ -18,7 +18,6 @@
 #include <doctest/doctest.h>
 #include <restclient-cpp/restclient.h>
 #include "mm2.client.hpp"
-#include "http/http.endpoints.hpp"
 
 namespace antara::mmbot::tests
 {
@@ -26,12 +25,6 @@ namespace antara::mmbot::tests
     {
         load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         antara::mmbot::mm2_client mm2;
-
-        nlohmann::json json_data = {{"method",   "version"},
-                                    {"userpass", get_mmbot_config().mm2_rpc_password}};
-        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
-        CHECK_EQ(200, resp.code);
-        DVLOG_F(loguru::Verbosity_INFO, "body: %s", resp.body.c_str());
         SUBCASE("mm2 rpc orderbooks")
         {
             //! Good pair
@@ -60,6 +53,12 @@ namespace antara::mmbot::tests
             mm2::balance_request bad_request({antara::asset{st_symbol{"BTC"}}});
             answer = mm2.rpc_balance(std::move(bad_request));
             CHECK_EQ(500, answer.rpc_result_code);
+        }
+
+        SUBCASE("mm2 rpc version")
+        {
+            auto answer = mm2.rpc_version();
+            CHECK_EQ(200, answer.rpc_result_code);
         }
     }
 

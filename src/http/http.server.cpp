@@ -45,6 +45,10 @@ namespace antara::mmbot
             return this->mm2_rest_callbook_.my_balance(std::forward<decltype(params)>(params)...);
         });
 
+        http_router->http_get("/api/v1/legacy/mm2/version", [this](auto &&... params) {
+            return this->mm2_rest_callbook_.version(std::forward<decltype(params)>(params)...);
+        });
+
         http_router->non_matched_request_handler(
                 [](auto req) {
                     return req->create_response(status_not_found()).set_body("Not Found").done();
