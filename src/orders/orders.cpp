@@ -118,9 +118,35 @@ namespace antara::mmbot::orders
         return order(id_, pair_, price_, quantity_, filled_, side_, status_);
     }
 
-    void order_book::add_order(const order &o)
+    const orders_by_price &order_book::get_bids() const
     {
-        // TODO
+        return bids_;
+    }
+
+    const orders_by_price &order_book::get_asks() const
+    {
+        return asks_;
+    }
+
+    void &order_book::add_order(const order &o)
+    {
+        // auto side = o.side == antara::side::buy ? bids_ : asks_ ;
+        auto &side = bids_;
+        if (o.side == antara::side::buy) {
+            side = bids_;
+        } else {
+            side = asks_;
+        }
+
+        auto price = o.price;
+
+        if (side.find(price) == side.end()) {
+            side.emplace(price, std::vector<orders::order>());
+        }
+
+        auto &orders = side.at(price);
+        orders.push_back(o);
+
         return;
     }
 }

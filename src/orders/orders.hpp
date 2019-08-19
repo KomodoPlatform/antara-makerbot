@@ -140,10 +140,10 @@ namespace antara::mmbot::orders
 
         order_book(antara::pair pair) : pair(std::move(pair)) {};
 
-        [[nodiscard]] const orders_by_price &get_bids(const antara::pair &pair) const;
-        [[nodiscard]] const orders_by_price &get_asks(const antara::pair &pair) const;
+        [[nodiscard]] const orders_by_price &get_bids() const;
+        [[nodiscard]] const orders_by_price &get_asks() const;
 
-        void add_order(const order &o);
+        void &add_order(const order &o);
 
     private:
         std::map<st_price, std::vector<order>> bids_;
