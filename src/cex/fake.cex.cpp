@@ -15,17 +15,18 @@
  ******************************************************************************/
 
 #include <utils/exceptions.hpp>
+#include <iostream>
 
 #include "fake.cex.hpp"
 
 namespace antara::mmbot
 {
-    void fake_cex::add_book(const orders::order_book &book)
+    const orders::order_book &fake_cex::add_book(const orders::order_book &book)
     {
-        order_books_.emplace(book.pair, book);
+        return order_books_.emplace(book.pair, book).first->second;
     }
 
-    orders::order_book fake_cex::get_book(const antara::pair &pair)
+    const orders::order_book &fake_cex::get_book(const antara::pair &pair) const
     {
         return order_books_.at(pair);
     }
@@ -35,18 +36,18 @@ namespace antara::mmbot
         throw mmbot::errors::not_implemented();
     }
 
-    void fake_cex::place_order(const orders::order &o)
+    const orders::order &fake_cex::place_order(const orders::order &o)
     {
         auto pair = o.pair;
-        orders::order_book book(pair);
 
         if (order_books_.find(pair) == order_books_.end()) {
-            book = orders::order_book(pair);
-        } else {
-            book = order_books_.at(pair);
+            auto new_book = orders::order_book(pair);
+            order_books_.emplace(pair, new_book);
         }
 
-        book.add_order(o);
+        auto &book = order_books_.at(pair);
+
+        return book.add_order(o);
     }
 
     void fake_cex::mirror([[maybe_unused]] const orders::execution &ex)
