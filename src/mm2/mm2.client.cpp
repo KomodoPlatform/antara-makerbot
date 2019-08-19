@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <cstdlib>
 #include "mm2.client.hpp"
 
 namespace antara::mmbot::mm2

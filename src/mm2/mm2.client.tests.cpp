@@ -49,6 +49,9 @@ namespace antara::mmbot::tests
             auto answer = mm2.rpc_balance(std::move(request));
             CHECK_EQ(200, answer.rpc_result_code);
 
+            if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
+                CHECK_NE("0", answer.balance);
+            }
             //! Non enable coin
             mm2::balance_request bad_request({antara::asset{st_symbol{"BTC"}}});
             answer = mm2.rpc_balance(std::move(bad_request));
