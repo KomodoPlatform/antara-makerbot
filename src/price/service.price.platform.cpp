@@ -70,8 +70,8 @@ namespace antara::mmbot
         json_data[asset.symbol.value()] = nlohmann::json::array();
         std::mutex mutex;
         auto functor = [&asset, this, &json_data, &mutex](auto &&current_coin) {
+            std::scoped_lock lock(mutex);
             if (current_coin != asset.symbol.value()) {
-                std::scoped_lock lock(mutex);
                 nlohmann::json current_data = nlohmann::json::object();
                 antara::pair current_pair{antara::asset{st_symbol{current_coin}}, asset};
                 try {

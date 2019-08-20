@@ -85,16 +85,10 @@ namespace antara
 
         absl::uint128 value = 0;
         for (char cur_char : price_str) {
-            absl::uint128 cur_value = std::stoull(&cur_char);
+            absl::uint128 cur_value = cur_char - '0';
             value *= 10;
             value += cur_value;
         }
-        /*absl::uint128 value = std::stoull(price_str.substr(0, 20));
-        auto low_str = price_str.substr(20);
-        for (std::size_t i = 0; i < low_str.size(); ++i) {
-            value *= 10;
-        }
-        value += std::stoull(low_str);*/
         return st_price{value};
     }
 
