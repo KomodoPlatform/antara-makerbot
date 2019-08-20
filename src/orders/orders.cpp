@@ -130,14 +130,7 @@ namespace antara::mmbot::orders
 
     void order_book::add_order(const order &o)
     {
-        // auto side = o.side == antara::side::buy ? bids_ : asks_ ;
-        auto &side = bids_;
-        if (o.side == antara::side::buy) {
-            side = bids_;
-        } else {
-            side = asks_;
-        }
-
+        auto &side = o.side == antara::side::buy ? bids_ : asks_ ;
         auto price = o.price;
 
         if (side.find(price) == side.end()) {
