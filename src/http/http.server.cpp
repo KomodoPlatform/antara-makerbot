@@ -18,8 +18,8 @@
 
 namespace antara::mmbot
 {
-    http_server::http_server(const mmbot::config &mmbot_cfg, price_service_platform &price_service) : mmbot_cfg_(
-            mmbot_cfg), price_rest_callbook(mmbot_cfg, price_service)
+    http_server::http_server(price_service_platform &price_service, mmbot::mm2_client &mm2_client)
+            : price_rest_callbook_(price_service), mm2_rest_callbook_(mm2_client)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
@@ -29,13 +29,24 @@ namespace antara::mmbot
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         using namespace restinio;
         auto http_router = std::make_unique<restinio::router::express_router_t<>>();
-        http_router->http_get("/", [](const auto& req, const auto&) {
+        http_router->http_get("/", [](const auto &req, const auto &) {
             return req->create_response(status_ok()).set_body("Welcome.").done();
         });
 
-        http_router->http_get("/api/v1/getprice", [this](auto&&... params)
-        {
-            return this->price_rest_callbook.get_price(std::forward<decltype(params)>(params)...);
+        http_router->http_get("/api/v1/getprice", [this](auto &&... params) {
+            return this->price_rest_callbook_.get_price(std::forward<decltype(params)>(params)...);
+        });
+
+        http_router->http_get("/api/v1/legacy/mm2/getorderbook", [this](auto &&... params) {
+            return this->mm2_rest_callbook_.get_orderbook(std::forward<decltype(params)>(params)...);
+        });
+
+        http_router->http_get("/api/v1/legacy/mm2/my_balance", [this](auto &&... params) {
+            return this->mm2_rest_callbook_.my_balance(std::forward<decltype(params)>(params)...);
+        });
+
+        http_router->http_get("/api/v1/legacy/mm2/version", [this](auto &&... params) {
+            return this->mm2_rest_callbook_.version(std::forward<decltype(params)>(params)...);
         });
 
         http_router->non_matched_request_handler(
@@ -48,9 +59,10 @@ namespace antara::mmbot
     void http_server::run()
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        DVLOG_F(loguru::Verbosity_INFO, "launch http server on port: %d", mmbot_cfg_.http_port);
+        const auto &mmbot_cfg = get_mmbot_config();
+        DVLOG_F(loguru::Verbosity_INFO, "launch http server on port: %d", mmbot_cfg.http_port);
         restinio::run(
-                restinio::on_this_thread<http_server_traits>().port(mmbot_cfg_.http_port).address(
+                restinio::on_this_thread<http_server_traits>().port(mmbot_cfg.http_port).address(
                         "localhost").request_handler(create_routes()));
     }
 }

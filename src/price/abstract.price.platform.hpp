@@ -24,15 +24,8 @@ namespace antara::mmbot
     class abstract_price_platform
     {
     public:
-        explicit abstract_price_platform(const config &cfg) noexcept : mmbot_config_(cfg)
-        {
-
-        }
-
+        abstract_price_platform() noexcept = default;
         [[nodiscard]] virtual st_price get_price(antara::pair currency_pair, [[maybe_unused]] std::size_t nb_try_in_a_row) const = 0;
         virtual ~abstract_price_platform() = default;
-
-    protected:
-        const config &mmbot_config_;
     };
 }

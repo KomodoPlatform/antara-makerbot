@@ -21,13 +21,13 @@ namespace antara::mmbot::tests
 {
     TEST_CASE ("factory price platform good parameters")
     {
-        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        CHECK_NOTNULL_F(factory_price_platform::create("coinpaprika", cfg), "should not be nullptr");
+        load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        CHECK_NOTNULL_F(factory_price_platform::create("coinpaprika"), "should not be nullptr");
     }
 
     TEST_CASE ("factory price platform wrong parameters")
     {
-        auto cfg = load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
-        CHECK_EQ_F(factory_price_platform::create("nonexistent", cfg), nullptr, "should be nullptr");
+        load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        CHECK_EQ_F(factory_price_platform::create("nonexistent"), nullptr, "should be nullptr");
     }
 }

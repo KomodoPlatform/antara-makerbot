@@ -32,7 +32,7 @@ namespace antara
     std::string
     unformat_str_to_representation_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
     {
-        auto nb_decimal = static_cast<int>(cfg.precision_registry.at(symbol.value()));
+        auto nb_decimal = static_cast<int>(cfg.registry_additional_coin_infos.at(symbol.value()).nb_decimals);
 
         while (static_cast<int>(price_str.length()) <= nb_decimal) {
             price_str.insert(0, 1, '0');
@@ -49,7 +49,7 @@ namespace antara
 
     std::string format_str_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
     {
-        auto nb_decimal = static_cast<int>(cfg.precision_registry.at(symbol.value()));
+        auto nb_decimal = static_cast<int>(cfg.registry_additional_coin_infos.at(symbol.value()).nb_decimals);
         auto after_decimal_str = price_str.substr(price_str.find('.') + 1, price_str.size());
         if (static_cast<int>(after_decimal_str.size()) > nb_decimal) {
             price_str = BCMath::bcround(price_str, nb_decimal);
