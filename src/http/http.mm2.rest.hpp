@@ -36,6 +36,9 @@ namespace antara::mmbot::http::rest
         restinio::request_handling_status_t
         my_balance(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
+        restinio::request_handling_status_t
+        version(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
     private:
         mm2_client &mm2_client_;
     };

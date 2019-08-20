@@ -19,6 +19,7 @@
 namespace antara::mmbot
 {
     static config mmbot_cfg;
+
     void from_json(const nlohmann::json &j, cex_config &cfg)
     {
         cfg.cex_endpoint = st_endpoint{j.at("cex_endpoint").get<std::string>()};
@@ -71,8 +72,9 @@ namespace antara::mmbot
 
     void load_mmbot_config(std::filesystem::path &&config_path, std::string filename) noexcept
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         mmbot_cfg = load_configuration<mmbot::config>(std::forward<std::filesystem::path>(config_path),
-                                                     std::move(filename));
+                                                      std::move(filename));
         fill_with_coins_cfg(config_path, mmbot_cfg);
         auto full_path = config_path / "MM2.json";
         std::ifstream ifs(full_path);
@@ -80,10 +82,20 @@ namespace antara::mmbot
         nlohmann::json coins_json_data;
         ifs >> coins_json_data;
         coins_json_data.at("rpc_password").get_to(mmbot_cfg.mm2_rpc_password);
+        ifs.close();
+        if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
+            VLOG_F(loguru::Verbosity_INFO, "passphrase detected through environment, setuping...");
+            std::ofstream ofs(full_path, std::ios::trunc);
+            DCHECK_F(ofs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
+            coins_json_data["passphrase"] = force_passphrase;
+            ofs << coins_json_data;
+            ofs.close();
+        }
     }
 
     void fill_with_coins_cfg(const std::filesystem::path &config_path, config &cfg)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto full_path = config_path / "coins.json";
         std::ifstream ifs(full_path);
         DCHECK_F(ifs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
@@ -118,6 +130,7 @@ namespace antara::mmbot
     void extract_from_electrum_file(const std::filesystem::path &path, const std::string &coin,
                                     additional_coin_info &additional_info)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto full_path = path / "electrums" / coin;
         std::ifstream ifs(full_path);
         DCHECK_F(ifs.is_open(), "Failed to open: [%s]", full_path.string().c_str());
@@ -152,7 +165,7 @@ namespace antara::mmbot
         return mmbot_cfg;
     }
 
-    void set_mmbot_config(config& cfg) noexcept
+    void set_mmbot_config(config &cfg) noexcept
     {
         mmbot_cfg = cfg;
     }
