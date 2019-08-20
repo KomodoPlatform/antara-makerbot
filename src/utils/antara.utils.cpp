@@ -20,31 +20,36 @@
 
 namespace antara
 {
-    std::string get_price_as_string_decimal(const mmbot::config &cfg, const st_symbol &symbol, st_price price) noexcept
+    std::string
+    get_price_as_string_decimal(const mmbot::config &cfg, const st_symbol &symbol, const st_symbol &original_symbol,
+                                st_price price) noexcept
     {
         std::stringstream ss;
         ss << price.value();
         std::string price_str;
         ss >> price_str;
-        return unformat_str_to_representation_price(cfg, symbol, price_str);
+        return unformat_str_to_representation_price(cfg, symbol, original_symbol, price_str);
     }
 
     std::string
-    unformat_str_to_representation_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
+    unformat_str_to_representation_price(const mmbot::config &cfg, const st_symbol &symbol,
+                                         const st_symbol &original_symbol, std::string price_str)
     {
+
         auto nb_decimal = static_cast<int>(cfg.registry_additional_coin_infos.at(symbol.value()).nb_decimals);
+        auto original_nb_decimal = static_cast<int>(cfg.registry_additional_coin_infos.at(original_symbol.value()).nb_decimals);
 
-        while (static_cast<int>(price_str.length()) <= nb_decimal) {
+        while (static_cast<int>(price_str.length()) <= original_nb_decimal) {
             price_str.insert(0, 1, '0');
         }
 
-        if (nb_decimal < static_cast<int>(price_str.length())) {
-            price_str.insert(price_str.size() - nb_decimal, 1, '.');
-        } else if (nb_decimal == static_cast<int>(price_str.length())) {
-            price_str.insert(price_str.size() - nb_decimal, 1, '.');
+        if (original_nb_decimal < static_cast<int>(price_str.length())) {
+            price_str.insert(price_str.size() - original_nb_decimal, 1, '.');
+        } else if (original_nb_decimal == static_cast<int>(price_str.length())) {
+            price_str.insert(price_str.size() - original_nb_decimal, 1, '.');
             price_str.insert(0, 1, '0');
         }
-        return price_str;
+        return original_nb_decimal > nb_decimal ? price_str.substr(0, (nb_decimal + price_str.find('.')) + 1) : price_str;
     }
 
     std::string format_str_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
@@ -74,16 +79,22 @@ namespace antara
     {
         extract_if_scientific(price_str);
         price_str = format_str_api_price(cfg, symbol, price_str);
-        if (price_str.length() <= 20) {
+        if (price_str.length() < 20) {
             return st_price{std::stoull(price_str)};
         }
 
-        absl::uint128 value = std::stoull(price_str.substr(0, 20));
+        absl::uint128 value = 0;
+        for (char cur_char : price_str) {
+            absl::uint128 cur_value = std::stoull(&cur_char);
+            value *= 10;
+            value += cur_value;
+        }
+        /*absl::uint128 value = std::stoull(price_str.substr(0, 20));
         auto low_str = price_str.substr(20);
         for (std::size_t i = 0; i < low_str.size(); ++i) {
             value *= 10;
         }
-        value += std::stoull(low_str);
+        value += std::stoull(low_str);*/
         return st_price{value};
     }
 
@@ -99,12 +110,12 @@ namespace antara
                 tmp_str.erase(dot_pos, 1);
                 tmp_str.pop_back();
             }
-           for (int idx = 0; idx < skip_zero; ++idx) {
-               tmp_str.insert(tmp_str.begin(), '0');
-           }
-           tmp_str.insert(tmp_str.begin(), '.');
-           tmp_str.insert(tmp_str.begin(), '0');
-           price_str = tmp_str;
+            for (int idx = 0; idx < skip_zero; ++idx) {
+                tmp_str.insert(tmp_str.begin(), '0');
+            }
+            tmp_str.insert(tmp_str.begin(), '.');
+            tmp_str.insert(tmp_str.begin(), '0');
+            price_str = tmp_str;
         }
     }
 
@@ -171,4 +182,5 @@ namespace antara
     {
         return false;
     }
+
 }
