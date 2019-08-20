@@ -68,9 +68,7 @@ namespace antara::mmbot
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         nlohmann::json json_data = nlohmann::json::object();
         json_data[asset.symbol.value()] = nlohmann::json::array();
-        std::mutex mutex;
-        auto functor = [&asset, this, &json_data, &mutex](auto &&current_coin) {
-            std::scoped_lock lock(mutex);
+        auto functor = [&asset, this, &json_data](auto &&current_coin) {
             if (current_coin != asset.symbol.value()) {
                 nlohmann::json current_data = nlohmann::json::object();
                 antara::pair current_pair{antara::asset{st_symbol{current_coin}}, asset};
@@ -88,7 +86,7 @@ namespace antara::mmbot
                 }
             }
         };
-        antara::par_for_each(begin(coins_to_track), end(coins_to_track), functor);
+        std::for_each(begin(coins_to_track), end(coins_to_track), functor);
         DVLOG_F(loguru::Verbosity_INFO, "json result: %s", json_data.dump().c_str());
         return json_data;
     }
@@ -97,9 +95,7 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         nlohmann::json json_data = nlohmann::json::array();
-        std::mutex mutex;
-        antara::par_for_each(begin(coins_to_track), end(coins_to_track), [&json_data, &mutex, this](auto &&current_asset) {
-            std::scoped_lock lock(mutex);
+        std::for_each(begin(coins_to_track), end(coins_to_track), [&json_data, this](auto &&current_asset) {
             json_data.push_back(get_all_price_pairs_of_given_coin(antara::asset{st_symbol{current_asset}}));
         });
         DVLOG_F(loguru::Verbosity_INFO, "json result: %s", json_data.dump().c_str());
