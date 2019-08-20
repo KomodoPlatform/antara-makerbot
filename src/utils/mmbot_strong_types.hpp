@@ -53,11 +53,13 @@ namespace antara
 
     using st_price = st::type<
             absl::uint128,
-            struct price_tag,
-            st::arithmetic
+            struct price_tag //,
+            // st::arithmetic
     >;
 
     st_price operator*(const st_price &price, const st_spread &spread);
+    bool operator==(const st_price &price, const st_price &other);
+    bool operator<(const st_price &price, const st_price &other);
 
     using st_order_id = std::string;
 

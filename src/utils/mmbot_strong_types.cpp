@@ -26,4 +26,14 @@ namespace antara
         const int dp = 1000;
         return st_price{(price.value() * absl::uint128(spread.value() * dp)) / dp};
     }
+
+    bool operator==(const st_price &price, const st_price &other)
+    {
+        return price.value() == other.value();
+    }
+
+    bool operator<(const st_price &price, const st_price &other)
+    {
+        return price.value() < other.value();
+    }
 }
