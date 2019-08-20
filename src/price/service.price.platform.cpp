@@ -98,7 +98,7 @@ namespace antara::mmbot
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         nlohmann::json json_data = nlohmann::json::array();
         std::mutex mutex;
-        std::for_each(begin(coins_to_track), end(coins_to_track), [&json_data, &mutex, this](auto &&current_asset) {
+        antara::par_for_each(begin(coins_to_track), end(coins_to_track), [&json_data, &mutex, this](auto &&current_asset) {
             std::scoped_lock lock(mutex);
             json_data.push_back(get_all_price_pairs_of_given_coin(antara::asset{st_symbol{current_asset}}));
         });
