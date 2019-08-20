@@ -38,29 +38,43 @@ namespace antara::mmbot
     st_price price_service_platform::get_price(antara::pair currency_pair) const
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        std::atomic_size_t nb_calls_succeed = 0u;
-        absl::uint128 price = 0;
-        std::mutex mutex;
-        auto price_functor = [&nb_calls_succeed, &mutex, &price, &currency_pair](auto &&current_platform_price) {
-            auto &&[platform_name, platform_ptr] = current_platform_price;
-            auto current_price = platform_ptr->get_price(currency_pair, 0u).value();
-            if (current_price > 0) {
-                ++nb_calls_succeed;
-            }
-            {
-                auto const lck = std::lock_guard(mutex);
-                price = price + current_price;
-            }
+        struct TransformResult
+        {
+            absl::uint128 price = 0;
+            size_t calls_succeeded = 0;
         };
+        TransformResult result{};
 
-        if (!registry_platform_price_.empty()) {
-            antara::par_for_each(begin(registry_platform_price_), end(registry_platform_price_), price_functor);
-        }
+        tf::Taskflow taskflow;
+        taskflow.transform_reduce(
+                begin(registry_platform_price_), end(registry_platform_price_), result,
 
-        if (nb_calls_succeed == 0) {
+                // reduce
+                [](TransformResult a, TransformResult b) {
+                    return TransformResult{
+                            a.price + b.price,
+                            a.calls_succeeded + b.calls_succeeded
+                    };
+                },
+
+                // transform
+                [&currency_pair](auto &&current_platform_price) {
+                    auto &&platform_ptr = current_platform_price.second;
+                    auto current_price = platform_ptr->get_price(currency_pair, 0u).value();
+                    if (current_price > 0) {
+                        return TransformResult{current_price, 1};
+                    }
+
+                    return TransformResult{};
+                }
+        );
+
+        tf::Executor{}.run(taskflow).wait();
+
+        if (result.calls_succeeded == 0) {
             throw errors::pair_not_available();
         }
-        return st_price{price / nb_calls_succeed.load()};
+        return st_price{result.price / result.calls_succeeded};
     }
 
     nlohmann::json price_service_platform::get_all_price_pairs_of_given_coin(const antara::asset &asset)
