@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <mutex>
+#include <atomic>
+#include <thread>
 #include <algorithm>
 #include <memory>
 #include <vector>
@@ -32,15 +35,21 @@ namespace antara::mmbot
     {
     public:
         explicit price_service_platform() noexcept;
-
+        ~price_service_platform() noexcept;
         st_price get_price(antara::pair currency_pair) const;
-
+        void enable_price_service_thread();
         nlohmann::json get_all_price_pairs_of_given_coin(const antara::asset &asset);
+
         nlohmann::json fetch_all_price();
+
     private:
         using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
-        std::unordered_set<std::string> coins_to_track{"BTC", "BCH", "DASH", "LTC", "DOGE", "QTUM", "DGB", "RVN",
-                                                       "ETH", "USDC", "BAT", "KMD", "RFOX", "ZILLA", "VRSC"};
+        std::unordered_set<std::string> coins_to_track_{"BTC", "BCH", "DASH", "LTC", "DOGE", "QTUM", "DGB", "RVN",
+                                                        "ETH", "USDC", "BAT", "KMD", "RFOX", "ZILLA", "VRSC"};
         registry_platform_price registry_platform_price_{};
+        std::thread price_service_fetcher_;
+        std::atomic_bool keep_thread_alive_{true};
+        std::mutex price_service_mutex_;
+        nlohmann::json price_registry_;
     };
 }

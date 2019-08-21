@@ -100,7 +100,7 @@ namespace antara::mmbot
                 }
             }
         };
-        std::for_each(begin(coins_to_track), end(coins_to_track), functor);
+        std::for_each(begin(coins_to_track_), end(coins_to_track_), functor);
         DVLOG_F(loguru::Verbosity_INFO, "json result: %s", json_data.dump().c_str());
         return json_data;
     }
@@ -109,11 +109,44 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         nlohmann::json json_data = nlohmann::json::array();
-        std::for_each(begin(coins_to_track), end(coins_to_track), [&json_data, this](auto &&current_asset) {
+        std::for_each(begin(coins_to_track_), end(coins_to_track_), [&json_data, this](auto &&current_asset) {
             json_data.push_back(get_all_price_pairs_of_given_coin(antara::asset{st_symbol{current_asset}}));
         });
         DVLOG_F(loguru::Verbosity_INFO, "json result: %s", json_data.dump().c_str());
         return json_data;
+    }
+
+    price_service_platform::~price_service_platform() noexcept
+    {
+        this->keep_thread_alive_ = false;
+
+        if (price_service_fetcher_.joinable()) {
+            price_service_fetcher_.join();
+        }
+    }
+
+    void price_service_platform::enable_price_service_thread()
+    {
+        price_service_fetcher_ = std::thread([this]() {
+            loguru::set_thread_name("price sv thread");
+            VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+            using namespace std::literals;
+            DVLOG_F(loguru::Verbosity_INFO, "%s", "fetching price begin");
+            auto json_data = this->fetch_all_price();
+            {
+                std::scoped_lock lock(this->price_service_mutex_);
+                this->price_registry_ = json_data;
+            }
+            DVLOG_F(loguru::Verbosity_INFO, "%s", "fetching price finished");
+            while(this->keep_thread_alive_) {
+                std::this_thread::sleep_for(30s);
+                DVLOG_F(loguru::Verbosity_INFO, "%s", "fetching price begin");
+                json_data = this->fetch_all_price();
+                std::scoped_lock lock(this->price_service_mutex_);
+                this->price_registry_ = json_data;
+                DVLOG_F(loguru::Verbosity_INFO, "%s", "fetching price finished");
+            }
+        });
     }
 
 }
