@@ -117,4 +117,12 @@ namespace antara::mmbot::tests
         CHECK_EQ(resp.code, 200);
         std::raise(SIGINT);
     }
+
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test get all prices")
+    {
+        std::this_thread::sleep_for(1s);
+        auto resp = RestClient::get("localhost:7777/api/v1/getallprice"); //Well formed
+        CHECK_EQ(resp.code, 200);
+        std::raise(SIGINT);
+    }
 }

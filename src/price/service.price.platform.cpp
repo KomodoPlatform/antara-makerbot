@@ -149,4 +149,11 @@ namespace antara::mmbot
         });
     }
 
+    nlohmann::json price_service_platform::get_price_registry() noexcept
+    {
+        std::scoped_lock lock(this->price_service_mutex_);
+        auto copy_json = this->price_registry_;
+        return copy_json;
+    }
+
 }

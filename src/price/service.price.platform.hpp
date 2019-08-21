@@ -39,8 +39,8 @@ namespace antara::mmbot
         st_price get_price(antara::pair currency_pair) const;
         void enable_price_service_thread();
         nlohmann::json get_all_price_pairs_of_given_coin(const antara::asset &asset);
-
         nlohmann::json fetch_all_price();
+        nlohmann::json get_price_registry() noexcept;
 
     private:
         using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
