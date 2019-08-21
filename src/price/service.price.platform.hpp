@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <mutex>
 #include <atomic>
 #include <thread>
 #include <algorithm>
