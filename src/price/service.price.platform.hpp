@@ -19,24 +19,28 @@
 #include <algorithm>
 #include <memory>
 #include <vector>
+#include <unordered_set>
 #include <unordered_map>
 #include "factory.price.platform.hpp"
 #include "abstract.price.platform.hpp"
 
 namespace antara::mmbot
 {
-    using registry_quotes_for_specific_base = std::unordered_map<st_symbol::value_type, std::vector<st_symbol>>;
     using registry_price_result = std::unordered_map<antara::pair, st_price>;
+
     class price_service_platform
     {
     public:
         explicit price_service_platform() noexcept;
+
         st_price get_price(antara::pair currency_pair) const;
-        registry_price_result get_price(const registry_quotes_for_specific_base& quotes_for_specific_base);
-        [[nodiscard]] const std::string& get_all_price() const;
+
+        nlohmann::json get_all_price_pairs_of_given_coin(const antara::asset &asset);
+        nlohmann::json fetch_all_price();
     private:
         using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
+        std::unordered_set<std::string> coins_to_track{"BTC", "BCH", "DASH", "LTC", "DOGE", "QTUM", "DGB", "RVN",
+                                                       "ETH", "USDC", "BAT", "KMD", "RFOX", "ZILLA", "VRSC"};
         registry_platform_price registry_platform_price_{};
-        std::string all_price_;
     };
 }

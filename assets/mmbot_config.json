@@ -20,5 +20,5 @@
       "price_api_key": "your_api_key_here"
     }
   },
-  "http_port": 8080
+  "http_port": 7777
 }
