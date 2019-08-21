@@ -56,6 +56,7 @@ namespace antara::mmbot::tests
             AND_WHEN("i want to fetch all the price") {
                 auto json_result = price_service.fetch_all_price();
                 CHECK_FALSE(json_result.empty());
+                CHECK(price_service.get_price_registry().empty());
             }
         }
         GIVEN("a price service with a wrong configuration (bad endpoint)") {

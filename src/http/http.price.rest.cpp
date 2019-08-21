@@ -59,4 +59,13 @@ namespace antara::mmbot::http::rest
         }
         return req->create_response(restinio::status_ok()).set_body(answer_json.dump()).done();
     }
+
+    restinio::request_handling_status_t
+    price::get_all_prices(const restinio::request_handle_t &req, const restinio::router::route_params_t &)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/getallprice");
+        auto answer_json = price_service_.get_price_registry();
+        return req->create_response(restinio::status_ok()).set_body(answer_json.dump()).done();
+    }
 }
