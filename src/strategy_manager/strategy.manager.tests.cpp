@@ -15,13 +15,15 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include <doctest/trompeloeil.hpp>
+#include <trompeloeil.hpp>
 
 #include <utils/mmbot_strong_types.hpp>
+#include <order_manager/order.manager.mock.hpp>
 #include "strategy.manager.hpp"
 
 namespace antara::mmbot::tests
 {
-
     TEST_CASE ("asset equality")
     {
         antara::asset a1 = {antara::st_symbol{"A"}};
@@ -34,7 +36,10 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("strats can be added and retreived")
     {
-        auto sm = strategy_manager();
+        dex dex;
+        cex cex;
+        order_manager_mock om(dex, cex);
+        auto sm = strategy_manager(om);
 
         antara::pair pair = {{st_symbol{"A"}},
                              {st_symbol{"B"}}};
@@ -60,10 +65,13 @@ namespace antara::mmbot::tests
         auto quantity = antara::st_quantity{10.0};
         auto bid_price = antara::st_price{9};
 
-        auto sm = strategy_manager();
+        dex dex;
+        cex cex;
+        auto om = order_manager(dex, cex);
+        auto sm = strategy_manager(om);
 
         auto expected = orders::order_level{bid_price, quantity, antara::side::buy};
-        auto actual = strategy_manager::make_bid(mid, spread, quantity);
+        auto actual = sm.make_bid(mid, spread, quantity);
 
         //CHECK_EQ(expected, actual);
     }
@@ -76,10 +84,13 @@ namespace antara::mmbot::tests
 
         antara::st_price ask_price = antara::st_price{11};
 
-        strategy_manager sm = strategy_manager();
+        dex dex;
+        cex cex;
+        auto om = order_manager(dex, cex);
+        auto sm = strategy_manager(om);
 
         auto expected = orders::order_level{ask_price, quantity, antara::side::sell};
-        auto actual = strategy_manager::make_ask(mid, spread, quantity);
+        auto actual = sm.make_ask(mid, spread, quantity);
 
         //CHECK_EQ(expected, actual);
     }

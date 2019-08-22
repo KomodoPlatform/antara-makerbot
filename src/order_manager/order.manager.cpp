@@ -120,15 +120,16 @@ namespace antara::mmbot
 
     st_order_id order_manager::place_order(const orders::order_level &ol)
     {
-        return dex_.place(ol);
+        auto &order = dex_.place(ol);
+        return order.id;
     }
 
     std::unordered_set<st_order_id> order_manager::place_order(const orders::order_group &os)
     {
         auto order_ids = std::unordered_set<st_order_id>();
         for (const auto &ol : os.levels) {
-            auto id = dex_.place(ol);
-            order_ids.emplace(id);
+            auto &order = dex_.place(ol);
+            order_ids.emplace(order.id);
         }
 
         return order_ids;

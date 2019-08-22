@@ -111,4 +111,48 @@ namespace antara::mmbot
         return os;
     }
 
+    orders::order_group strategy_manager::create_order_group(
+        antara::pair pair, const market_making_strategy &strat)
+    {
+        auto mid = ps_.get_price(pair);
+        return create_order_group(pair, strat, mid);
+    }
+
+    // Every n seconds, cancel all orders and place new ones
+    void refresh_orders(antara::pair pair)
+    {
+        // if (registry_strategies.find(pair) == registry_strategies_.end()) {
+        //     throw
+        // }
+
+        auto strat = registry_strategies_.at(pair);
+        auto orders = create_order_group(pair, strat);
+
+        // cancel existing orders
+        // TODO
+        // om_.cancel_orders(pair);
+
+        // place new orders
+        om_.place_order(orders);
+    }
+
+    void refresh_all_orders()
+    {
+        for(const auto& [pair, strat] : registry_strategies_) {
+            auto orders = create_order_group(pair, strat);
+            om_.place_order(orders);
+        }
+    }
+
+    // Call refresh_all_orders on a loop
+    void start()
+    {
+        while(running_)
+        {
+            // if there is latency in this function call
+            // then we should run this on a new thread for each pair
+            refresh_all_orders()
+            std::this_thread::sleep_for(1s);
+        }
+    }
 }

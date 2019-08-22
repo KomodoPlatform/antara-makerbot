@@ -28,29 +28,48 @@
 
 namespace antara::mmbot
 {
-    class order_manager
+    class abstract_om
+    {
+    public:
+        virtual ~abstract_om() = default;
+
+        virtual [[nodiscard]] const orders::order &get_order(const st_order_id &id) const = 0;
+        virtual [[nodiscard]] const orders::orders_by_id &get_all_orders() const = 0;
+
+        virtual void add_orders(const std::vector<orders::order> &o) = 0;
+        virtual void add_executions(const std::vector<orders::execution> &e) = 0;
+
+        virtual void start() = 0;
+        virtual void poll() = 0;
+
+        virtual void update_from_live() = 0;
+
+        virtual st_order_id place_order(const orders::order_level &ol) = 0;
+        virtual std::unordered_set<st_order_id> place_order(const orders::order_group &os) = 0;
+    };
+
+    class order_manager : public abstract_om
     {
     public:
         order_manager(abstract_dex& dex, abstract_cex& cex) : dex_(dex), cex_(cex)
         {}
 
-
-        [[nodiscard]] const orders::order &get_order(const st_order_id &id) const;
+        [[nodiscard]] const orders::order &get_order(const st_order_id &id) const override;
         [[nodiscard]] const orders::orders_by_id &get_all_orders() const
         {
             return orders_;
         }
 
-        void add_orders(const std::vector<orders::order> &o);
-        void add_executions(const std::vector<orders::execution> &e);
+        void add_orders(const std::vector<orders::order> &o) override;
+        void add_executions(const std::vector<orders::execution> &e) override;
 
-        void start();
-        void poll();
+        void start() override;
+        void poll() override;
 
-        void update_from_live();
+        void update_from_live() override;
 
-        st_order_id place_order(const orders::order_level &ol);
-        std::unordered_set<st_order_id> place_order(const orders::order_group &os);
+        st_order_id place_order(const orders::order_level &ol) override;
+        std::unordered_set<st_order_id> place_order(const orders::order_group &os) override;
 
     private:
         abstract_dex& dex_;

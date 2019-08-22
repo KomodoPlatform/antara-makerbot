@@ -21,7 +21,7 @@
 
 namespace antara::mmbot
 {
-    st_order_id dex::place([[maybe_unused]] const orders::order_level &o)
+    orders::order &dex::place([[maybe_unused]] const orders::order_level &o)
     {
         throw mmbot::errors::not_implemented(pretty_function);
     }
