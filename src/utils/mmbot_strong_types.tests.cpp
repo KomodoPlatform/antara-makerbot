@@ -20,13 +20,13 @@
 
 namespace antara::mmbot::tests
 {
-    TEST_CASE ("st_price can * with st_spread")
+    TEST_CASE ("st_price can multiply with st_spread")
     {
         auto price = st_price{100};
         auto spread = st_spread{1.05};
 
         auto expected = st_price{105};
 
-        CHECK_EQ(expected, price * spread);
+        CHECK_EQ(expected.value(), (price * spread).value());
     }
 }
