@@ -20,6 +20,26 @@
 
 namespace antara::mmbot::tests
 {
+    TEST_CASE ("st_prices can be equal")
+    {
+        auto p1 = st_price{1};
+        auto p_one = st_price{1};
+        auto p2 = st_price{2};
+
+        CHECK_EQ(p1, p_one);
+        CHECK_NE(p1, p2);
+    }
+
+    TEST_CASE ("st_prices can be ordered")
+    {
+        auto p1 = st_price{1};
+        auto p2 = st_price{2};
+        auto p3 = st_price{3};
+
+        CHECK(p1 < p2);
+        CHECK(!(p3 < p2));
+    }
+
     TEST_CASE ("st_price can multiply with st_spread")
     {
         auto price = st_price{100};
