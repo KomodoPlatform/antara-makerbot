@@ -25,7 +25,7 @@ namespace antara::mmbot
 {
     price_service_platform::price_service_platform() noexcept
     {
-        const auto& cfg = antara::mmbot::get_mmbot_config();
+        const auto &cfg = antara::mmbot::get_mmbot_config();
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         for (auto[platform_name, platform_cfg]: cfg.price_registry) {
             auto current_price_platform_ptr = factory_price_platform::create(platform_name);
@@ -38,58 +38,82 @@ namespace antara::mmbot
     st_price price_service_platform::get_price(antara::pair currency_pair) const
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        std::atomic_size_t nb_calls_succeed = 0u;
-        absl::uint128 price = 0;
-        std::mutex mutex;
-        auto price_functor = [&nb_calls_succeed, &mutex, &price, &currency_pair](auto &&current_platform_price) {
-            auto &&[platform_name, platform_ptr] = current_platform_price;
-            auto current_price = platform_ptr->get_price(currency_pair, 0u).value();
-            if( current_price > 0 ) {
-                ++nb_calls_succeed;
-            }
-            {
-                auto const lck = std::lock_guard(mutex);
-                price = price + current_price;
-            }
+        struct TransformResult
+        {
+            absl::uint128 price = 0;
+            size_t calls_succeeded = 0;
         };
+        TransformResult result{};
 
-        if (!registry_platform_price_.empty()) {
-            antara::par_for_each(begin(registry_platform_price_), end(registry_platform_price_), price_functor);
-        }
+        tf::Taskflow taskflow;
+        taskflow.transform_reduce(
+                begin(registry_platform_price_), end(registry_platform_price_), result,
 
-        if (nb_calls_succeed == 0) {
+                // reduce
+                [](TransformResult a, TransformResult b) {
+                    return TransformResult{
+                            a.price + b.price,
+                            a.calls_succeeded + b.calls_succeeded
+                    };
+                },
+
+                // transform
+                [&currency_pair](auto &&current_platform_price) {
+                    auto &&platform_ptr = current_platform_price.second;
+                    auto current_price = platform_ptr->get_price(currency_pair, 0u).value();
+                    if (current_price > 0) {
+                        return TransformResult{current_price, 1};
+                    }
+
+                    return TransformResult{};
+                }
+        );
+
+        tf::Executor{}.run(taskflow).wait();
+
+        if (result.calls_succeeded == 0) {
             throw errors::pair_not_available();
         }
-        return st_price{price / nb_calls_succeed.load()};
+        return st_price{result.price / result.calls_succeeded};
     }
 
-    registry_price_result price_service_platform::get_price(const registry_quotes_for_specific_base &quotes_for_specific_base)
+    nlohmann::json price_service_platform::get_all_price_pairs_of_given_coin(const antara::asset &asset)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        antara::mmbot::registry_price_result res{};
-        for (auto&&[current_symbol, current_quotes_table] : quotes_for_specific_base) {
-            for (auto &&current_quote : current_quotes_table) {
-                antara::pair current_pair{antara::asset{current_quote}, antara::asset{st_symbol{current_symbol}}};
-                res.emplace(current_pair, this->get_price(current_pair));
+        nlohmann::json json_data = nlohmann::json::object();
+        json_data[asset.symbol.value()] = nlohmann::json::array();
+        auto functor = [&asset, this, &json_data](auto &&current_coin) {
+            if (current_coin != asset.symbol.value()) {
+                nlohmann::json current_data = nlohmann::json::object();
+                antara::pair current_pair{antara::asset{st_symbol{current_coin}}, asset};
+                try {
+                    auto current_price = this->get_price(current_pair);
+                    auto current_price_str = antara::get_price_as_string_decimal(get_mmbot_config(), asset.symbol,
+                                                                                 current_pair.quote.symbol,
+                                                                                 current_price);
+
+                    current_data[asset.symbol.value() + "/" + current_coin] = current_price_str;
+                    json_data[asset.symbol.value()].push_back(current_data);
+                }
+                catch (const antara::mmbot::errors::pair_not_available &e) {
+                    VLOG_F(loguru::Verbosity_WARNING, "%s", e.what());
+                }
             }
-        }
-        all_price_.clear();
-        nlohmann::json all_price_json;
-        all_price_json["prices"] = nlohmann::json::array();
-        for (auto &&[current_pair, current_price] : res) {
-            auto current_object = nlohmann::json::object();
-            std::string current_price_str = antara::get_price_as_string_decimal(get_mmbot_config(), current_pair.base.symbol, current_price);
-            current_object[current_pair.base.symbol.value() + "/" + current_pair.quote.symbol.value()] = current_price_str;
-            all_price_json["prices"].push_back(std::move(current_object));
-        }
-        all_price_ = all_price_json.dump();
-        return res;
+        };
+        std::for_each(begin(coins_to_track), end(coins_to_track), functor);
+        DVLOG_F(loguru::Verbosity_INFO, "json result: %s", json_data.dump().c_str());
+        return json_data;
     }
 
-    const std::string &price_service_platform::get_all_price() const
+    nlohmann::json price_service_platform::fetch_all_price()
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        DVLOG_F(loguru::Verbosity_INFO, "all_price: %s", all_price_.c_str());
-        return all_price_;
+        nlohmann::json json_data = nlohmann::json::array();
+        std::for_each(begin(coins_to_track), end(coins_to_track), [&json_data, this](auto &&current_asset) {
+            json_data.push_back(get_all_price_pairs_of_given_coin(antara::asset{st_symbol{current_asset}}));
+        });
+        DVLOG_F(loguru::Verbosity_INFO, "json result: %s", json_data.dump().c_str());
+        return json_data;
     }
+
 }
