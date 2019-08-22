@@ -19,31 +19,13 @@
 #include <trompeloeil.hpp>
 
 #include <utils/mmbot_strong_types.hpp>
+#include <dex/dex.mock.hpp>
+#include <cex/cex.mock.hpp>
+
 #include "order.manager.hpp"
 
 namespace antara::mmbot::tests
 {
-    class dex_mock : public dex
-    {
-    public:
-        MAKE_MOCK1(place, st_order_id(const orders::order_level&), override);
-
-        MAKE_MOCK0(get_live_orders, std::vector<orders::order>(), override);
-        MAKE_MOCK1(get_order_status, orders::order(const st_order_id&), override);
-
-        MAKE_MOCK0(get_executions, std::vector<orders::execution>(), override);
-        MAKE_MOCK1(get_executions, std::vector<orders::execution>(const st_order_id&), override);
-        MAKE_MOCK1(get_executions, std::vector<orders::execution>(const std::unordered_set<st_order_id>&), override);
-        MAKE_MOCK0(get_recent_executions, std::vector<orders::execution>(), override);
-    };
-
-    class cex_mock : public cex
-    {
-    public:
-        MAKE_MOCK1(place_order, void(const orders::order_level&), override);
-        MAKE_MOCK1(mirror, void(const orders::execution&), override);
-    };
-
     using trompeloeil::_;
     using trompeloeil::lt;
 
