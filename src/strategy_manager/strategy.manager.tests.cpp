@@ -20,6 +20,7 @@
 
 #include <utils/mmbot_strong_types.hpp>
 #include <order_manager/order.manager.mock.hpp>
+#include <price/service.price.platform.mock.hpp>
 #include "strategy.manager.hpp"
 
 namespace antara::mmbot::tests
@@ -34,12 +35,29 @@ namespace antara::mmbot::tests
         CHECK_NE(a1, a3);
     }
 
+    TEST_CASE ("market_making_strategy equality")
+    {
+        auto pair = antara::pair::of("A", "B");
+        auto spread = st_spread{0.1};
+        auto side = antara::side::sell;
+
+        auto q_10 = st_quantity{10};
+        auto q_11 = st_quantity{11};
+
+        auto mms_1 = market_making_strategy{pair, spread, q_10, side};
+        auto mms_2 = market_making_strategy{pair, spread, q_11, side};
+
+        CHECK_EQ(mms_1, mms_1);
+        CHECK_NE(mms_1, mms_2);
+    }
+
     TEST_CASE ("strats can be added and retreived")
     {
         dex dex;
         cex cex;
         order_manager_mock om(dex, cex);
-        auto sm = strategy_manager(om);
+        auto ps = price_service_platform_mock();
+        auto sm = strategy_manager(ps, om);
 
         antara::pair pair = {{st_symbol{"A"}},
                              {st_symbol{"B"}}};
@@ -55,7 +73,6 @@ namespace antara::mmbot::tests
 
         const auto& other = sm.get_strategy(pair);
         CHECK_EQ(strat, other);
-
     }
 
     TEST_CASE ("bids can be made")
@@ -68,7 +85,8 @@ namespace antara::mmbot::tests
         dex dex;
         cex cex;
         auto om = order_manager(dex, cex);
-        auto sm = strategy_manager(om);
+        auto ps = price_service_platform_mock();
+        auto sm = strategy_manager(ps, om);
 
         auto expected = orders::order_level{bid_price, quantity, antara::side::buy};
         auto actual = sm.make_bid(mid, spread, quantity);
@@ -87,7 +105,8 @@ namespace antara::mmbot::tests
         dex dex;
         cex cex;
         auto om = order_manager(dex, cex);
-        auto sm = strategy_manager(om);
+        auto ps = price_service_platform_mock();
+        auto sm = strategy_manager(ps, om);
 
         auto expected = orders::order_level{ask_price, quantity, antara::side::sell};
         auto actual = sm.make_ask(mid, spread, quantity);

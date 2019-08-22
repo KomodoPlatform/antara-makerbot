@@ -29,6 +29,11 @@ namespace antara::mmbot
                && side == other.side;
     }
 
+    bool market_making_strategy::operator!=(const market_making_strategy &other) const
+    {
+        return !(*this == other);
+    }
+
     void strategy_manager::add_strategy(const antara::pair &pair, const market_making_strategy &strat)
     {
         registry_strategies_.emplace(pair, strat);
@@ -119,7 +124,7 @@ namespace antara::mmbot
     }
 
     // Every n seconds, cancel all orders and place new ones
-    void refresh_orders(antara::pair pair)
+    void strategy_manager::refresh_orders(antara::pair pair)
     {
         // if (registry_strategies.find(pair) == registry_strategies_.end()) {
         //     throw
@@ -136,7 +141,7 @@ namespace antara::mmbot
         om_.place_order(orders);
     }
 
-    void refresh_all_orders()
+    void strategy_manager::refresh_all_orders()
     {
         for(const auto& [pair, strat] : registry_strategies_) {
             auto orders = create_order_group(pair, strat);
@@ -145,14 +150,13 @@ namespace antara::mmbot
     }
 
     // Call refresh_all_orders on a loop
-    void start()
+    void strategy_manager::start()
     {
-        while(running_)
-        {
+        while(running_) {
             // if there is latency in this function call
             // then we should run this on a new thread for each pair
-            refresh_all_orders()
-            std::this_thread::sleep_for(1s);
+            refresh_all_orders();
+            // std::this_thread::sleep_for(1s);
         }
     }
 }

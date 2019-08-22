@@ -18,9 +18,11 @@
 
 #include <vector>
 #include <unordered_map>
+
 #include <utils/mmbot_strong_types.hpp>
 #include <orders/orders.hpp>
 #include <order_manager/order.manager.hpp>
+#include <price/service.price.platform.hpp>
 
 namespace antara::mmbot
 {
@@ -31,6 +33,7 @@ namespace antara::mmbot
         antara::st_quantity quantity;
         antara::side side;
         bool operator==(const market_making_strategy &other) const;
+        bool operator!=(const market_making_strategy &other) const;
     };
 
     class abstract_sm
@@ -54,14 +57,16 @@ namespace antara::mmbot
 
         virtual orders::order_group create_order_group(
             antara::pair pair, const market_making_strategy &strat, antara::st_price mid) = 0;
+
+        virtual orders::order_group create_order_group(antara::pair pair, const market_making_strategy &strat) = 0;
     };
 
     class strategy_manager : public abstract_sm
     {
     public:
-        strategy_manager(order_manager& om, price_service_platform& ps): om_(om), ps_(ps)
+        strategy_manager(abstract_price_service_platform& ps, abstract_om& om): om_(om), ps_(ps)
         {
-            running_ = true;
+            // running_ = true;
         }
 
         void add_strategy(const antara::pair& pair, const market_making_strategy& strat) override;
@@ -81,10 +86,15 @@ namespace antara::mmbot
 
         orders::order_group create_order_group(antara::pair pair, const market_making_strategy &strat) override;
 
+        void refresh_orders(antara::pair pair);
+        void refresh_all_orders();
+
+        void start();
+
     private:
         registry_strategies registry_strategies_;
-        order_manager &om_;
-        price_service_platform &ps_;
+        abstract_om &om_;
+        abstract_price_service_platform &ps_;
         bool running_;
     };
 }

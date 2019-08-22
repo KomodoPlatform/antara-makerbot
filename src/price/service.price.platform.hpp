@@ -31,16 +31,28 @@ namespace antara::mmbot
 {
     using registry_price_result = std::unordered_map<antara::pair, st_price>;
 
-    class price_service_platform
+    class abstract_price_service_platform
+    {
+    public:
+        // virtual explicit price_service_platform() noexcept = 0;
+        // virtual ~abstract_price_service_platform() = 0;
+        virtual st_price get_price(antara::pair currency_pair) const = 0;
+        virtual void enable_price_service_thread() = 0;
+        virtual nlohmann::json get_all_price_pairs_of_given_coin(const antara::asset &asset) = 0;
+        virtual nlohmann::json fetch_all_price() = 0;
+        virtual nlohmann::json get_price_registry() noexcept = 0;
+    };
+
+    class price_service_platform : public abstract_price_service_platform
     {
     public:
         explicit price_service_platform() noexcept;
-        ~price_service_platform() noexcept;
-        st_price get_price(antara::pair currency_pair) const;
-        void enable_price_service_thread();
-        nlohmann::json get_all_price_pairs_of_given_coin(const antara::asset &asset);
-        nlohmann::json fetch_all_price();
-        nlohmann::json get_price_registry() noexcept;
+        ~price_service_platform();
+        st_price get_price(antara::pair currency_pair) const override;
+        void enable_price_service_thread() override;
+        nlohmann::json get_all_price_pairs_of_given_coin(const antara::asset &asset) override;
+        nlohmann::json fetch_all_price() override;
+        nlohmann::json get_price_registry() noexcept override;
 
     private:
         using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
