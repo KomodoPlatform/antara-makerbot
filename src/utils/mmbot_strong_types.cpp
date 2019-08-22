@@ -32,6 +32,11 @@ namespace antara
         return price.value() == other.value();
     }
 
+    bool operator!=(const st_price &price, const st_price &other)
+    {
+        return !(price == other);
+    }
+
     bool operator<(const st_price &price, const st_price &other)
     {
         return price.value() < other.value();
