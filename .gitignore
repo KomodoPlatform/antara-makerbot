@@ -2,4 +2,5 @@ src/version/version.hpp
 cmake-build-debug
 .idea
 build
+
 .clang_complete
