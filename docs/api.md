@@ -352,3 +352,96 @@ Retrieve the version of mm2
   "result":"2.0.1009_mm2_b08da3aa9_Darwin"
 }
 ```
+
+## mm2 setprice
+
+The setprice method places an order on the orderbook, and it relies on this node acting as a maker, also called a Bob node.
+
+**URL**: `/api/v1/legacy/mm2/setprice`
+
+**Method**: `POST`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+### Success Response
+
+**Code** `200 OK`
+
+**Content examples (request)**
+
+```json
+{
+  "base": "RICK",
+  "method": "setprice",
+  "price": "1",
+  "rel": "MORTY",
+  "userpass": "YOUR_PASSWORD_HERE",
+  "volume": "1"
+}
+```
+
+**Content example (answer)**
+
+```json
+{
+  "result": {
+    "base": "RICK",
+    "created_at": 1566505487524,
+    "matches": {},
+    "max_base_vol": "1",
+    "min_base_vol": "0",
+    "price": "1",
+    "rel": "MORTY",
+    "started_swaps": [],
+    "uuid": "de05f451-d665-45c6-9526-112446644621"
+  }
+}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
+
+## mm2 cancel_order
+
+The `cancel_order` cancels the active order created by the MM2 node.
+
+**URL**: `/api/v1/legacy/mm2/cancel_order`
+
+**Method**: `POST`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+### Success Response
+
+**Code** `200 OK`
+
+**Content examples (request)**
+
+```json
+{
+  "method": "cancel_order",
+  "userpass": "YOUR_PASSWORD_HERE",
+  "uuid": "de05f451-d665-45c6-9526-112446644621"
+}
+```
+
+**Content example (answer)**
+
+```json
+{
+  "result": "success"
+}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
