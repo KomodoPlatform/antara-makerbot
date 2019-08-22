@@ -37,6 +37,10 @@ namespace antara::mmbot
             return this->price_rest_callbook_.get_price(std::forward<decltype(params)>(params)...);
         });
 
+        http_router->http_get("/api/v1/getallprice", [this](auto &&... params) {
+            return this->price_rest_callbook_.get_all_prices(std::forward<decltype(params)>(params)...);
+        });
+
         http_router->http_get("/api/v1/legacy/mm2/getorderbook", [this](auto &&... params) {
             return this->mm2_rest_callbook_.get_orderbook(std::forward<decltype(params)>(params)...);
         });
@@ -48,6 +52,7 @@ namespace antara::mmbot
         http_router->http_get("/api/v1/legacy/mm2/version", [this](auto &&... params) {
             return this->mm2_rest_callbook_.version(std::forward<decltype(params)>(params)...);
         });
+
 
         http_router->non_matched_request_handler(
                 [](auto req) {

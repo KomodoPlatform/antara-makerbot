@@ -1,5 +1,172 @@
 # Rest Api Doc
 
+## get all price from cache
+
+Retrieve all the median price pairs of all komodo ecosystem coins
+
+**URL**: `/api/v1/getallprice`
+
+**Method**: `GET`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+**Prerequisites**: Program should be launched since atleast one minute (cache filling)
+
+### Success Response
+
+**Code**: `200 OK`
+
+**Content examples**
+
+```json
+[
+  {
+    "RFOX": [
+      {
+        "RFOX/VRSC": "0.27409349"
+      },
+      {
+        "RFOX/KMD": "0.03270390"
+      },
+      {
+        "RFOX/DOGE": "9.38900572"
+      },
+      {
+        "RFOX/BAT": "0.13624038"
+      },
+      {
+        "RFOX/RVN": "0.73872477"
+      },
+      {
+        "RFOX/ZILLA": "0.22130490"
+      },
+      {
+        "RFOX/QTUM": "0.00992935"
+      },
+      {
+        "RFOX/BTC": "0.00000243"
+      },
+      {
+        "RFOX/LTC": "0.00033437"
+      },
+      {
+        "RFOX/DASH": "0.00027411"
+      },
+      {
+        "RFOX/DGB": "2.76478635"
+      },
+      {
+        "RFOX/USDC": "0.02472535"
+      },
+      {
+        "RFOX/ETH": "0.00013283"
+      },
+      {
+        "RFOX/BCH": "0.00008210"
+      }
+    ]
+  },
+  {
+    "VRSC": [
+      {
+        "VRSC/RFOX": "3.64839017"
+      },
+      {
+        "VRSC/KMD": "0.11931659"
+      },
+      {
+        "VRSC/DOGE": "34.25475619"
+      },
+      {
+        "VRSC/BAT": "0.49705808"
+      },
+      {
+        "VRSC/RVN": "2.69515619"
+      },
+      {
+        "VRSC/ZILLA": "0.80740661"
+      },
+      {
+        "VRSC/QTUM": "0.03622615"
+      },
+      {
+        "VRSC/BTC": "0.00000888"
+      },
+      {
+        "VRSC/LTC": "0.00121990"
+      },
+      {
+        "VRSC/DASH": "0.00100008"
+      },
+      {
+        "VRSC/DGB": "10.08701934"
+      },
+      {
+        "VRSC/USDC": "0.09020775"
+      },
+      {
+        "VRSC/ETH": "0.00048465"
+      },
+      {
+        "VRSC/BCH": "0.00029954"
+      }
+    ]
+  },
+  {
+    "KMD": [
+      {
+        "KMD/RFOX": "30.57739281"
+      },
+      {
+        "KMD/VRSC": "8.38106435"
+      },
+      {
+        "KMD/DOGE": "287.09131590"
+      },
+      {
+        "KMD/BAT": "4.16587578"
+      },
+      {
+        "KMD/RVN": "22.58827747"
+      },
+      {
+        "KMD/ZILLA": "6.76692679"
+      },
+      {
+        "KMD/QTUM": "0.30361373"
+      },
+      {
+        "KMD/BTC": "0.00007441"
+      },
+      {
+        "KMD/LTC": "0.01022409"
+      },
+      {
+        "KMD/DASH": "0.00838172"
+      },
+      {
+        "KMD/DGB": "84.53995820"
+      },
+      {
+        "KMD/USDC": "0.75603698"
+      },
+      {
+        "KMD/ETH": "0.00406189"
+      },
+      {
+        "KMD/BCH": "0.00251046"
+      }
+    ]
+  }
+]
+```
+
+### Error response
+
+200 + `null` in the body
+
 ## get price with an base currency and quote currency
 
 Retrieves the median of the price of a base / quote currency pair
