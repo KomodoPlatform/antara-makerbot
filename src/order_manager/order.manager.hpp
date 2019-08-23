@@ -71,11 +71,17 @@ namespace antara::mmbot
         st_order_id place_order(const orders::order_level &ol) override;
         std::unordered_set<st_order_id> place_order(const orders::order_group &os) override;
 
+        std::unordered_set<st_order_id> cancel_orders(antara::pair pair);
+
     private:
         abstract_dex& dex_;
         abstract_cex& cex_;
 
         orders::orders_by_id orders_;
         orders::executions_by_id executions_;
+
+        std::unordered_map<antara::pair, std::unordered_set<st_order_id>> orders_by_pair_;
+
+        void add_order_to_pair_map(const orders::order &o);
     };
 }

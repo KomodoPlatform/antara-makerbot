@@ -23,6 +23,19 @@
 
 namespace antara::mmbot
 {
+    void order_manager::add_order_to_pair_map(const orders::order &o)
+    {
+        auto &id = o.id;
+        auto &pair = o.pair;
+
+        if (orders_by_pair_.find(pair) != orders_by_pair_.end()) {
+            orders_by_pair_.emplace(pair, std::unordered_set<st_order_id>());
+        }
+
+        auto &ids = orders_by_pair_.at(pair);
+        ids.emplace(id);
+    }
+
     const orders::order &order_manager::get_order(const st_order_id &id) const
     {
         return orders_.at(id);
@@ -32,6 +45,7 @@ namespace antara::mmbot
     {
         for (const auto &o : orders) {
             orders_.emplace(o.id, o);
+            add_order_to_pair_map(o);
         }
     }
 
@@ -121,7 +135,13 @@ namespace antara::mmbot
     st_order_id order_manager::place_order(const orders::order_level &ol)
     {
         auto &order = dex_.place(ol);
-        return order.id;
+        auto id = order.id;
+        auto pair = order.pair;
+
+        orders_.emplace(id, order);
+        add_order_to_pair_map(order);
+
+        return id;
     }
 
     std::unordered_set<st_order_id> order_manager::place_order(const orders::order_group &os)
@@ -133,5 +153,29 @@ namespace antara::mmbot
         }
 
         return order_ids;
+    }
+
+    std::unordered_set<st_order_id> order_manager::cancel_orders(antara::pair pair)
+    {
+        auto ids = orders_by_pair_.at(pair);
+        std::unordered_set<st_order_id> cancelled_orders;
+        for (const auto &id : ids) {
+            auto result = dex_.cancel(id);
+            if (result) {
+                cancelled_orders.emplace(id);
+            }
+        }
+
+        for (const auto &id : cancelled_orders) {
+            ids.erase(id);
+            auto &order = orders_.at(id);
+            auto ex_ids = order.execution_ids;
+            for (auto &&current_id : ex_ids) {
+                executions_.erase(current_id);
+            }
+            orders_.erase(order.id);
+        }
+
+        return cancelled_orders;
     }
 }

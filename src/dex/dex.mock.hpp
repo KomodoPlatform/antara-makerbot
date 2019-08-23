@@ -29,6 +29,7 @@ namespace antara::mmbot
     {
     public:
         MAKE_MOCK1(place, orders::order&(const orders::order_level&), override);
+        MAKE_MOCK1(cancel, bool(st_order_id), override);
 
         MAKE_MOCK0(get_live_orders, std::vector<orders::order>(), override);
         MAKE_MOCK1(get_order_status, orders::order(const st_order_id&), override);
