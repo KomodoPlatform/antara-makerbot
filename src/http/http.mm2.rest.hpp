@@ -39,6 +39,35 @@ namespace antara::mmbot::http::rest
         restinio::request_handling_status_t
         version(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
+        restinio::request_handling_status_t
+        set_price(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
+
+        restinio::request_handling_status_t
+        cancel_order(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
+
+        template<typename TRequest, typename Functor>
+        restinio::request_handling_status_t process_post_function(const restinio::request_handle_t &req, const restinio::router::route_params_t &, Functor&& rpc_functor)
+        {
+            nlohmann::json json_answer;
+            auto status = restinio::status_ok();
+            try {
+                auto json_data = nlohmann::json::parse(req->body());
+                TRequest request;
+                mmbot::mm2::from_json(json_data, request);
+                auto answer = rpc_functor(std::move(request));
+                status = restinio::http_status_line_t(
+                        static_cast<restinio::http_status_code_t>(answer.rpc_result_code), "");
+                json_answer = nlohmann::json::parse(answer.result);
+            }
+            catch (const nlohmann::json::exception &error) {
+                VLOG_SCOPE_F(loguru::Verbosity_ERROR, "json error: %s", error.what());
+                return req->create_response(restinio::status_bad_request()).set_body(error.what()).done();
+            }
+            return req->create_response(status).append_header(restinio::http_field::content_type,
+                                                              "application/json").set_body(
+                    json_answer.dump()).done();
+        }
+
     private:
         mm2_client &mm2_client_;
     };

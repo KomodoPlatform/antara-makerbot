@@ -44,22 +44,19 @@ namespace antara::mmbot::tests
                     }
                 }
             }
-            AND_WHEN("i want to get price with a registry of symbols") {
-                THEN("i create the registry of symbols that i to get price") {
-                    registry_quotes_for_specific_base registry_symbols{{"KMD", {st_symbol{"DOGE"}, st_symbol{"ETH"}, st_symbol{"BTC"}}}, {"ZIL", {st_symbol{"KMD"}}}};
+            AND_WHEN("i want to get all the price trading pair of specific coin") {
+                THEN("i create the coin") {
+                    antara::asset coin{st_symbol{"BTC"}};
                     AND_THEN("i ask for the price using the registry of symbols") {
-                        auto res = price_service.get_price(registry_symbols);
-                        AND_THEN("i should atleast get 4 different price that's all greater than 0")
-                        {
-                            CHECK(!res.empty());
-                            CHECK_EQ_F(4u, res.size(), "size should be 4");
-                            for (auto&& current_result: res) {
-                                CHECK_GT(current_result.second.value(), 0);
-                            }
-                            CHECK(!price_service.get_all_price().empty());
-                        }
+                        auto json_result = price_service.get_all_price_pairs_of_given_coin(coin);
+                        CHECK_FALSE(json_result.empty());
                     }
                 }
+            }
+            AND_WHEN("i want to fetch all the price") {
+                auto json_result = price_service.fetch_all_price();
+                CHECK_FALSE(json_result.empty());
+                CHECK(price_service.get_price_registry().empty());
             }
         }
         GIVEN("a price service with a wrong configuration (bad endpoint)") {

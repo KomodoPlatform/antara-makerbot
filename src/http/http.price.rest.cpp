@@ -51,12 +51,21 @@ namespace antara::mmbot::http::rest
         nlohmann::json answer_json;
         try {
             price = price_service_.get_price(currency_pair);
-            answer_json = {{"price", get_price_as_string_decimal(get_mmbot_config(), currency_pair.quote.symbol, price)}};
+            answer_json = {{"price", get_price_as_string_decimal(get_mmbot_config(), currency_pair.base.symbol, currency_pair.quote.symbol, price)}};
         }
         catch (const antara::mmbot::errors::pair_not_available& e) {
             nlohmann::json error_json = {"errors", e.what()};
             req->create_response(restinio::status_internal_server_error()).set_body(error_json.dump()).done();
         }
+        return req->create_response(restinio::status_ok()).set_body(answer_json.dump()).done();
+    }
+
+    restinio::request_handling_status_t
+    price::get_all_prices(const restinio::request_handle_t &req, const restinio::router::route_params_t &)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/getallprice");
+        auto answer_json = price_service_.get_price_registry();
         return req->create_response(restinio::status_ok()).set_body(answer_json.dump()).done();
     }
 }

@@ -29,7 +29,7 @@ namespace antara::mmbot::http::rest
         ~price() noexcept;
 
         restinio::request_handling_status_t get_price(const restinio::request_handle_t& req, const restinio::router::route_params_t &);
-
+        restinio::request_handling_status_t get_all_prices(const restinio::request_handle_t& req, const restinio::router::route_params_t &);
     private:
         price_service_platform &price_service_;
     };

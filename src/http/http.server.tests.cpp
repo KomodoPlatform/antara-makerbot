@@ -61,7 +61,7 @@ namespace antara::mmbot::tests
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test welcome http_server")
     {
         std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:8080/");
+        auto resp = RestClient::get("localhost:7777/");
         CHECK_EQ(resp.code, 200);
         std::raise(SIGINT);
     }
@@ -69,15 +69,15 @@ namespace antara::mmbot::tests
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test getprice")
     {
         std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:8080/api/v1/getprice");
+        auto resp = RestClient::get("localhost:7777/api/v1/getprice");
         CHECK_EQ(resp.code, 400); //! Bad request
-        resp = RestClient::get("localhost:8080/api/v1/getprice?wrong_option=0&wrong_option2=1");
+        resp = RestClient::get("localhost:7777/api/v1/getprice?wrong_option=0&wrong_option2=1");
         CHECK_EQ(resp.code, 422); //! Unprocessable entity
-        resp = RestClient::get("localhost:8080/api/v1/getprice?base_currency=KMD&quote_currency=BTC"); //Well formed
+        resp = RestClient::get("localhost:7777/api/v1/getprice?base_currency=KMD&quote_currency=BTC"); //Well formed
         CHECK_EQ(resp.code, 200);
-        resp = RestClient::get("localhost:8080/api/v1/getprice?base_currency=DOGE&quote_currency=BTC"); //Well formed
+        resp = RestClient::get("localhost:7777/api/v1/getprice?base_currency=DOGE&quote_currency=BTC"); //Well formed
         CHECK_EQ(resp.code, 200);
-        resp = RestClient::get("localhost:8080/api/v1/getprice?base_currency=KMDD&quote_currency=BTC"); //Wrong base_currency throw pair not available (internal error)
+        resp = RestClient::get("localhost:7777/api/v1/getprice?base_currency=KMDD&quote_currency=BTC"); //Wrong base_currency throw pair not available (internal error)
         CHECK_EQ(resp.code, 500);
         std::raise(SIGINT);
     }
@@ -85,13 +85,13 @@ namespace antara::mmbot::tests
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 get orderbook")
     {
         std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/getorderbook");
+        auto resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/getorderbook");
         CHECK_EQ(resp.code, 400); //! Bad request
-        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/getorderbook?wrong_option=0&wrong_option2=1");
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/getorderbook?wrong_option=0&wrong_option2=1");
         CHECK_EQ(resp.code, 422); //! Unprocessable entity
-        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/getorderbook?base_currency=RICK&quote_currency=MORTY"); //Well formed
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/getorderbook?base_currency=RICK&quote_currency=MORTY"); //Well formed
         CHECK_EQ(resp.code, 200);
-        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/getorderbook?base_currency=BTC&quote_currency=MORTY"); //Well formed but BTC not enabled.
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/getorderbook?base_currency=BTC&quote_currency=MORTY"); //Well formed but BTC not enabled.
         CHECK_EQ(resp.code, 500);
         std::raise(SIGINT);
     }
@@ -99,13 +99,13 @@ namespace antara::mmbot::tests
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 my balance")
     {
         std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/my_balance");
+        auto resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance");
         CHECK_EQ(resp.code, 400); //! Bad request
-        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/my_balance?wrong_option=0");
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance?wrong_option=0");
         CHECK_EQ(resp.code, 422); //! Unprocessable entity
-        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/my_balance?currency=RICK"); //Well formed
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance?currency=RICK"); //Well formed
         CHECK_EQ(resp.code, 200);
-        resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/my_balance?currency=BTC"); //Well formed but BTC not enabled.
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance?currency=BTC"); //Well formed but BTC not enabled.
         CHECK_EQ(resp.code, 500);
         std::raise(SIGINT);
     }
@@ -113,7 +113,34 @@ namespace antara::mmbot::tests
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 version")
     {
         std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:8080/api/v1/legacy/mm2/version"); //Well formed
+        auto resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/version"); //Well formed
+        CHECK_EQ(resp.code, 200);
+        std::raise(SIGINT);
+    }
+
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test get all prices")
+    {
+        std::this_thread::sleep_for(1s);
+        auto resp = RestClient::get("localhost:7777/api/v1/getallprice"); //Well formed
+        CHECK_EQ(resp.code, 200);
+        std::raise(SIGINT);
+    }
+
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 setprice")
+    {
+        std::this_thread::sleep_for(1s);
+        mm2::setprice_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+        nlohmann::json json_request;
+        mm2::to_json(json_request, request);
+        auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/setprice", "application/json", json_request.dump());
+        CHECK_EQ(resp.code, 200);
+        nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
+        mm2::setprice_answer answer;
+        mm2::from_json(resp_answer, answer);
+        mm2::cancel_order_request cancel_request{answer.result_setprice.uuid};
+        json_request.clear();
+        mm2::to_json(json_request, cancel_request);
+        resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json", json_request.dump());
         CHECK_EQ(resp.code, 200);
         std::raise(SIGINT);
     }

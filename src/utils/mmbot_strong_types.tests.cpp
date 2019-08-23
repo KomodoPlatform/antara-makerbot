@@ -14,33 +14,39 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "version/version.hpp"
-#include "mmbot.application.hpp"
+#include <doctest/doctest.h>
 
-namespace antara::mmbot
+#include <utils/mmbot_strong_types.hpp>
+
+namespace antara::mmbot::tests
 {
-    int application::run()
+    TEST_CASE ("st_prices can be equal")
     {
-        this->price_service_.enable_price_service_thread();
-        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        VLOG_SCOPE_F(loguru::Verbosity_INFO, "launching antara-mmbot version: %s", version());
-        try {
-            server_.run();
-        }
-        catch (const std::exception &e) {
-            VLOG_F(loguru::Verbosity_FATAL, "exception catch: %s", e.what());
-            return 1;
-        }
-        return 0;
+        auto p1 = st_price{1};
+        auto p_one = st_price{1};
+        auto p2 = st_price{2};
+
+        CHECK_EQ(p1, p_one);
+        CHECK_NE(p1, p2);
     }
 
-    application::application() noexcept
+    TEST_CASE ("st_prices can be ordered")
     {
-        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto p1 = st_price{1};
+        auto p2 = st_price{2};
+        auto p3 = st_price{3};
+
+        CHECK(p1 < p2);
+        CHECK(!(p3 < p2));
     }
 
-    application::~application() noexcept
+    TEST_CASE ("st_price can multiply with st_spread")
     {
-        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto price = st_price{100};
+        auto spread = st_spread{1.05};
+
+        auto expected = st_price{105};
+
+        CHECK_EQ(expected.value(), (price * spread).value());
     }
 }

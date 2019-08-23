@@ -14,33 +14,31 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "version/version.hpp"
-#include "mmbot.application.hpp"
+#include "mmbot_strong_types.hpp"
+#include <absl/numeric/int128.h>
 
-namespace antara::mmbot
+namespace antara
 {
-    int application::run()
+    st_price operator*(const st_price &price, const st_spread &spread)
     {
-        this->price_service_.enable_price_service_thread();
-        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        VLOG_SCOPE_F(loguru::Verbosity_INFO, "launching antara-mmbot version: %s", version());
-        try {
-            server_.run();
-        }
-        catch (const std::exception &e) {
-            VLOG_F(loguru::Verbosity_FATAL, "exception catch: %s", e.what());
-            return 1;
-        }
-        return 0;
+        // This means that spreads are accurate to 0.001 or 0.1%
+        // Necessary for the conversion from double to uint128
+        const int dp = 1000;
+        return st_price{(price.value() * absl::uint128(spread.value() * dp)) / dp};
     }
 
-    application::application() noexcept
+    bool operator==(const st_price &price, const st_price &other)
     {
-        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        return price.value() == other.value();
     }
 
-    application::~application() noexcept
+    bool operator!=(const st_price &price, const st_price &other)
     {
-        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        return !(price == other);
+    }
+
+    bool operator<(const st_price &price, const st_price &other)
+    {
+        return price.value() < other.value();
     }
 }

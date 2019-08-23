@@ -35,12 +35,22 @@ namespace antara::mmbot
 
     private:
         using coinpaprika_coin_id_translation_registry = std::unordered_map<std::string, std::string>;
-        coinpaprika_coin_id_translation_registry coin_id_translation_{{"KMD",  "kmd-komodo"},
-                                                                      {"BTC",  "btc-bitcoin"},
-                                                                      {"ETH",  "eth-ethereum"},
+        coinpaprika_coin_id_translation_registry coin_id_translation_{{"KMD", "kmd-komodo"},
+                                                                      {"BTC", "btc-bitcoin"},
+                                                                      {"BCH", "bch-bitcoin-cash"},
+                                                                      {"QTUM", "qtum-qtum"},
+                                                                      {"DASH", "dash-dash"},
+                                                                      {"LTC", "ltc-litecoin"},
+                                                                      {"DGB", "dgb-digibyte"},
+                                                                      {"BAT", "bat-basic-attention-token"},
+                                                                      {"RVN", "rvn-ravencoin"},
+                                                                      {"USDC", "usdc-usd-coin"},
+                                                                      {"RFOX", "rfox-redfox-labs"},
+                                                                      {"VRSC", "vrsc-verus-coin"},
+                                                                      {"ETH", "eth-ethereum"},
                                                                       {"DOGE", "doge-dogecoin"},
-                                                                      {"USD",  "usd-us-dollars"},
-                                                                      {"EUR",  "eur-euro"},
-                                                                      {"ZIL",  "zil-zilliqa"}};
+                                                                      {"USD", "usd-us-dollars"},
+                                                                      {"EUR", "eur-euro"},
+                                                                      {"ZILLA", "zilla-chainzilla"}};
     };
 }
