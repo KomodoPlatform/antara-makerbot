@@ -102,6 +102,62 @@ namespace antara::mmbot::mm2
     {
         j.at("result").get_to(cfg.version);
     }
+
+    void to_json(nlohmann::json &j, const setprice_request &cfg)
+    {
+        j["rel"] = cfg.rel.symbol.value();
+        j["base"] = cfg.base.symbol.value();
+        j["price"] = cfg.price;
+        j["volume"] = cfg.volume;
+        if (cfg.max.has_value()) {
+            j["max"] = cfg.max.value();
+        }
+        if (cfg.cancel_previous.has_value()) {
+            j["cancel_previous"] = cfg.cancel_previous.value();
+        }
+    }
+
+    void from_json(const nlohmann::json &j, setprice_request &cfg)
+    {
+        cfg.rel = antara::asset{st_symbol{j.at("rel").get<std::string>()}};
+        cfg.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
+        j.at("volume").get_to(cfg.volume);
+        j.at("price").get_to(cfg.price);
+        if (j.find("max") != j.end()) {
+            cfg.max = j.at("max").get<bool>();
+        }
+        if (j.find("cancel_previous") != j.end()) {
+            cfg.cancel_previous = j.at("cancel_previous").get<bool>();
+        }
+    }
+
+    void from_json(const nlohmann::json &j, setprice_answer &cfg)
+    {
+        cfg.result_setprice.rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
+        cfg.result_setprice.base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
+        j.at("result").at("price").get_to(cfg.result_setprice.price);
+        j.at("result").at("uuid").get_to(cfg.result_setprice.uuid);
+        j.at("result").at("started_swaps").get_to(cfg.result_setprice.started_swaps);
+        j.at("result").at("max_base_vol").get_to(cfg.result_setprice.max_base_vol);
+        j.at("result").at("min_base_vol").get_to(cfg.result_setprice.max_base_vol);
+        j.at("result").at("created_at").get_to(cfg.result_setprice.created_at);
+        cfg.result_setprice.matches = j.at("result").at("matches");
+    }
+
+    void to_json(nlohmann::json &j, const cancel_order_request &cfg)
+    {
+        j["uuid"] = cfg.uuid;
+    }
+
+    void from_json(const nlohmann::json &, cancel_order_answer &)
+    {
+
+    }
+
+    void from_json(const nlohmann::json &j, cancel_order_request &cfg)
+    {
+        j.at("uuid").get_to(cfg.uuid);
+    }
 }
 namespace antara::mmbot
 {
@@ -149,7 +205,7 @@ namespace antara::mmbot
         return rpc_process_call<mm2::electrum_answer>(resp);
     }
 
-    mm2::orderbook_answer mm2_client::rpc_orderbook(mm2::orderbook_request&& request)
+    mm2::orderbook_answer mm2_client::rpc_orderbook(mm2::orderbook_request &&request)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto json_data = template_request("orderbook");
@@ -173,7 +229,7 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         bool res = true;
-        const auto& mmbot_config = get_mmbot_config();
+        const auto &mmbot_config = get_mmbot_config();
         for (auto&&[current_coin, current_coin_data] : mmbot_config.registry_additional_coin_infos) {
             if (current_coin_data.is_mm2_compatible) {
                 if (current_coin_data.is_electrum_compatible && (current_coin == "RICK" || current_coin == "MORTY")) {
@@ -203,5 +259,25 @@ namespace antara::mmbot
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::version_answer>(resp);
+    }
+
+    mm2::setprice_answer mm2_client::rpc_setprice(mm2::setprice_request &&request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("setprice");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::setprice_answer>(resp);
+    }
+
+    mm2::cancel_order_answer mm2_client::rpc_cancel_order(mm2::cancel_order_request &&request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("cancel_order");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::cancel_order_answer>(resp);
     }
 }

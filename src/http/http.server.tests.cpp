@@ -125,4 +125,23 @@ namespace antara::mmbot::tests
         CHECK_EQ(resp.code, 200);
         std::raise(SIGINT);
     }
+
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 setprice")
+    {
+        std::this_thread::sleep_for(1s);
+        mm2::setprice_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+        nlohmann::json json_request;
+        mm2::to_json(json_request, request);
+        auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/setprice", "application/json", json_request.dump());
+        CHECK_EQ(resp.code, 200);
+        nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
+        mm2::setprice_answer answer;
+        mm2::from_json(resp_answer, answer);
+        mm2::cancel_order_request cancel_request{answer.result_setprice.uuid};
+        json_request.clear();
+        mm2::to_json(json_request, cancel_request);
+        resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json", json_request.dump());
+        CHECK_EQ(resp.code, 200);
+        std::raise(SIGINT);
+    }
 }

@@ -44,7 +44,8 @@ namespace antara::mmbot::http::rest
             return req->create_response(restinio::status_unprocessable_entity()).done();
         }
         antara::mmbot::mm2::orderbook_request orderbook_request{
-                antara::pair::of(std::string(query_params["quote_currency"]), std::string(query_params["base_currency"]))};
+                antara::pair::of(std::string(query_params["quote_currency"]),
+                                 std::string(query_params["base_currency"]))};
         auto orderbook_answer = mm2_client_.rpc_orderbook(std::move(orderbook_request));
         auto answer_json = nlohmann::json::parse(orderbook_answer.result);
         auto final_status = restinio::http_status_line_t(
@@ -67,7 +68,8 @@ namespace antara::mmbot::http::rest
             DVLOG_F(loguru::Verbosity_ERROR, "Wrong parameters, require currency parameters");
             return req->create_response(restinio::status_unprocessable_entity()).done();
         }
-        antara::mmbot::mm2::balance_request balance_request{antara::asset{st_symbol{std::string(query_params["currency"])}}};
+        antara::mmbot::mm2::balance_request balance_request{
+                antara::asset{st_symbol{std::string(query_params["currency"])}}};
         auto balance_answer = mm2_client_.rpc_balance(std::move(balance_request));
         auto answer_json = nlohmann::json::parse(balance_answer.result);
         auto final_status = restinio::http_status_line_t(
@@ -85,5 +87,28 @@ namespace antara::mmbot::http::rest
         auto final_status = restinio::http_status_line_t(
                 static_cast<restinio::http_status_code_t>(version_answer.rpc_result_code), "");
         return req->create_response(final_status).set_body(answer_json.dump()).done();
+    }
+
+    restinio::request_handling_status_t
+    mm2::set_price(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/setprice");
+        return process_post_function<antara::mmbot::mm2::setprice_request>(req, params,  [this](auto &&request) {
+            return this->mm2_client_.rpc_setprice(
+                    std::forward<decltype(request)>(request));
+        });
+    }
+
+    restinio::request_handling_status_t
+    mm2::cancel_order(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/cancel_order");
+        return process_post_function<antara::mmbot::mm2::cancel_order_request>(req, params,
+                                                                               [this](auto &&request) {
+                                                                                   return this->mm2_client_.rpc_cancel_order(
+                                                                                           std::forward<decltype(request)>(request));
+                                                                               });
     }
 }

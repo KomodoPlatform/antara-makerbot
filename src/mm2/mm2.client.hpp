@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <optional>
 #include <algorithm>
 #include <string>
 #include <thread>
@@ -94,15 +95,15 @@ namespace antara::mmbot
             std::string result;
         };
 
-        void to_json(nlohmann::json &j, const orderbook_request& cfg);
+        void to_json(nlohmann::json &j, const orderbook_request &cfg);
 
-        void from_json(const nlohmann::json &j, order_contents& cfg);
+        void from_json(const nlohmann::json &j, order_contents &cfg);
 
-        void from_json(const nlohmann::json &j, orderbook_bids& cfg);
+        void from_json(const nlohmann::json &j, orderbook_bids &cfg);
 
-        void from_json(const nlohmann::json &j, orderbook_asks& cfg);
+        void from_json(const nlohmann::json &j, orderbook_asks &cfg);
 
-        void from_json(const nlohmann::json &j, orderbook_answer& cfg);
+        void from_json(const nlohmann::json &j, orderbook_answer &cfg);
 
         struct balance_request
         {
@@ -118,8 +119,9 @@ namespace antara::mmbot
             antara::asset coin;
         };
 
-        void to_json(nlohmann::json &j, const balance_request& cfg);
-        void from_json(const nlohmann::json &j, balance_answer& cfg);
+        void to_json(nlohmann::json &j, const balance_request &cfg);
+
+        void from_json(const nlohmann::json &j, balance_answer &cfg);
 
         struct version_answer
         {
@@ -128,7 +130,56 @@ namespace antara::mmbot
             std::string result;
         };
 
-        void from_json(const nlohmann::json &j, version_answer& cfg);
+        void from_json(const nlohmann::json &j, version_answer &cfg);
+
+        struct setprice_request
+        {
+            antara::asset base;
+            antara::asset rel;
+            std::string price;
+            std::string volume;
+            std::optional<bool> max{std::nullopt};
+            std::optional<bool> cancel_previous{std::nullopt};
+        };
+
+        struct setprice_result
+        {
+            antara::asset base;
+            antara::asset rel;
+            std::string price;
+            std::string max_base_vol;
+            std::string min_base_vol;
+            int created_at;
+            nlohmann::json matches;
+            std::vector<std::string> started_swaps;
+            std::string uuid;
+        };
+        struct setprice_answer
+        {
+            setprice_result result_setprice;
+            int rpc_result_code;
+            std::string result;
+        };
+
+        void to_json(nlohmann::json &j, const setprice_request &cfg);
+        void from_json(const nlohmann::json &j, setprice_request &cfg);
+
+        void from_json(const nlohmann::json &j, setprice_answer &cfg);
+
+        struct cancel_order_request
+        {
+            std::string uuid;
+        };
+
+        struct cancel_order_answer
+        {
+            std::string result;
+            int rpc_result_code;
+        };
+
+        void to_json(nlohmann::json &j, const cancel_order_request& cfg);
+        void from_json(const nlohmann::json &j, cancel_order_request &cfg);
+        void from_json([[maybe_unused]] const nlohmann::json &j, [[maybe_unused]] cancel_order_answer &cfg);
     }
 
 
@@ -140,16 +191,23 @@ namespace antara::mmbot
         ~mm2_client() noexcept;
 
         mm2::electrum_answer rpc_electrum(mm2::electrum_request &&request);
+
         mm2::orderbook_answer rpc_orderbook(mm2::orderbook_request &&request);
+
         mm2::balance_answer rpc_balance(mm2::balance_request &&request);
+
+        mm2::setprice_answer rpc_setprice(mm2::setprice_request &&request);
+
+        mm2::cancel_order_answer rpc_cancel_order(mm2::cancel_order_request &&request);
         mm2::version_answer rpc_version();
+
     private:
         nlohmann::json template_request(std::string method_name) noexcept;
 
         bool enable_tests_coins();
 
         template<typename RpcReturnType>
-        RpcReturnType rpc_process_call(const RestClient::Response& resp)
+        RpcReturnType rpc_process_call(const RestClient::Response &resp)
         {
             RpcReturnType answer;
             DVLOG_F(loguru::Verbosity_INFO, "resp: %s", resp.body.c_str());
@@ -172,6 +230,7 @@ namespace antara::mmbot
                 return answer;
             }
         }
+
     private:
         reproc::process background_{reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill,
                                     reproc::infinite};

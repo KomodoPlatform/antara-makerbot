@@ -91,7 +91,7 @@ namespace antara::mmbot::tests
         auto expected = orders::order_level{bid_price, quantity, antara::side::buy};
         auto actual = sm.make_bid(mid, spread, quantity);
 
-        //CHECK_EQ(expected, actual);
+        CHECK_EQ(expected, actual);
     }
 
     TEST_CASE ("asks can be made")
@@ -111,7 +111,7 @@ namespace antara::mmbot::tests
         auto expected = orders::order_level{ask_price, quantity, antara::side::sell};
         auto actual = sm.make_ask(mid, spread, quantity);
 
-        //CHECK_EQ(expected, actual);
+        CHECK_EQ(expected, actual);
     }
 
 }
