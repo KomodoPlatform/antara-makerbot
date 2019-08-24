@@ -34,15 +34,10 @@ namespace antara::mmbot
         return !(*this == other);
     }
 
-    void strategy_manager::add_strategy(antara::pair pair, const market_making_strategy &strat)
-    {
-        registry_strategies_.emplace(pair, strat);
-    }
-
     void strategy_manager::add_strategy(const market_making_strategy &strat)
     {
         antara::pair pair = strat.pair;
-        this->add_strategy(pair, strat);
+        registry_strategies_.emplace(pair, strat);
     }
 
     const market_making_strategy &strategy_manager::get_strategy(antara::pair pair) const

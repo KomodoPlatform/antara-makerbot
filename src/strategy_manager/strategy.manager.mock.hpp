@@ -30,7 +30,6 @@ namespace antara::mmbot
     public:
         strategy_manager_mock() = default;
 
-        MAKE_MOCK2(add_strategy, void(const antara::pair&, const market_making_strategy&), override);
         MAKE_MOCK1(add_strategy, void(const market_making_strategy&), override);
 
         MAKE_CONST_MOCK1(get_strategy, market_making_strategy&(const antara::pair&), override);

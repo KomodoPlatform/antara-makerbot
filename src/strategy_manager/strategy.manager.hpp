@@ -43,7 +43,6 @@ namespace antara::mmbot
 
         virtual ~abstract_sm() = default;
 
-        virtual void add_strategy(antara::pair pair, const market_making_strategy& strat) = 0;
         virtual void add_strategy(const market_making_strategy& strat) = 0;
 
         virtual const market_making_strategy &get_strategy(antara::pair pair) const = 0;
@@ -58,7 +57,8 @@ namespace antara::mmbot
         virtual orders::order_group create_order_group(
             antara::pair pair, const market_making_strategy &strat, antara::st_price mid) = 0;
 
-        virtual orders::order_group create_order_group(antara::pair pair, const market_making_strategy &strat) = 0;
+        virtual orders::order_group create_order_group(
+            antara::pair pair, const market_making_strategy &strat) = 0;
     };
 
     class strategy_manager : public abstract_sm
@@ -66,10 +66,9 @@ namespace antara::mmbot
     public:
         strategy_manager(abstract_price_service_platform& ps, abstract_om& om): om_(om), ps_(ps)
         {
-            // running_ = true;
+            running_ = true;
         }
 
-        void add_strategy(antara::pair pair, const market_making_strategy& strat) override;
         void add_strategy(const market_making_strategy& strat) override;
 
         [[nodiscard]] const market_making_strategy &get_strategy(antara::pair pair) const override;
@@ -84,7 +83,8 @@ namespace antara::mmbot
         orders::order_group create_order_group(
             antara::pair pair, const market_making_strategy &strat, antara::st_price mid) override;
 
-        orders::order_group create_order_group(antara::pair pair, const market_making_strategy &strat) override;
+        orders::order_group create_order_group(
+            antara::pair pair, const market_making_strategy &strat) override;
 
         void refresh_orders(antara::pair pair);
         void refresh_all_orders();
