@@ -46,6 +46,8 @@ namespace antara::mmbot
 
         virtual st_order_id place_order(const orders::order_level &ol) = 0;
         virtual std::unordered_set<st_order_id> place_order(const orders::order_group &os) = 0;
+
+        virtual std::unordered_set<st_order_id> cancel_orders(antara::pair pair) = 0;
     };
 
     class order_manager : public abstract_om
