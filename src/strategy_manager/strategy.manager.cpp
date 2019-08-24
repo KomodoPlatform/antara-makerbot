@@ -123,7 +123,6 @@ namespace antara::mmbot
         return create_order_group(pair, strat, mid);
     }
 
-    // Every n seconds, cancel all orders and place new ones
     void strategy_manager::refresh_orders(antara::pair pair)
     {
         // if (registry_strategies.find(pair) == registry_strategies_.end()) {
@@ -133,11 +132,7 @@ namespace antara::mmbot
         auto strat = registry_strategies_.at(pair);
         auto orders = create_order_group(pair, strat);
 
-        // cancel existing orders
-        // TODO
-        // om_.cancel_orders(pair);
-
-        // place new orders
+        om_.cancel_orders(pair);
         om_.place_order(orders);
     }
 
@@ -152,6 +147,8 @@ namespace antara::mmbot
     // Call refresh_all_orders on a loop
     void strategy_manager::start()
     {
+        // For the time being this loops with a sleep
+        // But could run in response to price changes in the future
         while(running_) {
             // if there is latency in this function call
             // then we should run this on a new thread for each pair
