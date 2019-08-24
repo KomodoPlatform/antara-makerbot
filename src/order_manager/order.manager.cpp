@@ -28,7 +28,7 @@ namespace antara::mmbot
         auto &id = o.id;
         auto &pair = o.pair;
 
-        if (orders_by_pair_.find(pair) != orders_by_pair_.end()) {
+        if (orders_by_pair_.find(pair) == orders_by_pair_.end()) {
             orders_by_pair_.emplace(pair, std::unordered_set<st_order_id>());
         }
 
