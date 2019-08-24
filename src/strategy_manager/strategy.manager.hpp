@@ -43,11 +43,11 @@ namespace antara::mmbot
 
         virtual ~abstract_sm() = default;
 
-        virtual void add_strategy(const antara::pair& pair, const market_making_strategy& strat) = 0;
+        virtual void add_strategy(antara::pair pair, const market_making_strategy& strat) = 0;
         virtual void add_strategy(const market_making_strategy& strat) = 0;
 
-        virtual [[nodiscard]] const market_making_strategy &get_strategy(const antara::pair &pair) const = 0;
-        virtual [[nodiscard]] const registry_strategies &get_strategies() const = 0;
+        virtual const market_making_strategy &get_strategy(antara::pair pair) const = 0;
+        virtual const registry_strategies &get_strategies() const = 0;
 
         virtual orders::order_level make_bid(
             antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) = 0;
@@ -69,10 +69,10 @@ namespace antara::mmbot
             // running_ = true;
         }
 
-        void add_strategy(const antara::pair& pair, const market_making_strategy& strat) override;
+        void add_strategy(antara::pair pair, const market_making_strategy& strat) override;
         void add_strategy(const market_making_strategy& strat) override;
 
-        [[nodiscard]] const market_making_strategy &get_strategy(const antara::pair &pair) const override;
+        [[nodiscard]] const market_making_strategy &get_strategy(antara::pair pair) const override;
         [[nodiscard]] const registry_strategies &get_strategies() const override;
 
         orders::order_level make_bid(

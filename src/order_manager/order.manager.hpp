@@ -33,8 +33,8 @@ namespace antara::mmbot
     public:
         virtual ~abstract_om() = default;
 
-        virtual [[nodiscard]] const orders::order &get_order(const st_order_id &id) const = 0;
-        virtual [[nodiscard]] const orders::orders_by_id &get_all_orders() const = 0;
+        virtual const orders::order &get_order(const st_order_id &id) const = 0;
+        virtual const orders::orders_by_id &get_all_orders() const = 0;
 
         virtual void add_orders(const std::vector<orders::order> &o) = 0;
         virtual void add_executions(const std::vector<orders::execution> &e) = 0;

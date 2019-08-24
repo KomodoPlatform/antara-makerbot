@@ -136,7 +136,6 @@ namespace antara::mmbot
     {
         auto &order = dex_.place(ol);
         auto id = order.id;
-        auto pair = order.pair;
 
         orders_.emplace(id, order);
         add_order_to_pair_map(order);

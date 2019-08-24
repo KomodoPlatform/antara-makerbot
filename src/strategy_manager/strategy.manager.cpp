@@ -34,7 +34,7 @@ namespace antara::mmbot
         return !(*this == other);
     }
 
-    void strategy_manager::add_strategy(const antara::pair &pair, const market_making_strategy &strat)
+    void strategy_manager::add_strategy(antara::pair pair, const market_making_strategy &strat)
     {
         registry_strategies_.emplace(pair, strat);
     }
@@ -45,7 +45,7 @@ namespace antara::mmbot
         this->add_strategy(pair, strat);
     }
 
-    const market_making_strategy &strategy_manager::get_strategy(const antara::pair &pair) const
+    const market_making_strategy &strategy_manager::get_strategy(antara::pair pair) const
     {
         return registry_strategies_.at(pair);
     }
