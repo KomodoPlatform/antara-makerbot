@@ -29,38 +29,6 @@ namespace antara::mmbot::tests
     using trompeloeil::_;
     using trompeloeil::lt;
 
-    TEST_CASE ("orders can be cancelled by pair")
-    {
-        auto pair = antara::pair::of("A", "B");
-
-        orders::order_level ol = {st_price(10), st_quantity(10), antara::side::sell};
-
-        auto o_id = st_order_id{"id"};
-        auto b = orders::order_builder(o_id, pair);
-        orders::order o = b.build();
-
-        dex_mock dex;
-        cex_mock cex;
-
-        auto om = order_manager(dex, cex);
-
-        ALLOW_CALL(dex, place(ol))
-            .LR_RETURN(std::ref(o));
-
-        REQUIRE_CALL(dex, cancel(o_id))
-            .RETURN(true);
-
-        om.place_order(ol);
-        CHECK_EQ(1, om.get_all_orders().size());
-
-        auto ids = om.cancel_orders(pair);
-
-        CHECK_EQ(1, ids.size());
-        CHECK_EQ(1, ids.count(o_id));
-
-        CHECK_EQ(0, om.get_all_orders().size());
-    }
-
     TEST_CASE ("on start, the OM loads existing orders")
     {
         auto o_id = st_order_id{"id"};
@@ -191,5 +159,37 @@ namespace antara::mmbot::tests
         REQUIRE_CALL(cex, mirror(e3));
 
         om.poll();
+    }
+
+    TEST_CASE ("orders can be cancelled by pair")
+    {
+        auto pair = antara::pair::of("A", "B");
+
+        orders::order_level ol = {st_price(10), st_quantity(10), antara::side::sell};
+
+        auto o_id = st_order_id{"id"};
+        auto b = orders::order_builder(o_id, pair);
+        orders::order o = b.build();
+
+        dex_mock dex;
+        cex_mock cex;
+
+        auto om = order_manager(dex, cex);
+
+        ALLOW_CALL(dex, place(ol))
+            .LR_RETURN(std::ref(o));
+
+        REQUIRE_CALL(dex, cancel(o_id))
+            .RETURN(true);
+
+        om.place_order(ol);
+        CHECK_EQ(1, om.get_all_orders().size());
+
+        auto ids = om.cancel_orders(pair);
+
+        CHECK_EQ(1, ids.size());
+        CHECK_EQ(1, ids.count(o_id));
+
+        CHECK_EQ(0, om.get_all_orders().size());
     }
 }
