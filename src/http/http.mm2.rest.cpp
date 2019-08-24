@@ -94,7 +94,7 @@ namespace antara::mmbot::http::rest
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/setprice");
-        return process_post_function<antara::mmbot::mm2::setprice_request>(req, params,  [this](auto &&request) {
+        return process_post_function<antara::mmbot::mm2::setprice_request>(req, params, [this](auto &&request) {
             return this->mm2_client_.rpc_setprice(
                     std::forward<decltype(request)>(request));
         });
@@ -108,7 +108,19 @@ namespace antara::mmbot::http::rest
         return process_post_function<antara::mmbot::mm2::cancel_order_request>(req, params,
                                                                                [this](auto &&request) {
                                                                                    return this->mm2_client_.rpc_cancel_order(
-                                                                                           std::forward<decltype(request)>(request));
+                                                                                           std::forward<decltype(request)>(
+                                                                                                   request));
                                                                                });
+    }
+
+    restinio::request_handling_status_t
+    mm2::buy(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/buy");
+        return process_post_function<antara::mmbot::mm2::buy_request>(req, params, [this](auto &&request) {
+            return this->mm2_client_.rpc_buy(
+                    std::forward<decltype(request)>(request));
+        });
     }
 }
