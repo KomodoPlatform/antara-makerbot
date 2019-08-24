@@ -55,10 +55,9 @@ namespace antara::mmbot
             antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) = 0;
 
         virtual orders::order_group create_order_group(
-            antara::pair pair, const market_making_strategy &strat, antara::st_price mid) = 0;
+            const market_making_strategy &strat, antara::st_price mid) = 0;
 
-        virtual orders::order_group create_order_group(
-            antara::pair pair, const market_making_strategy &strat) = 0;
+        virtual orders::order_group create_order_group(const market_making_strategy &strat) = 0;
     };
 
     class strategy_manager : public abstract_sm
@@ -81,10 +80,9 @@ namespace antara::mmbot
             antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) override;
 
         orders::order_group create_order_group(
-            antara::pair pair, const market_making_strategy &strat, antara::st_price mid) override;
+            const market_making_strategy &strat, antara::st_price mid) override;
 
-        orders::order_group create_order_group(
-            antara::pair pair, const market_making_strategy &strat) override;
+        orders::order_group create_order_group(const market_making_strategy &strat) override;
 
         void refresh_orders(antara::pair pair);
         void refresh_all_orders();

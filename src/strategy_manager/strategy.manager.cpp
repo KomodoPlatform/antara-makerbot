@@ -71,8 +71,10 @@ namespace antara::mmbot
     }
 
     orders::order_group strategy_manager::create_order_group(
-            antara::pair pair, const market_making_strategy &strat, antara::st_price mid)
+            const market_making_strategy &strat, antara::st_price mid)
     {
+        auto pair = strat.pair;
+
         antara::side side = strat.side;
         antara::st_spread spread = strat.spread;
         antara::st_quantity quantity = strat.quantity;
@@ -111,11 +113,11 @@ namespace antara::mmbot
         return os;
     }
 
-    orders::order_group strategy_manager::create_order_group(
-        antara::pair pair, const market_making_strategy &strat)
+    orders::order_group strategy_manager::create_order_group(const market_making_strategy &strat)
     {
+        auto pair = strat.pair;
         auto mid = ps_.get_price(pair);
-        return create_order_group(pair, strat, mid);
+        return create_order_group(strat, mid);
     }
 
     void strategy_manager::refresh_orders(antara::pair pair)
@@ -125,7 +127,7 @@ namespace antara::mmbot
         // }
 
         auto strat = registry_strategies_.at(pair);
-        auto orders = create_order_group(pair, strat);
+        auto orders = create_order_group(strat);
 
         om_.cancel_orders(pair);
         om_.place_order(orders);
@@ -134,8 +136,7 @@ namespace antara::mmbot
     void strategy_manager::refresh_all_orders()
     {
         for(const auto& [pair, strat] : registry_strategies_) {
-            auto orders = create_order_group(pair, strat);
-            om_.place_order(orders);
+            refresh_orders(pair);
         }
     }
 
