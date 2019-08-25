@@ -114,4 +114,36 @@ namespace antara::mmbot::tests
         CHECK_EQ(expected, actual);
     }
 
+    TEST_CASE("orders are refreshed by cancelling them and placing new")
+    {
+        auto pair = antara::pair::of("A", "B");
+        market_making_strategy strat
+            = {pair, st_spread{0.1}, st_quantity{10}, antara::side::sell};
+
+        dex dex;
+        cex cex;
+        auto om = order_manager_mock(dex, cex);
+        auto ps = price_service_platform_mock();
+
+        auto sm = strategy_manager(ps, om);
+
+        sm.add_strategy(strat);
+
+        REQUIRE_CALL(om, cancel_orders(pair))
+            .RETURN(std::unordered_set<st_order_id>());
+
+        auto mid = st_price{1};
+        auto og = sm.create_order_group(strat, mid);
+
+        auto o_id = st_order_id{"o_id"};
+        auto new_orders = std::unordered_set<st_order_id>();
+        new_orders.emplace(o_id);
+        REQUIRE_CALL(om, place_order(og))
+            .RETURN(new_orders);
+
+        REQUIRE_CALL(ps, get_price(pair))
+            .RETURN(mid);
+
+        sm.refresh_orders(pair);
+    }
 }

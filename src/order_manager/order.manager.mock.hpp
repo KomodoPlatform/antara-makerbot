@@ -42,5 +42,7 @@ namespace antara::mmbot
 
         MAKE_MOCK1(place_order, st_order_id(const orders::order_level&), override);
         MAKE_MOCK1(place_order, std::unordered_set<st_order_id>(const orders::order_group&), override);
+
+        MAKE_MOCK1(cancel_orders, std::unordered_set<st_order_id>(antara::pair pair), override);
     };
 }
