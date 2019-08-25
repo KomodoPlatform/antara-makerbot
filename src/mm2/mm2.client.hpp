@@ -162,6 +162,7 @@ namespace antara::mmbot
         };
 
         void to_json(nlohmann::json &j, const setprice_request &cfg);
+
         void from_json(const nlohmann::json &j, setprice_request &cfg);
 
         void from_json(const nlohmann::json &j, setprice_answer &cfg);
@@ -177,8 +178,10 @@ namespace antara::mmbot
             int rpc_result_code;
         };
 
-        void to_json(nlohmann::json &j, const cancel_order_request& cfg);
+        void to_json(nlohmann::json &j, const cancel_order_request &cfg);
+
         void from_json(const nlohmann::json &j, cancel_order_request &cfg);
+
         void from_json([[maybe_unused]] const nlohmann::json &j, [[maybe_unused]] cancel_order_answer &cfg);
 
         struct buy_request
@@ -191,6 +194,7 @@ namespace antara::mmbot
         };
 
         void to_json(nlohmann::json &j, const buy_request &cfg);
+
         void from_json(const nlohmann::json &j, buy_request &cfg);
 
         struct buy_result
@@ -215,6 +219,30 @@ namespace antara::mmbot
         };
 
         void from_json(const nlohmann::json &j, buy_answer &cfg);
+
+        struct cancel_all_orders_data
+        {
+            antara::asset base;
+            antara::asset rel;
+        };
+
+        struct cancel_all_orders_request
+        {
+            std::string type;
+            std::optional<cancel_all_orders_data> data{std::nullopt};
+        };
+
+        struct cancel_all_orders_answer
+        {
+            std::vector<std::string> cancelled;
+            std::vector<std::string> currently_matching;
+            std::string result;
+            int rpc_result_code;
+        };
+
+        void to_json(nlohmann::json &j, const cancel_all_orders_request &cfg);
+        void from_json(const nlohmann::json &j, cancel_all_orders_request &cfg);
+        void from_json(const nlohmann::json &j, cancel_all_orders_answer &cfg);
     }
 
 
@@ -232,8 +260,13 @@ namespace antara::mmbot
         mm2::balance_answer rpc_balance(mm2::balance_request &&request);
 
         mm2::setprice_answer rpc_setprice(mm2::setprice_request &&request);
+
         mm2::buy_answer rpc_buy(mm2::buy_request &&request);
+
+        mm2::cancel_all_orders_answer rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request);
+
         mm2::cancel_order_answer rpc_cancel_order(mm2::cancel_order_request &&request);
+
         mm2::version_answer rpc_version();
 
 
