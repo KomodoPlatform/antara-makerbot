@@ -103,6 +103,22 @@ namespace antara::mmbot::mm2
         j.at("result").get_to(cfg.version);
     }
 
+    void to_json(nlohmann::json &j, const buy_request &cfg)
+    {
+        j["rel"] = cfg.rel.symbol.value();
+        j["base"] = cfg.base.symbol.value();
+        j["price"] = cfg.price;
+        j["volume"] = cfg.volume;
+    }
+
+    void from_json(const nlohmann::json &j, buy_request &cfg)
+    {
+        cfg.rel = antara::asset{st_symbol{j.at("rel").get<std::string>()}};
+        cfg.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
+        j.at("volume").get_to(cfg.volume);
+        j.at("price").get_to(cfg.price);
+    }
+
     void to_json(nlohmann::json &j, const setprice_request &cfg)
     {
         j["rel"] = cfg.rel.symbol.value();
@@ -157,6 +173,24 @@ namespace antara::mmbot::mm2
     void from_json(const nlohmann::json &j, cancel_order_request &cfg)
     {
         j.at("uuid").get_to(cfg.uuid);
+    }
+
+    void from_json(const nlohmann::json &j, buy_answer &cfg)
+    {
+        if (j.find("error") == j.end()) {
+            cfg.result_buy = buy_result{};
+            cfg.result_buy.value().rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
+            cfg.result_buy.value().base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
+            j.at("result").at("action").get_to(cfg.result_buy.value().action);
+            j.at("result").at("uuid").get_to(cfg.result_buy.value().uuid);
+            j.at("result").at("method").get_to(cfg.result_buy.value().method);
+            j.at("result").at("rel_amount").get_to(cfg.result_buy.value().rel_amount);
+            j.at("result").at("base_amount").get_to(cfg.result_buy.value().base_amount);
+            j.at("result").at("dest_pub_key").get_to(cfg.result_buy.value().dest_pub_key);
+            j.at("result").at("sender_pubkey").get_to(cfg.result_buy.value().sender_pub_key);
+        } else {
+            cfg.error = j.at("error").get<std::string>();
+        }
     }
 }
 namespace antara::mmbot
@@ -279,5 +313,15 @@ namespace antara::mmbot
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::cancel_order_answer>(resp);
+    }
+
+    mm2::buy_answer mm2_client::rpc_buy(mm2::buy_request &&request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("buy");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::buy_answer>(resp);
     }
 }

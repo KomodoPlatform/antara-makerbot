@@ -180,6 +180,41 @@ namespace antara::mmbot
         void to_json(nlohmann::json &j, const cancel_order_request& cfg);
         void from_json(const nlohmann::json &j, cancel_order_request &cfg);
         void from_json([[maybe_unused]] const nlohmann::json &j, [[maybe_unused]] cancel_order_answer &cfg);
+
+        struct buy_request
+        {
+            antara::asset base;
+            antara::asset rel;
+            std::string price;
+            std::string volume;
+
+        };
+
+        void to_json(nlohmann::json &j, const buy_request &cfg);
+        void from_json(const nlohmann::json &j, buy_request &cfg);
+
+        struct buy_result
+        {
+            std::string action;
+            antara::asset base;
+            antara::asset rel;
+            std::string base_amount;
+            std::string rel_amount;
+            std::string method;
+            std::string dest_pub_key;
+            std::string sender_pub_key;
+            std::string uuid;
+        };
+
+        struct buy_answer
+        {
+            std::optional<buy_result> result_buy;
+            std::optional<std::string> error;
+            std::string result;
+            int rpc_result_code;
+        };
+
+        void from_json(const nlohmann::json &j, buy_answer &cfg);
     }
 
 
@@ -197,9 +232,10 @@ namespace antara::mmbot
         mm2::balance_answer rpc_balance(mm2::balance_request &&request);
 
         mm2::setprice_answer rpc_setprice(mm2::setprice_request &&request);
-
+        mm2::buy_answer rpc_buy(mm2::buy_request &&request);
         mm2::cancel_order_answer rpc_cancel_order(mm2::cancel_order_request &&request);
         mm2::version_answer rpc_version();
+
 
     private:
         nlohmann::json template_request(std::string method_name) noexcept;
