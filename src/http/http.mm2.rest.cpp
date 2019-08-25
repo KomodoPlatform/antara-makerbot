@@ -123,4 +123,15 @@ namespace antara::mmbot::http::rest
                     std::forward<decltype(request)>(request));
         });
     }
+
+    restinio::request_handling_status_t
+    mm2::cancel_all_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/cancel_all_orders");
+        return process_post_function<antara::mmbot::mm2::cancel_all_orders_request>(req, params, [this](auto &&request) {
+            return this->mm2_client_.rpc_cancel_all_orders(
+                    std::forward<decltype(request)>(request));
+        });
+    }
 }

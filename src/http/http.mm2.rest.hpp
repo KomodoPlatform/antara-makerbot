@@ -46,6 +46,9 @@ namespace antara::mmbot::http::rest
         buy(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
 
         restinio::request_handling_status_t
+        cancel_all_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
+
+        restinio::request_handling_status_t
         cancel_order(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
 
         template<typename TRequest, typename Functor>

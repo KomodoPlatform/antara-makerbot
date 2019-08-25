@@ -498,3 +498,50 @@ The buy method issues a buy request and attempts to match an order from the orde
 **Code**: `400 Bad request` (Ill-formed request)
 
 **Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
+
+## mm2 cancel_all_orders
+
+The cancel_all_orders cancels the active orders created by the MM2 node by specified condition.
+
+**URL**: `/api/v1/legacy/mm2/cancel_all_orders`
+
+**Method**: `POST`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+### Success Response
+
+**Code** `200 OK`
+
+**Content examples (request)**
+
+```json
+{
+  "cancel_by": {
+    "type": "All"
+  },
+  "method": "cancel_all_orders",
+  "userpass": "YOUR_PASSWORD_HERE"
+}
+```
+
+**Content example (answer)**
+
+```json
+{
+  "result": {
+    "cancelled": [
+      "25366927-d48b-4aca-b950-f81c40c36c83"
+    ],
+    "currently_matching": []
+  }
+}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
