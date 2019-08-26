@@ -57,7 +57,7 @@ namespace antara::mmbot
         {}
 
         [[nodiscard]] const orders::order &get_order(const st_order_id &id) const override;
-        [[nodiscard]] const orders::orders_by_id &get_all_orders() const
+        [[nodiscard]] const orders::orders_by_id &get_all_orders() const override
         {
             return orders_;
         }
@@ -73,7 +73,7 @@ namespace antara::mmbot
         st_order_id place_order(const orders::order_level &ol) override;
         std::unordered_set<st_order_id> place_order(const orders::order_group &os) override;
 
-        std::unordered_set<st_order_id> cancel_orders(antara::pair pair);
+        std::unordered_set<st_order_id> cancel_orders(antara::pair pair) override;
 
     private:
         abstract_dex& dex_;
