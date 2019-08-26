@@ -38,6 +38,31 @@ namespace antara::mmbot::orders
             && side == other.side;
     }
 
+    bool order_level::operator!=(const order_level &other) const
+    {
+        return !(*this == other);
+    }
+
+    // Order group
+
+    bool order_group::operator==(const order_group &other) const
+    {
+        auto equal = true;
+        if (pair != other.pair) { equal = false; }
+        if (levels.size() != other.levels.size()) { equal = false; }
+
+        for (int i = 0; i < levels.size(); i++) {
+            if (levels[i] != other.levels[i]) { equal = false; }
+        }
+
+        return equal;
+    }
+
+    bool order_group::operator!=(const order_group &other) const
+    {
+        return !(*this == other);
+    }
+
     // Execution
 
     bool execution::operator==(const execution &other) const

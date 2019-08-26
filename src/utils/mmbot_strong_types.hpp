@@ -100,6 +100,11 @@ namespace antara
             return base == rhs.base && quote == rhs.quote;
         }
 
+        bool operator!=(const pair &rhs) const
+        {
+            return !(*this == rhs);
+        }
+
         static pair of(std::string a, std::string b);
     };
 

@@ -32,12 +32,16 @@ namespace antara::mmbot::orders
         antara::side side;
 
         bool operator==(const order_level &other) const;
+        bool operator!=(const order_level &other) const;
     };
 
     struct order_group
     {
         antara::pair pair;
         std::vector<order_level> levels;
+
+        bool operator==(const order_group &other) const;
+        bool operator!=(const order_group &other) const;
     };
 
     enum class order_status

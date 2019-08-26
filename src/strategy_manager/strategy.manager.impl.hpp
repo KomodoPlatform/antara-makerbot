@@ -14,6 +14,8 @@
  *                                                                            *
  ******************************************************************************/
 
+#pragma once
+
 #include <vector>
 #include <unordered_map>
 
@@ -29,29 +31,33 @@ namespace antara::mmbot
                && side == other.side;
     }
 
-    void strategy_manager::add_strategy(const antara::pair &pair, const market_making_strategy &strat)
+    bool market_making_strategy::operator!=(const market_making_strategy &other) const
     {
+        return !(*this == other);
+    }
+
+    template <class PS>
+    void strategy_manager<PS>::add_strategy(const market_making_strategy &strat)
+    {
+        antara::pair pair = strat.pair;
         registry_strategies_.emplace(pair, strat);
     }
 
-    void strategy_manager::add_strategy(const market_making_strategy &strat)
-    {
-        antara::pair pair = strat.pair;
-        this->add_strategy(pair, strat);
-    }
-
-    const market_making_strategy &strategy_manager::get_strategy(const antara::pair &pair) const
+    template <class PS>
+    const market_making_strategy &strategy_manager<PS>::get_strategy(antara::pair pair) const
     {
         return registry_strategies_.at(pair);
     }
 
-    const strategy_manager::registry_strategies &strategy_manager::get_strategies() const
+    template <class PS>
+    const typename strategy_manager<PS>::registry_strategies &strategy_manager<PS>::get_strategies() const
     {
         return registry_strategies_;
     }
 
-    orders::order_level
-    strategy_manager::make_bid(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
+    template <class PS>
+    orders::order_level strategy_manager<PS>::make_bid(
+        antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
     {
         antara::st_spread mod = antara::st_spread{1.0} - spread;
         antara::st_price price = mid * mod;
@@ -60,8 +66,9 @@ namespace antara::mmbot
         return ol;
     }
 
-    orders::order_level
-    strategy_manager::make_ask(antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
+    template <class PS>
+    orders::order_level strategy_manager<PS>::make_ask(
+        antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity)
     {
         antara::st_spread mod = 1.0 + spread;
         antara::st_price price = mid * mod;
@@ -70,9 +77,12 @@ namespace antara::mmbot
         return ol;
     }
 
-    orders::order_group strategy_manager::create_order_group(
-            antara::pair pair, const market_making_strategy &strat, antara::st_price mid)
+    template <class PS>
+    orders::order_group strategy_manager<PS>::create_order_group(
+            const market_making_strategy &strat, antara::st_price mid)
     {
+        auto pair = strat.pair;
+
         antara::side side = strat.side;
         antara::st_spread spread = strat.spread;
         antara::st_quantity quantity = strat.quantity;
@@ -111,4 +121,50 @@ namespace antara::mmbot
         return os;
     }
 
+    template <class PS>
+    orders::order_group strategy_manager<PS>::create_order_group(const market_making_strategy &strat)
+    {
+        auto pair = strat.pair;
+        auto mid = ps_.get_price(pair);
+        return create_order_group(strat, mid);
+    }
+
+    template <class PS>
+    void strategy_manager<PS>::refresh_orders(antara::pair pair)
+    {
+        // if (registry_strategies.find(pair) == registry_strategies_.end()) {
+        //     throw
+        // }
+
+        auto strat = registry_strategies_.at(pair);
+        auto orders = create_order_group(strat);
+
+        om_.cancel_orders(pair);
+        om_.place_order(orders);
+    }
+
+    template <class PS>
+    void strategy_manager<PS>::refresh_all_orders()
+    {
+        for(const auto& [pair, strat] : registry_strategies_) {
+            refresh_orders(pair);
+        }
+    }
+
+    // Call refresh_all_orders on a loop
+    template <class PS>
+    void strategy_manager<PS>::start()
+    {
+        // For the time being this loops with a sleep
+        // But could run in response to price changes in the future
+        while(running_) {
+            // if there is latency in this function call
+            // then we should run this on a new thread for each pair
+            refresh_all_orders();
+            // std::this_thread::sleep_for(1s);
+        }
+    }
+
+    template class strategy_manager<price_service_platform>;
+    template class strategy_manager<price_service_platform_mock>;
 }

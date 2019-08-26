@@ -15,13 +15,16 @@
  ******************************************************************************/
 
 #include <doctest/doctest.h>
+#include <doctest/trompeloeil.hpp>
+#include <trompeloeil.hpp>
 
 #include <utils/mmbot_strong_types.hpp>
+#include <order_manager/order.manager.mock.hpp>
+#include <price/service.price.platform.mock.hpp>
 #include "strategy.manager.hpp"
 
 namespace antara::mmbot::tests
 {
-
     TEST_CASE ("asset equality")
     {
         antara::asset a1 = {antara::st_symbol{"A"}};
@@ -32,9 +35,29 @@ namespace antara::mmbot::tests
         CHECK_NE(a1, a3);
     }
 
+    TEST_CASE ("market_making_strategy equality")
+    {
+        auto pair = antara::pair::of("A", "B");
+        auto spread = st_spread{0.1};
+        auto side = antara::side::sell;
+
+        auto q_10 = st_quantity{10};
+        auto q_11 = st_quantity{11};
+
+        auto mms_1 = market_making_strategy{pair, spread, q_10, side};
+        auto mms_2 = market_making_strategy{pair, spread, q_11, side};
+
+        CHECK_EQ(mms_1, mms_1);
+        CHECK_NE(mms_1, mms_2);
+    }
+
     TEST_CASE ("strats can be added and retreived")
     {
-        auto sm = strategy_manager();
+        dex dex;
+        cex cex;
+        order_manager_mock om(dex, cex);
+        auto ps = price_service_platform_mock();
+        auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
         antara::pair pair = {{st_symbol{"A"}},
                              {st_symbol{"B"}}};
@@ -50,7 +73,6 @@ namespace antara::mmbot::tests
 
         const auto& other = sm.get_strategy(pair);
         CHECK_EQ(strat, other);
-
     }
 
     TEST_CASE ("bids can be made")
@@ -60,10 +82,14 @@ namespace antara::mmbot::tests
         auto quantity = antara::st_quantity{10.0};
         auto bid_price = antara::st_price{9};
 
-        auto sm = strategy_manager();
+        dex dex;
+        cex cex;
+        auto om = order_manager(dex, cex);
+        auto ps = price_service_platform_mock();
+        auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
         auto expected = orders::order_level{bid_price, quantity, antara::side::buy};
-        auto actual = strategy_manager::make_bid(mid, spread, quantity);
+        auto actual = sm.make_bid(mid, spread, quantity);
 
         CHECK_EQ(expected, actual);
     }
@@ -76,12 +102,48 @@ namespace antara::mmbot::tests
 
         antara::st_price ask_price = antara::st_price{11};
 
-        strategy_manager sm = strategy_manager();
+        dex dex;
+        cex cex;
+        auto om = order_manager(dex, cex);
+        auto ps = price_service_platform_mock();
+        auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
         auto expected = orders::order_level{ask_price, quantity, antara::side::sell};
-        auto actual = strategy_manager::make_ask(mid, spread, quantity);
+        auto actual = sm.make_ask(mid, spread, quantity);
 
         CHECK_EQ(expected, actual);
     }
 
+    TEST_CASE("orders are refreshed by cancelling them and placing new")
+    {
+        auto pair = antara::pair::of("A", "B");
+        market_making_strategy strat
+            = {pair, st_spread{0.1}, st_quantity{10}, antara::side::sell};
+
+        dex dex;
+        cex cex;
+        auto om = order_manager_mock(dex, cex);
+        auto ps = price_service_platform_mock();
+
+        auto sm = strategy_manager<price_service_platform_mock>(ps, om);
+
+        sm.add_strategy(strat);
+
+        REQUIRE_CALL(om, cancel_orders(pair))
+            .RETURN(std::unordered_set<st_order_id>());
+
+        auto mid = st_price{1};
+        auto og = sm.create_order_group(strat, mid);
+
+        auto o_id = st_order_id{"o_id"};
+        auto new_orders = std::unordered_set<st_order_id>();
+        new_orders.emplace(o_id);
+        REQUIRE_CALL(om, place_order(og))
+            .RETURN(new_orders);
+
+        REQUIRE_CALL(ps, get_price(pair))
+            .RETURN(mid);
+
+        sm.refresh_orders(pair);
+    }
 }
