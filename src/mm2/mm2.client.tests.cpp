@@ -74,6 +74,44 @@ namespace antara::mmbot::tests
                 CHECK_EQ(200, cancel_answer.rpc_result_code);
             }
         }
+
+        SUBCASE ("mm2 rpc buy") {
+            if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
+                mm2::buy_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+                auto answer = mm2.rpc_buy(std::move(request));
+                REQUIRE_EQ(200, answer.rpc_result_code);
+
+                mm2::cancel_order_request cancel_request{answer.result_buy.value().uuid};
+                auto cancel_answer = mm2.rpc_cancel_order(std::move(cancel_request));
+                CHECK_EQ(200, cancel_answer.rpc_result_code);
+            }
+        }
+
+
+        SUBCASE ("mm2 cancel_all_request by ALL") {
+            if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
+                mm2::buy_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+                auto answer = mm2.rpc_buy(std::move(request));
+                REQUIRE_EQ(200, answer.rpc_result_code);
+
+                mm2::cancel_all_orders_request cancel_request{"All"};
+                auto cancel_answer = mm2.rpc_cancel_all_orders(std::move(cancel_request));
+                CHECK_EQ(200, cancel_answer.rpc_result_code);
+            }
+        }
+
+        SUBCASE ("mm2 cancel_all_request by PAIR") {
+            if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
+                mm2::buy_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+                auto answer = mm2.rpc_buy(std::move(request));
+                REQUIRE_EQ(200, answer.rpc_result_code);
+
+                auto pair_asset = antara::pair::of("MORTY", "RICK");
+                mm2::cancel_all_orders_request cancel_request{"Pair", mm2::cancel_all_orders_data{pair_asset.base, pair_asset.quote}};
+                auto cancel_answer = mm2.rpc_cancel_all_orders(std::move(cancel_request));
+                CHECK_EQ(200, cancel_answer.rpc_result_code);
+            }
+        }
     }
 
     TEST_CASE ("mm2 rpc electrum")
