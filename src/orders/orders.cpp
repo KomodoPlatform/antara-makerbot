@@ -51,7 +51,7 @@ namespace antara::mmbot::orders
         if (pair != other.pair) { equal = false; }
         if (levels.size() != other.levels.size()) { equal = false; }
 
-        for (int i = 0; i < levels.size(); i++) {
+        for (decltype(levels)::size_type i = 0; i < levels.size(); i++) {
             if (levels[i] != other.levels[i]) { equal = false; }
         }
 
