@@ -25,7 +25,7 @@
 
 namespace antara::mmbot
 {
-    class price_service_platform_mock : public abstract_price_service_platform
+    class price_service_platform_mock
     {
     public:
         MAKE_CONST_MOCK1(get_price, st_price(antara::pair));

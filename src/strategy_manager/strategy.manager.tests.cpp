@@ -57,7 +57,7 @@ namespace antara::mmbot::tests
         cex cex;
         order_manager_mock om(dex, cex);
         auto ps = price_service_platform_mock();
-        auto sm = strategy_manager(ps, om);
+        auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
         antara::pair pair = {{st_symbol{"A"}},
                              {st_symbol{"B"}}};
@@ -86,7 +86,7 @@ namespace antara::mmbot::tests
         cex cex;
         auto om = order_manager(dex, cex);
         auto ps = price_service_platform_mock();
-        auto sm = strategy_manager(ps, om);
+        auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
         auto expected = orders::order_level{bid_price, quantity, antara::side::buy};
         auto actual = sm.make_bid(mid, spread, quantity);
@@ -106,7 +106,7 @@ namespace antara::mmbot::tests
         cex cex;
         auto om = order_manager(dex, cex);
         auto ps = price_service_platform_mock();
-        auto sm = strategy_manager(ps, om);
+        auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
         auto expected = orders::order_level{ask_price, quantity, antara::side::sell};
         auto actual = sm.make_ask(mid, spread, quantity);
@@ -125,7 +125,7 @@ namespace antara::mmbot::tests
         auto om = order_manager_mock(dex, cex);
         auto ps = price_service_platform_mock();
 
-        auto sm = strategy_manager(ps, om);
+        auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
         sm.add_strategy(strat);
 

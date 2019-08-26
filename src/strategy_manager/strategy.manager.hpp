@@ -36,6 +36,7 @@ namespace antara::mmbot
         bool operator!=(const market_making_strategy &other) const;
     };
 
+    template <class PS>
     class abstract_sm
     {
     public:
@@ -60,10 +61,13 @@ namespace antara::mmbot
         virtual orders::order_group create_order_group(const market_making_strategy &strat) = 0;
     };
 
-    class strategy_manager : public abstract_sm
+    template <class PS>
+    class strategy_manager : public abstract_sm<PS>
     {
     public:
-        strategy_manager(abstract_price_service_platform& ps, abstract_om& om): om_(om), ps_(ps)
+        using registry_strategies = std::unordered_map<antara::pair, market_making_strategy>;
+
+        strategy_manager(PS& ps, abstract_om& om): om_(om), ps_(ps)
         {
             running_ = true;
         }
@@ -92,7 +96,9 @@ namespace antara::mmbot
     private:
         registry_strategies registry_strategies_;
         abstract_om &om_;
-        abstract_price_service_platform &ps_;
+        PS &ps_;
         bool running_;
     };
 }
+
+#include "strategy.manager.impl.hpp"

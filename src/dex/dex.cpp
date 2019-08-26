@@ -26,7 +26,7 @@ namespace antara::mmbot
         throw mmbot::errors::not_implemented(pretty_function);
     }
 
-    bool dex::cancel(st_order_id id)
+    bool dex::cancel([[maybe_unused]] st_order_id id)
     {
         throw mmbot::errors::not_implemented(pretty_function);
     }
