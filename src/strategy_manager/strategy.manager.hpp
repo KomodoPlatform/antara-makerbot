@@ -18,8 +18,11 @@
 
 #include <vector>
 #include <unordered_map>
+
 #include <utils/mmbot_strong_types.hpp>
 #include <orders/orders.hpp>
+#include <order_manager/order.manager.hpp>
+#include <price/service.price.platform.hpp>
 
 namespace antara::mmbot
 {
@@ -30,35 +33,72 @@ namespace antara::mmbot
         antara::st_quantity quantity;
         antara::side side;
         bool operator==(const market_making_strategy &other) const;
+        bool operator!=(const market_making_strategy &other) const;
     };
 
-    class strategy_manager
+    template <class PS>
+    class abstract_sm
     {
     public:
         using registry_strategies = std::unordered_map<antara::pair, market_making_strategy>;
-        strategy_manager() = default;
 
-        void add_strategy(const antara::pair& pair, const market_making_strategy& strat);
+        virtual ~abstract_sm() = default;
 
-        void add_strategy(const market_making_strategy& strat);
+        virtual void add_strategy(const market_making_strategy& strat) = 0;
 
-        [[nodiscard]] const market_making_strategy &get_strategy(const antara::pair &pair) const;
+        virtual const market_making_strategy &get_strategy(antara::pair pair) const = 0;
+        virtual const registry_strategies &get_strategies() const = 0;
 
-        [[nodiscard]] const registry_strategies &get_strategies() const;
+        virtual orders::order_level make_bid(
+            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) = 0;
 
-        static orders::order_level make_bid(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
+        virtual orders::order_level make_ask(
+            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) = 0;
 
-        static orders::order_level make_ask(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity);
+        virtual orders::order_group create_order_group(
+            const market_making_strategy &strat, antara::st_price mid) = 0;
 
-        static orders::order_group create_order_group(
-            antara::pair pair, const market_making_strategy &strat, antara::st_price mid);
-
-    private:
-
-        registry_strategies registry_strategies_;
+        virtual orders::order_group create_order_group(const market_making_strategy &strat) = 0;
     };
 
+    template <class PS>
+    class strategy_manager : public abstract_sm<PS>
+    {
+    public:
+        using registry_strategies = std::unordered_map<antara::pair, market_making_strategy>;
+
+        strategy_manager(PS& ps, abstract_om& om): om_(om), ps_(ps)
+        {
+            running_ = true;
+        }
+
+        void add_strategy(const market_making_strategy& strat) override;
+
+        [[nodiscard]] const market_making_strategy &get_strategy(antara::pair pair) const override;
+        [[nodiscard]] const registry_strategies &get_strategies() const override;
+
+        orders::order_level make_bid(
+            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) override;
+
+        orders::order_level make_ask(
+            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) override;
+
+        orders::order_group create_order_group(
+            const market_making_strategy &strat, antara::st_price mid) override;
+
+        orders::order_group create_order_group(const market_making_strategy &strat) override;
+
+        void refresh_orders(antara::pair pair);
+        void refresh_all_orders();
+
+        void start();
+
+    private:
+        registry_strategies registry_strategies_;
+        abstract_om &om_;
+        PS &ps_;
+        bool running_;
+    };
 }
 
+#include "strategy.manager.impl.hpp"
