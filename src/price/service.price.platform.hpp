@@ -35,7 +35,7 @@ namespace antara::mmbot
     {
     public:
         explicit price_service_platform() noexcept;
-        ~price_service_platform();
+        ~price_service_platform() noexcept;
         st_price get_price(antara::pair currency_pair) const;
         void enable_price_service_thread();
         nlohmann::json get_all_price_pairs_of_given_coin(const antara::asset &asset);
