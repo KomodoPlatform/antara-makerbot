@@ -35,9 +35,17 @@ namespace antara::mmbot
 
         virtual const orders::order &get_order(const st_order_id &id) const = 0;
         virtual const orders::orders_by_id &get_all_orders() const = 0;
+        virtual const std::unordered_set<st_order_id> &get_orders(antara::pair pair) const = 0;
 
+        virtual const orders::executions_by_id &get_all_executions() const = 0;
+
+        virtual void add_order(const orders::order &o) = 0;
         virtual void add_orders(const std::vector<orders::order> &o) = 0;
+
+        virtual void add_execution(const orders::execution &e) = 0;
         virtual void add_executions(const std::vector<orders::execution> &e) = 0;
+
+        virtual void remove_order(const orders::order &o) = 0;
 
         virtual void start() = 0;
         virtual void poll() = 0;
@@ -56,14 +64,28 @@ namespace antara::mmbot
         order_manager(abstract_dex& dex, abstract_cex& cex) : dex_(dex), cex_(cex)
         {}
 
+        void add_order_to_pair_map(const orders::order &o);
+        void remove_order_from_pair_map(const orders::order &o);
+
         [[nodiscard]] const orders::order &get_order(const st_order_id &id) const override;
         [[nodiscard]] const orders::orders_by_id &get_all_orders() const override
         {
             return orders_;
         }
+        const std::unordered_set<st_order_id> &get_orders(antara::pair pair) const override;
 
+        [[nodiscard]] const orders::executions_by_id &get_all_executions() const override
+        {
+            return executions_;
+        }
+
+        void add_order(const orders::order &o) override;
         void add_orders(const std::vector<orders::order> &o) override;
+
+        void add_execution(const orders::execution &e) override;
         void add_executions(const std::vector<orders::execution> &e) override;
+
+        void remove_order(const orders::order &o) override;
 
         void start() override;
         void poll() override;
@@ -83,7 +105,5 @@ namespace antara::mmbot
         orders::executions_by_id executions_;
 
         std::unordered_map<antara::pair, std::unordered_set<st_order_id>> orders_by_pair_;
-
-        void add_order_to_pair_map(const orders::order &o);
     };
 }
