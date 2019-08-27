@@ -41,10 +41,10 @@ namespace antara::mmbot
         throw mmbot::errors::not_implemented(pretty_function);
     }
 
-    std::vector<orders::execution> dex::get_executions()
-    {
-        throw mmbot::errors::not_implemented(pretty_function);
-    }
+    // std::vector<orders::execution> dex::get_executions()
+    // {
+    //     throw mmbot::errors::not_implemented(pretty_function);
+    // }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)
     {
