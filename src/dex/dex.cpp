@@ -21,9 +21,23 @@
 
 namespace antara::mmbot
 {
-    orders::order &dex::place([[maybe_unused]] const orders::order_level &o)
+    orders::order dex::buy(const orders::order_level &o, antara::pair pair)
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        auto answer = mm_.rpc_buy(to_buy(o, pair));
+
+        auto result = answer.result_buy;
+        if (result) {
+            return to_order(result.value());
+        }
+    }
+
+    orders::order dex::place([[maybe_unused]] const orders::order_level &o, antara::pair pair)
+    {
+        if (o.side == antara::side::buy) {
+            return buy(o, pair);
+        // } else {
+        //     return sell(o);
+        }
     }
 
     bool dex::cancel([[maybe_unused]] st_order_id id)
@@ -40,11 +54,6 @@ namespace antara::mmbot
     {
         throw mmbot::errors::not_implemented(pretty_function);
     }
-
-    // std::vector<orders::execution> dex::get_executions()
-    // {
-    //     throw mmbot::errors::not_implemented(pretty_function);
-    // }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)
     {

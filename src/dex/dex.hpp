@@ -23,6 +23,8 @@
 #include <orders/orders.hpp>
 #include <utils/mmbot_strong_types.hpp>
 
+#include "dex.utils.hpp"
+
 namespace antara::mmbot
 {
     class abstract_dex
@@ -30,7 +32,7 @@ namespace antara::mmbot
     public:
         virtual ~abstract_dex() = default;
 
-        virtual orders::order &place(const orders::order_level &ol) = 0;
+        virtual orders::order place(const orders::order_level &ol, antara::pair pair) = 0;
         virtual bool cancel(st_order_id id) = 0;
 
         virtual std::vector<orders::order> get_live_orders() = 0;
@@ -45,17 +47,22 @@ namespace antara::mmbot
     class dex : public abstract_dex
     {
     public:
-        orders::order &place(const orders::order_level &ol) override;
+        dex(mm2_client mm) : mm_(mm)
+        {}
+
+        orders::order place(const orders::order_level &ol, antara::pair pair) override;
         bool cancel(st_order_id id) override;
 
         std::vector<orders::order> get_live_orders() override;
         orders::order get_order_status(const st_order_id &id) override;
 
-        // std::vector<orders::execution> get_executions() override;
         std::vector<orders::execution> get_executions(const st_order_id &id) override;
         std::vector<orders::execution> get_executions(const std::unordered_set<st_order_id> &ids) override;
         std::vector<orders::execution> get_recent_executions() override;
 
+    private:
+        mm2_client &mm_;
 
+        orders::order buy(const orders::order_level &o, antara::pair pair);
     };
 }

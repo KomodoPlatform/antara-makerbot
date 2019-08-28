@@ -1,0 +1,68 @@
+/******************************************************************************
+ * Copyright © 2013-2019 The Komodo Platform Developers.                      *
+ *                                                                            *
+ * See the AUTHORS, DEVELOPER-AGREEMENT and LICENSE files at                  *
+ * the top-level directory of this distribution for the individual copyright  *
+ * holder information and the developer policies on copyright and licensing.  *
+ *                                                                            *
+ * Unless otherwise agreed in a custom licensing agreement, no part of the    *
+ * Komodo Platform software, including this file may be copied, modified,     *
+ * propagated or distributed except according to the terms contained in the   *
+ * LICENSE file                                                               *
+ *                                                                            *
+ * Removal or modification of this copyright notice is prohibited.            *
+ *                                                                            *
+ ******************************************************************************/
+
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+#include <string>
+
+#include <absl/numeric/int128.h>
+#include <orders/orders.hpp>
+#include <utils/mmbot_strong_types.hpp>
+#include <utils/antara.utils.hpp>
+#include <mm2/mm2.client.hpp>
+
+#include "dex.utils.hpp"
+
+namespace antara::mmbot
+{
+    mm2::buy_request to_buy (orders::order_level ol, antara::pair pair)
+    {
+        const auto& cfg = get_mmbot_config();
+
+        auto base = pair.base;
+        auto quote = pair.quote;
+        auto price = get_price_as_string_decimal(cfg, base.symbol, base.symbol, ol.price);
+        auto quantity = std::to_string(ol.quantity.value());
+
+        return mm2::buy_request{base, quote, price, quantity};
+    }
+
+    const orders::order to_order (mm2::buy_result res)
+    {
+        auto id = st_order_id{res.uuid};
+        auto pair = antara::pair{res.base, res.rel};
+
+        auto base_amount = std::stod(res.base_amount);
+        auto rel_amount = std::stod(res.rel_amount);
+        auto price = st_price{ absl::uint128( base_amount / rel_amount ) };
+
+        auto quantity = st_quantity{std::stod(res.base_amount)};
+
+        auto b = orders::order_builder(id, pair);
+        b.price(price);
+        b.quantity(quantity);
+        // b.filled(0);
+        b.side(antara::side::buy);
+        // b.status();
+        return b.build();
+    }
+
+    mm2::cancel_order_request foo(st_order_id o_id)
+    {
+        return mm2::cancel_order_request{o_id};
+    }
+}

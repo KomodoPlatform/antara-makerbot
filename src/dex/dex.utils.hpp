@@ -16,35 +16,19 @@
 
 #pragma once
 
-#include <doctest/doctest.h>
-#include <doctest/trompeloeil.hpp>
-#include <trompeloeil.hpp>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+#include <string>
 
+#include <absl/numeric/int128.h>
+#include <orders/orders.hpp>
 #include <utils/mmbot_strong_types.hpp>
-#include "order.manager.hpp"
+#include <utils/antara.utils.hpp>
+#include <mm2/mm2.client.hpp>
 
 namespace antara::mmbot
 {
-    class order_manager_mock : public order_manager
-    {
-        using order_manager::order_manager;
-
-        order_manager_mock() = default;
-
-        MAKE_CONST_MOCK1(get_order, orders::order&(const st_order_id&), override);
-        MAKE_CONST_MOCK0(get_all_orders, orders::orders_by_id&(), override);
-
-        MAKE_MOCK1(add_orders, void(const std::vector<orders::order>&), override);
-        MAKE_MOCK1(add_executions, void(const std::vector<orders::execution>&), override);
-
-        MAKE_MOCK0(start, void(), override);
-        MAKE_MOCK0(poll, void(), override);
-
-        MAKE_MOCK0(update_from_live, void(), override);
-
-        MAKE_MOCK2(place_order, st_order_id(const orders::order_level&, antara::pair pair), override);
-        MAKE_MOCK1(place_order, std::unordered_set<st_order_id>(const orders::order_group&), override);
-
-        MAKE_MOCK1(cancel_orders, std::unordered_set<st_order_id>(antara::pair pair), override);
-    };
+    mm2::buy_request to_buy (orders::order_level ol, antara::pair pair);
+    const orders::order to_order (mm2::buy_result res);
 }
