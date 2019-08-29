@@ -31,13 +31,24 @@ namespace antara::mmbot
         }
     }
 
+    orders::order dex::sell(const orders::order_level &o, antara::pair pair)
+    {
+        auto answer = mm_.rpc_buy(to_sell(o, pair));
+
+        auto result = answer.result_sell;
+        if (result) {
+            return to_order(result.value());
+        }
+    }
+
     orders::order dex::place([[maybe_unused]] const orders::order_level &o, antara::pair pair)
     {
-        if (o.side == antara::side::buy) {
-            return buy(o, pair);
+        return buy(o, pair);
+        // if (o.side == antara::side::buy) {
+        //     return buy(o, pair);
         // } else {
         //     return sell(o);
-        }
+        // }
     }
 
     bool dex::cancel([[maybe_unused]] st_order_id id)

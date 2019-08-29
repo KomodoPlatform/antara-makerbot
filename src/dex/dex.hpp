@@ -64,5 +64,6 @@ namespace antara::mmbot
         mm2_client &mm_;
 
         orders::order buy(const orders::order_level &o, antara::pair pair);
+        orders::order sell(const orders::order_level &o, antara::pair pair);
     };
 }
