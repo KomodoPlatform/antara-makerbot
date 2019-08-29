@@ -31,4 +31,6 @@ namespace antara::mmbot
 {
     mm2::buy_request to_buy (orders::order_level ol, antara::pair pair);
     const orders::order to_order (mm2::buy_result res);
+    mm2::cancel_order_request foo(st_order_id o_id);
+    bool bar(mm2::cancel_order_answer ans);
 }

@@ -65,4 +65,9 @@ namespace antara::mmbot
     {
         return mm2::cancel_order_request{o_id};
     }
+
+    bool bar(mm2::cancel_order_answer ans)
+    {
+        return ans.result == "success";
+    }
 }
