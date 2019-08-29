@@ -47,7 +47,7 @@ namespace antara::mmbot
     class dex : public abstract_dex
     {
     public:
-        dex(mm2_client mm) : mm_(mm)
+        dex(mm2_client &mm) : mm_(mm)
         {}
 
         orders::order place(const orders::order_level &ol, antara::pair pair) override;

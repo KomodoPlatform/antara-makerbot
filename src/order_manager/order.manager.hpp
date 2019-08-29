@@ -62,13 +62,6 @@ namespace antara::mmbot
     class order_manager : public abstract_om
     {
     public:
-        order_manager()
-        {
-            auto mm = mm2_client(true);
-            dex_ = dex(mm);
-            cex_ = cex();
-        }
-
         order_manager(abstract_dex& dex, abstract_cex& cex) : dex_(dex), cex_(cex)
         {}
 

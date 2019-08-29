@@ -53,9 +53,6 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("strats can be added and retreived")
     {
-        // dex dex;
-        // cex cex;
-        // order_manager_mock om(dex, cex);
         auto om = order_manager_mock();
         auto ps = price_service_platform_mock();
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
@@ -83,9 +80,6 @@ namespace antara::mmbot::tests
         auto quantity = antara::st_quantity{10.0};
         auto bid_price = antara::st_price{9};
 
-        // dex dex;
-        // cex cex;
-        // auto om = order_manager(dex, cex);
         auto om = order_manager_mock();
         auto ps = price_service_platform_mock();
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
@@ -104,9 +98,6 @@ namespace antara::mmbot::tests
 
         antara::st_price ask_price = antara::st_price{11};
 
-        // dex dex;
-        // cex cex;
-        // auto om = order_manager(dex, cex);
         auto om = order_manager_mock();
         auto ps = price_service_platform_mock();
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
@@ -123,9 +114,6 @@ namespace antara::mmbot::tests
         market_making_strategy strat
             = {pair, st_spread{0.1}, st_quantity{10}, antara::side::sell};
 
-        // dex dex;
-        // cex cex;
-        // auto om = order_manager_mock(dex, cex);
         auto om = order_manager_mock();
         auto ps = price_service_platform_mock();
 
