@@ -353,6 +353,11 @@ namespace antara::mmbot
         return rpc_process_call<mm2::buy_answer>(resp);
     }
 
+    mm2::sell_answer mm2_client::rpc_sell(mm2::sell_request &&request)
+    {
+        return mm2::sell_answer{std::nullopt, std::nullopt, "", 0};
+    }
+
     mm2::cancel_all_orders_answer mm2_client::rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);

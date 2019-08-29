@@ -220,6 +220,42 @@ namespace antara::mmbot
 
         void from_json(const nlohmann::json &j, buy_answer &cfg);
 
+        struct sell_request
+        {
+            antara::asset base;
+            antara::asset rel;
+            std::string price;
+            std::string volume;
+
+        };
+
+        void to_json(nlohmann::json &j, const sell_request &cfg);
+
+        void from_json(const nlohmann::json &j, sell_request &cfg);
+
+        struct sell_result
+        {
+            std::string action;
+            antara::asset base;
+            antara::asset rel;
+            std::string base_amount;
+            std::string rel_amount;
+            std::string method;
+            std::string dest_pub_key;
+            std::string sender_pub_key;
+            std::string uuid;
+        };
+
+        struct sell_answer
+        {
+            std::optional<sell_result> result_sell;
+            std::optional<std::string> error;
+            std::string result;
+            int rpc_result_code;
+        };
+
+        void from_json(const nlohmann::json &j, sell_answer &cfg);
+
         struct cancel_all_orders_data
         {
             antara::asset base;
@@ -262,6 +298,7 @@ namespace antara::mmbot
         mm2::setprice_answer rpc_setprice(mm2::setprice_request &&request);
 
         mm2::buy_answer rpc_buy(mm2::buy_request &&request);
+        mm2::sell_answer rpc_sell(mm2::sell_request &&request);
 
         mm2::cancel_all_orders_answer rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request);
 
