@@ -260,13 +260,13 @@ namespace antara::mmbot::tests
 
         auto om = order_manager(dex, cex);
 
-        ALLOW_CALL(dex, place(ol))
+        ALLOW_CALL(dex, place(ol, pair))
             .LR_RETURN(std::ref(o));
 
         REQUIRE_CALL(dex, cancel(o_id))
             .RETURN(true);
 
-        om.place_order(ol);
+        om.place_order(ol, pair);
         CHECK_EQ(1, om.get_all_orders().size());
 
         auto ids = om.cancel_orders(pair);
