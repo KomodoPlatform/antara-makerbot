@@ -29,7 +29,7 @@ namespace antara::mmbot::tests
     using trompeloeil::_;
     using trompeloeil::lt;
 
-    TEST_CASE ("add_order_to_pair_map")
+    TEST_CASE ("add order to pair map")
     {
         dex_mock dex;
         cex_mock cex;
@@ -55,7 +55,7 @@ namespace antara::mmbot::tests
         CHECK_EQ(0, remove_orders.size());
     }
 
-    TEST_CASE("add_orders")
+    TEST_CASE("add orders")
     {
         dex_mock dex;
         cex_mock cex;
