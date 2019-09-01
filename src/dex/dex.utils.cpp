@@ -93,12 +93,12 @@ namespace antara::mmbot
         return b.build();
     }
 
-    mm2::cancel_order_request foo(st_order_id o_id)
+    mm2::cancel_order_request out(st_order_id o_id)
     {
         return mm2::cancel_order_request{o_id};
     }
 
-    bool bar(mm2::cancel_order_answer ans)
+    bool in(mm2::cancel_order_answer ans)
     {
         return ans.result == "success";
     }

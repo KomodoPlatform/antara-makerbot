@@ -52,7 +52,8 @@ namespace antara::mmbot
 
     bool dex::cancel([[maybe_unused]] st_order_id id)
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        auto answer = mm_.rpc_cancel_order(out(id));
+        return in(answer);
     }
 
     std::vector<orders::order> dex::get_live_orders()

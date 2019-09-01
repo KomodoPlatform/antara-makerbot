@@ -33,6 +33,6 @@ namespace antara::mmbot
     mm2::sell_request to_sell (orders::order_level ol, antara::pair pair);
     const orders::order to_order (mm2::buy_result res);
     const orders::order to_order (mm2::sell_result res);
-    mm2::cancel_order_request foo(st_order_id o_id);
-    bool bar(mm2::cancel_order_answer ans);
+    mm2::cancel_order_request out(st_order_id o_id);
+    bool in(mm2::cancel_order_answer ans);
 }
