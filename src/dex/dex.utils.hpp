@@ -41,5 +41,7 @@ namespace antara::mmbot
     mm2::cancel_order_request out(st_order_id o_id);
     bool in(mm2::cancel_order_answer ans);
 
-    std::vector<orders::order> to_orders(mm2::my_orders_answer answer);
+    std::vector<orders::order> to_orders(const mm2::my_orders_answer &answer);
+
+    std::vector<orders::execution> to_executions(const mm2::my_recent_swaps_answer &answer);
 }

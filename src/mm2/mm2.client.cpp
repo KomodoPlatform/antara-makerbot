@@ -377,4 +377,9 @@ namespace antara::mmbot
     {
         return {};
     }
+
+    mm2::my_recent_swaps_answer mm2_client::rpc_my_recent_swaps()
+    {
+        return {};
+    }
 }

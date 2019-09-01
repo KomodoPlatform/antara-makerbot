@@ -90,8 +90,13 @@ namespace antara::mmbot
         return ans.result == "success";
     }
 
-    std::vector<orders::order> to_orders(mm2::my_orders_answer answer)
+    std::vector<orders::order> to_orders(const mm2::my_orders_answer &answer)
     {
         return std::vector<orders::order>();
+    }
+
+    std::vector<orders::execution> to_executions(const mm2::my_recent_swaps_answer &answer)
+    {
+        return std::vector<orders::execution>();
     }
 }

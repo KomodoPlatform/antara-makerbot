@@ -62,7 +62,6 @@ namespace antara::mmbot
 
     std::vector<orders::order> dex::get_live_orders()
     {
-        // throw mmbot::errors::not_implemented(pretty_function);
         auto answer = mm_.rpc_my_orders();
         return to_orders(answer);
     }
@@ -85,6 +84,7 @@ namespace antara::mmbot
 
     std::vector<orders::execution> dex::get_recent_executions()
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        auto answer = mm_.rpc_my_recent_swaps();
+        return to_executions(answer);
     }
 }

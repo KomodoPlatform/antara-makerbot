@@ -318,14 +318,19 @@ namespace antara::mmbot
             using maker_orders = std::vector<maker_order>;
             using taker_orders = std::vector<taker_order>;
 
-            maker_orders m_orders = maker_orders();
-            taker_orders t_orders = taker_orders();
+            maker_orders m_orders;
+            taker_orders t_orders;
         };
 
         struct order_status
         {
             antara::maker maker;
             order o;
+        };
+
+        struct my_recent_swaps_answer
+        {
+            
         };
     }
 
@@ -355,6 +360,8 @@ namespace antara::mmbot
         mm2::my_orders_answer rpc_my_orders();
 
         mm2::order_status rpc_order_status(st_order_id id);
+
+        mm2::my_recent_swaps_answer rpc_my_recent_swaps();
 
         mm2::version_answer rpc_version();
 
