@@ -69,7 +69,8 @@ namespace antara::mmbot
 
     orders::order dex::get_order_status([[maybe_unused]] const st_order_id &id)
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        auto answer = mm_.rpc_order_status(id);
+        return to_order(answer.o);
     }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)

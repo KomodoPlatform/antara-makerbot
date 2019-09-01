@@ -36,6 +36,8 @@ namespace antara::mmbot
     const orders::order to_order (mm2::buy_result res);
     const orders::order to_order (mm2::sell_result res);
 
+    const orders::order to_order (mm2::order res);
+
     mm2::cancel_order_request out(st_order_id o_id);
     bool in(mm2::cancel_order_answer ans);
 

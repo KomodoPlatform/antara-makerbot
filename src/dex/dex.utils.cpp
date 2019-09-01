@@ -73,6 +73,13 @@ namespace antara::mmbot
         return b.build();
     }
 
+    const orders::order to_order (mm2::order res)
+    {
+        auto pair = antara::pair::of(res.base, res.rel);
+        auto b = orders::order_builder(st_order_id{res.id}, pair);
+        return b.build();
+    }
+
     mm2::cancel_order_request out(st_order_id o_id)
     {
         return mm2::cancel_order_request{o_id};

@@ -372,4 +372,9 @@ namespace antara::mmbot
     {
         return {};
     }
+
+    mm2::order_status mm2_client::rpc_order_status(st_order_id id)
+    {
+        return {};
+    }
 }

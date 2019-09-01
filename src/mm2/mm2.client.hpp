@@ -304,7 +304,12 @@ namespace antara::mmbot
         void from_json(const nlohmann::json &j, cancel_all_orders_request &cfg);
         void from_json(const nlohmann::json &j, cancel_all_orders_answer &cfg);
 
-        struct order {};
+        struct order {
+            std::string id;
+            std::string base;
+            std::string rel;
+        };
+
         struct maker_order : order {};
         struct taker_order : order {};
 
@@ -315,6 +320,12 @@ namespace antara::mmbot
 
             maker_orders m_orders = maker_orders();
             taker_orders t_orders = taker_orders();
+        };
+
+        struct order_status
+        {
+            antara::maker maker;
+            order o;
         };
     }
 
@@ -342,6 +353,8 @@ namespace antara::mmbot
         mm2::cancel_order_answer rpc_cancel_order(mm2::cancel_order_request &&request);
 
         mm2::my_orders_answer rpc_my_orders();
+
+        mm2::order_status rpc_order_status(st_order_id id);
 
         mm2::version_answer rpc_version();
 
