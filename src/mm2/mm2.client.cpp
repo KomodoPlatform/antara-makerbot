@@ -178,16 +178,16 @@ namespace antara::mmbot::mm2
     void from_json(const nlohmann::json &j, buy_answer &cfg)
     {
         if (j.find("error") == j.end()) {
-            cfg.result_buy = buy_result{};
-            cfg.result_buy.value().rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
-            cfg.result_buy.value().base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
-            j.at("result").at("action").get_to(cfg.result_buy.value().action);
-            j.at("result").at("uuid").get_to(cfg.result_buy.value().uuid);
-            j.at("result").at("method").get_to(cfg.result_buy.value().method);
-            j.at("result").at("rel_amount").get_to(cfg.result_buy.value().rel_amount);
-            j.at("result").at("base_amount").get_to(cfg.result_buy.value().base_amount);
-            j.at("result").at("dest_pub_key").get_to(cfg.result_buy.value().dest_pub_key);
-            j.at("result").at("sender_pubkey").get_to(cfg.result_buy.value().sender_pub_key);
+            cfg.result_trade = buy_result{};
+            cfg.result_trade.value().rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
+            cfg.result_trade.value().base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
+            j.at("result").at("action").get_to(cfg.result_trade.value().action);
+            j.at("result").at("uuid").get_to(cfg.result_trade.value().uuid);
+            j.at("result").at("method").get_to(cfg.result_trade.value().method);
+            j.at("result").at("rel_amount").get_to(cfg.result_trade.value().rel_amount);
+            j.at("result").at("base_amount").get_to(cfg.result_trade.value().base_amount);
+            j.at("result").at("dest_pub_key").get_to(cfg.result_trade.value().dest_pub_key);
+            j.at("result").at("sender_pubkey").get_to(cfg.result_trade.value().sender_pub_key);
         } else {
             cfg.error = j.at("error").get<std::string>();
         }

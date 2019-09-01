@@ -53,8 +53,10 @@ namespace antara::mmbot
         return mm2::sell_request{base, quote, price, quantity};
     }
 
-    const orders::order to_order (mm2::buy_result res)
+    const orders::order to_order (mm2::trade_result res)
     {
+        auto side = res.side;
+
         auto id = st_order_id{res.uuid};
         auto pair = antara::pair{res.base, res.rel};
 
@@ -67,29 +69,7 @@ namespace antara::mmbot
         auto b = orders::order_builder(id, pair);
         b.price(price);
         b.quantity(quantity);
-        // b.filled(0);
-        b.side(antara::side::buy);
-        // b.status();
-        return b.build();
-    }
-
-    const orders::order to_order (mm2::sell_result res)
-    {
-        auto id = st_order_id{res.uuid};
-        auto pair = antara::pair{res.base, res.rel};
-
-        auto base_amount = std::stod(res.base_amount);
-        auto rel_amount = std::stod(res.rel_amount);
-        auto price = st_price{ absl::uint128( base_amount / rel_amount ) };
-
-        auto quantity = st_quantity{std::stod(res.base_amount)};
-
-        auto b = orders::order_builder(id, pair);
-        b.price(price);
-        b.quantity(quantity);
-        // b.filled(0);
-        b.side(antara::side::sell);
-        // b.status();
+        b.side(side);
         return b.build();
     }
 

@@ -184,6 +184,28 @@ namespace antara::mmbot
 
         void from_json([[maybe_unused]] const nlohmann::json &j, [[maybe_unused]] cancel_order_answer &cfg);
 
+        struct trade_result
+        {
+            antara::side side;
+            std::string action;
+            antara::asset base;
+            antara::asset rel;
+            std::string base_amount;
+            std::string rel_amount;
+            std::string method;
+            std::string dest_pub_key;
+            std::string sender_pub_key;
+            std::string uuid;
+        };
+
+        struct trade_answer
+        {
+            std::optional<trade_result> result_trade;
+            std::optional<std::string> error;
+            std::string result;
+            int rpc_result_code;
+        };
+
         struct buy_request
         {
             antara::asset base;
@@ -197,25 +219,26 @@ namespace antara::mmbot
 
         void from_json(const nlohmann::json &j, buy_request &cfg);
 
-        struct buy_result
+        struct buy_result : trade_result
         {
-            std::string action;
-            antara::asset base;
-            antara::asset rel;
-            std::string base_amount;
-            std::string rel_amount;
-            std::string method;
-            std::string dest_pub_key;
-            std::string sender_pub_key;
-            std::string uuid;
+            antara::side side = antara::side::buy;
+            // std::string action;
+            // antara::asset base;
+            // antara::asset rel;
+            // std::string base_amount;
+            // std::string rel_amount;
+            // std::string method;
+            // std::string dest_pub_key;
+            // std::string sender_pub_key;
+            // std::string uuid;
         };
 
-        struct buy_answer
+        struct buy_answer : trade_answer
         {
-            std::optional<buy_result> result_buy;
-            std::optional<std::string> error;
-            std::string result;
-            int rpc_result_code;
+            // std::optional<buy_result> result_buy;
+            // std::optional<std::string> error;
+            // std::string result;
+            // int rpc_result_code;
         };
 
         void from_json(const nlohmann::json &j, buy_answer &cfg);
@@ -233,25 +256,26 @@ namespace antara::mmbot
 
         void from_json(const nlohmann::json &j, sell_request &cfg);
 
-        struct sell_result
+        struct sell_result : trade_result
         {
-            std::string action;
-            antara::asset base;
-            antara::asset rel;
-            std::string base_amount;
-            std::string rel_amount;
-            std::string method;
-            std::string dest_pub_key;
-            std::string sender_pub_key;
-            std::string uuid;
+            antara::side side = antara::side::sell;
+            // std::string action;
+            // antara::asset base;
+            // antara::asset rel;
+            // std::string base_amount;
+            // std::string rel_amount;
+            // std::string method;
+            // std::string dest_pub_key;
+            // std::string sender_pub_key;
+            // std::string uuid;
         };
 
-        struct sell_answer
+        struct sell_answer : trade_answer
         {
-            std::optional<sell_result> result_sell;
-            std::optional<std::string> error;
-            std::string result;
-            int rpc_result_code;
+            // std::optional<sell_result> result_sell;
+            // std::optional<std::string> error;
+            // std::string result;
+            // int rpc_result_code;
         };
 
         void from_json(const nlohmann::json &j, sell_answer &cfg);

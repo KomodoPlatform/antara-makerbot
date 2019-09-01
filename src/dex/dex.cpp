@@ -25,7 +25,7 @@ namespace antara::mmbot
     {
         auto answer = mm_.rpc_buy(to_buy(o, pair));
 
-        auto result = answer.result_buy;
+        auto result = answer.result_trade;
         if (result) {
             return std::make_optional<orders::order>(to_order(result.value()));
         } else {
@@ -37,7 +37,7 @@ namespace antara::mmbot
     {
         auto answer = mm_.rpc_sell(to_sell(o, pair));
 
-        auto result = answer.result_sell;
+        auto result = answer.result_trade;
         if (result) {
             return std::make_optional<orders::order>(to_order(result.value()));
         } else {
