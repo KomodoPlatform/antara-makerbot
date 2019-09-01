@@ -38,8 +38,8 @@ namespace antara::mmbot
 
     void order_manager::remove_order_from_pair_map(const orders::order &o)
     {
-        auto &id = o.id;
-        auto &pair = o.pair;
+        auto id = o.id;
+        auto pair = o.pair;
 
         auto& orders = orders_by_pair_.at(pair);
         orders.erase(id);
@@ -88,9 +88,8 @@ namespace antara::mmbot
         for (auto &&current_id : ex_ids) {
             executions_.erase(current_id);
         }
-        orders_.erase(order.id);
-
         remove_order_from_pair_map(order);
+        orders_.erase(order.id);
     }
 
     void order_manager::start()
