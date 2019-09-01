@@ -367,4 +367,9 @@ namespace antara::mmbot
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::cancel_all_orders_answer>(resp);
     }
+
+    mm2::my_orders_answer mm2_client::rpc_my_orders()
+    {
+        return {};
+    }
 }

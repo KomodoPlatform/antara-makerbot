@@ -82,4 +82,9 @@ namespace antara::mmbot
     {
         return ans.result == "success";
     }
+
+    std::vector<orders::order> to_orders(mm2::my_orders_answer answer)
+    {
+        return std::vector<orders::order>();
+    }
 }
