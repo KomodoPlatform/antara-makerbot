@@ -21,27 +21,31 @@
 
 namespace antara::mmbot
 {
-    orders::order dex::buy(const orders::order_level &o, antara::pair pair)
+    std::optional<orders::order> dex::buy(const orders::order_level &o, antara::pair pair)
     {
         auto answer = mm_.rpc_buy(to_buy(o, pair));
 
         auto result = answer.result_buy;
         if (result) {
-            return to_order(result.value());
+            return std::make_optional<orders::order>(to_order(result.value()));
+        } else {
+            return std::nullopt;
         }
     }
 
-    orders::order dex::sell(const orders::order_level &o, antara::pair pair)
+    std::optional<orders::order> dex::sell(const orders::order_level &o, antara::pair pair)
     {
         auto answer = mm_.rpc_sell(to_sell(o, pair));
 
         auto result = answer.result_sell;
         if (result) {
-            return to_order(result.value());
+            return std::make_optional<orders::order>(to_order(result.value()));
+        } else {
+            return std::nullopt;
         }
     }
 
-    orders::order dex::place([[maybe_unused]] const orders::order_level &o, antara::pair pair)
+    std::optional<orders::order> dex::place([[maybe_unused]] const orders::order_level &o, antara::pair pair)
     {
         if (o.side == antara::side::buy) {
             return buy(o, pair);

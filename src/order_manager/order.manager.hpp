@@ -19,6 +19,7 @@
 #include <vector>
 #include <unordered_map>
 #include <loguru.hpp>
+#include <optional>
 
 #include <utils/pretty_function.hpp>
 #include "utils/mmbot_strong_types.hpp"
@@ -53,7 +54,7 @@ namespace antara::mmbot
 
         virtual void update_from_live() = 0;
 
-        virtual st_order_id place_order(const orders::order_level &ol, antara::pair pair) = 0;
+        virtual std::optional<st_order_id> place_order(const orders::order_level &ol, antara::pair pair) = 0;
         virtual std::unordered_set<st_order_id> place_order(const orders::order_group &os) = 0;
 
         virtual std::unordered_set<st_order_id> cancel_orders(antara::pair pair) = 0;
@@ -93,7 +94,7 @@ namespace antara::mmbot
 
         void update_from_live() override;
 
-        st_order_id place_order(const orders::order_level &ol, antara::pair pair) override;
+        std::optional<st_order_id> place_order(const orders::order_level &ol, antara::pair pair) override;
         std::unordered_set<st_order_id> place_order(const orders::order_group &os) override;
 
         std::unordered_set<st_order_id> cancel_orders(antara::pair pair) override;

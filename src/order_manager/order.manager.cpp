@@ -164,11 +164,16 @@ namespace antara::mmbot
         }
     }
 
-    st_order_id order_manager::place_order(const orders::order_level &ol, antara::pair pair)
+    std::optional<st_order_id> order_manager::place_order(const orders::order_level &ol, antara::pair pair)
     {
-        auto order = dex_.place(ol, pair);
-        add_order(order);
-        return order.id;
+        auto opt_order = dex_.place(ol, pair);
+        if (opt_order) {
+            auto &order = opt_order.value();
+            add_order(order);
+            return std::make_optional<st_order_id>(order.id);
+        } else {
+            return std::nullopt;
+        }
     }
 
     std::unordered_set<st_order_id> order_manager::place_order(const orders::order_group &og)
@@ -177,7 +182,9 @@ namespace antara::mmbot
         auto order_ids = std::unordered_set<st_order_id>();
         for (const auto &ol : og.levels) {
             auto id = place_order(ol, pair);
-            order_ids.emplace(id);
+            if (id) {
+                order_ids.emplace(id.value());
+            }
         }
         return order_ids;
     }
