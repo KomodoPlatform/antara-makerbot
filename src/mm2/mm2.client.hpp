@@ -257,7 +257,7 @@ namespace antara::mmbot
 
         struct sell_result : trade_result
         {
-            antara::side side = antara::side::sell;
+            antara::side side{antara::side::sell};
             // std::string action;
             // antara::asset base;
             // antara::asset rel;

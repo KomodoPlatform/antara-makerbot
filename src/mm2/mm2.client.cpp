@@ -354,9 +354,9 @@ namespace antara::mmbot
         return rpc_process_call<mm2::buy_answer>(resp);
     }
 
-    mm2::sell_answer mm2_client::rpc_sell(mm2::sell_request &&request)
+    mm2::sell_answer mm2_client::rpc_sell([[maybe_unused]] mm2::sell_request &&request)
     {
-        return mm2::sell_answer{std::nullopt, std::nullopt, "", 0};
+        return mm2::sell_answer{{std::nullopt, std::nullopt, "", 0}};
     }
 
     mm2::cancel_all_orders_answer mm2_client::rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request)
@@ -374,7 +374,7 @@ namespace antara::mmbot
         return {};
     }
 
-    mm2::order_status mm2_client::rpc_order_status(st_order_id id)
+    mm2::order_status mm2_client::rpc_order_status([[maybe_unused]] st_order_id id)
     {
         return {};
     }
@@ -384,7 +384,7 @@ namespace antara::mmbot
         return {};
     }
 
-    mm2::my_swap_status_answer mm2_client::rpc_my_swap_status(st_execution_id id)
+    mm2::my_swap_status_answer mm2_client::rpc_my_swap_status([[maybe_unused]] st_execution_id id)
     {
         return {};
     }
