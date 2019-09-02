@@ -418,11 +418,13 @@ namespace antara::mmbot
 
         mm2::version_answer rpc_version();
 
+        std::size_t enable_all_coins();
 
     private:
         nlohmann::json template_request(std::string method_name) noexcept;
 
         bool enable_tests_coins();
+
 
         template<typename RpcReturnType>
         RpcReturnType rpc_process_call(const RestClient::Response &resp)

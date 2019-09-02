@@ -106,13 +106,13 @@ FetchContent_Declare(reproc
 
 if (APPLE)
     FetchContent_Declare(mm2
-            URL https://github.com/KomodoPlatform/atomicDEX-API/releases/download/2.0.1009/mm2-b08da3aa9-Darwin.zip)
+            URL http://195.201.0.6/mm2/mm2-latest-Darwin.zip)
 elseif (LINUX)
     FetchContent_Declare(mm2
-            URL https://github.com/KomodoPlatform/atomicDEX-API/releases/download/2.0.1009/mm2-b08da3aa9-Linux.zip)
+            URL http://195.201.0.6/mm2/mm2-latest-Linux.zip)
 else()
     FetchContent_Declare(mm2
-            URL https://github.com/KomodoPlatform/atomicDEX-API/releases/download/2.0.1009/mm2-b08da3aa9-Windows_NT.zip)
+            URL http://195.201.0.6/mm2/mm2-latest-Windows_NT.zip)
 endif ()
 
 FetchContent_MakeAvailable(doctest doom_st nlohmann_json loguru restclient-cpp cpp-taskflow restinio jl777-coins abseil-cpp bcmath trompeloeil mm2 reproc)

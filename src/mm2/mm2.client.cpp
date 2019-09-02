@@ -388,4 +388,33 @@ namespace antara::mmbot
     {
         return {};
     }
+
+    std::size_t mm2_client::enable_all_coins()
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        std::size_t res = 0;
+        const auto &mmbot_config = get_mmbot_config();
+        for (auto&&[current_coin, current_coin_data] : mmbot_config.registry_additional_coin_infos) {
+            if (current_coin_data.is_mm2_compatible) {
+                if (current_coin_data.is_electrum_compatible && (current_coin != "RICK" && current_coin != "MORTY")) {
+                    std::vector<electrum_server> servers;
+                    std::copy(begin(current_coin_data.servers_electrum), end(current_coin_data.servers_electrum),
+                              std::back_inserter(servers));
+                    mm2::electrum_request request{current_coin, servers};
+                    auto request_fallback = request;
+                    auto answer = rpc_electrum(std::move(request));
+                    if (answer.rpc_result_code != 200) {
+                        // Retry with ssl
+                        VLOG_SCOPE_F(loguru::Verbosity_WARNING, "%s", "Retry with ssl");
+                        for (auto &&current_srv : request_fallback.servers) {
+                            current_srv.protocol = "SSL";
+                        }
+                        answer = rpc_electrum(std::move(request_fallback));
+                    }
+                    res += (answer.rpc_result_code == 200) ? 1 : 0;
+                }
+            }
+        }
+        return res;
+    }
 }
