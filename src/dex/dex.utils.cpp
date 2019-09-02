@@ -29,7 +29,7 @@
 
 namespace antara::mmbot
 {
-    mm2::buy_request to_buy (orders::order_level ol, antara::pair pair)
+    mm2::buy_request to_buy (const orders::order_level &ol, antara::pair pair)
     {
         const auto& cfg = get_mmbot_config();
 
@@ -41,7 +41,7 @@ namespace antara::mmbot
         return mm2::buy_request{base, quote, price, quantity};
     }
 
-    mm2::sell_request to_sell (orders::order_level ol, antara::pair pair)
+    mm2::sell_request to_sell (const orders::order_level &ol, antara::pair pair)
     {
         const auto& cfg = get_mmbot_config();
 
@@ -53,7 +53,7 @@ namespace antara::mmbot
         return mm2::sell_request{base, quote, price, quantity};
     }
 
-    const orders::order to_order (mm2::trade_result res)
+    const orders::order to_order (const mm2::trade_result &res)
     {
         auto side = res.side;
 
@@ -73,7 +73,7 @@ namespace antara::mmbot
         return b.build();
     }
 
-    const orders::order to_order (mm2::order res)
+    const orders::order to_order (const mm2::order &res)
     {
         auto pair = antara::pair::of(res.base, res.rel);
         auto b = orders::order_builder(st_order_id{res.id}, pair);
@@ -85,7 +85,7 @@ namespace antara::mmbot
         return mm2::cancel_order_request{o_id};
     }
 
-    bool in(mm2::cancel_order_answer ans)
+    bool in(const mm2::cancel_order_answer &ans)
     {
         return ans.result == "success";
     }
