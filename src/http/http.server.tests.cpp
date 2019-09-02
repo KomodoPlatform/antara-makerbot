@@ -157,7 +157,7 @@ namespace antara::mmbot::tests
         nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
         mm2::buy_answer answer;
         mm2::from_json(resp_answer, answer);
-        mm2::cancel_order_request cancel_request{answer.result_buy.value().uuid};
+        mm2::cancel_order_request cancel_request{answer.result_trade.value().uuid};
         json_request.clear();
         mm2::to_json(json_request, cancel_request);
         resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json", json_request.dump());
