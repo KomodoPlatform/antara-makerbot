@@ -5,6 +5,7 @@ target_sources(mmbot_shared_deps INTERFACE
         cex/cex.cpp
         config/config.cpp
         dex/dex.cpp
+        dex/dex.utils.cpp
         http/http.price.rest.cpp
         http/http.mm2.rest.cpp
         http/http.server.cpp

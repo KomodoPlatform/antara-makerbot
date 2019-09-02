@@ -81,7 +81,7 @@ namespace antara::mmbot::tests
                 auto answer = mm2.rpc_buy(std::move(request));
                 REQUIRE_EQ(200, answer.rpc_result_code);
 
-                mm2::cancel_order_request cancel_request{answer.result_buy.value().uuid};
+                mm2::cancel_order_request cancel_request{answer.result_trade.value().uuid};
                 auto cancel_answer = mm2.rpc_cancel_order(std::move(cancel_request));
                 CHECK_EQ(200, cancel_answer.rpc_result_code);
             }

@@ -36,24 +36,60 @@ namespace antara::mmbot
         ids.emplace(id);
     }
 
+    void order_manager::remove_order_from_pair_map(const orders::order &o)
+    {
+        auto id = o.id;
+        auto pair = o.pair;
+
+        auto& orders = orders_by_pair_.at(pair);
+        orders.erase(id);
+    }
+
     const orders::order &order_manager::get_order(const st_order_id &id) const
     {
         return orders_.at(id);
     }
 
+    const std::unordered_set<st_order_id> &order_manager::get_orders(antara::pair pair) const
+    {
+        return orders_by_pair_.at(pair);
+    }
+
+    void order_manager::add_order(const orders::order &o)
+    {
+        orders_.emplace(o.id, o);
+        add_order_to_pair_map(o);
+        // Should we be adding the executions too?
+        // I think not, so that we can track new executions outside of this function
+    }
+
     void order_manager::add_orders(const std::vector<orders::order> &orders)
     {
         for (const auto &o : orders) {
-            orders_.emplace(o.id, o);
-            add_order_to_pair_map(o);
+            add_order(o);
         }
+    }
+
+    void order_manager::add_execution(const orders::execution &e)
+    {
+        executions_.emplace(e.id, e);
     }
 
     void order_manager::add_executions(const std::vector<orders::execution> &executions)
     {
         for (const auto &e : executions) {
-            executions_.emplace(e.id, e);
+            add_execution(e);
         }
+    }
+
+    void order_manager::remove_order(const orders::order &order)
+    {
+        auto ex_ids = order.execution_ids;
+        for (auto &&current_id : ex_ids) {
+            executions_.erase(current_id);
+        }
+        remove_order_from_pair_map(order);
+        orders_.erase(order.id);
     }
 
     void order_manager::start()
@@ -68,9 +104,7 @@ namespace antara::mmbot
         }
 
         auto exs = dex_.get_executions(order_ids);
-        for (const auto &ex : exs) {
-            executions_.emplace(ex.id, ex);
-        }
+        add_executions(exs);
     }
 
     void order_manager::poll()
@@ -78,7 +112,8 @@ namespace antara::mmbot
         // update the orders we know about
         for (const auto&[id, o] : orders_) {
             auto order = dex_.get_order_status(st_order_id{id});
-            orders_.emplace(id, order);
+            // orders_.emplace(id, order);
+            add_order(order);
         }
 
         // add new orders
@@ -108,17 +143,15 @@ namespace antara::mmbot
                 // for any that aren't in the ex object
                 // make a call to cex
                 cex_.mirror(ex);
+                // and add to known executions
+                add_execution(ex);
             }
         }
 
         // when an order is finished, remove it's executions
         for (auto&&[id, order] : orders_) {
             if (order.finished()) {
-                auto ex_ids = order.execution_ids;
-                for (auto &&current_id : ex_ids) {
-                    executions_.erase(current_id);
-                }
-                orders_.erase(order.id);
+                remove_order(order);
             }
         }
     }
@@ -126,53 +159,48 @@ namespace antara::mmbot
     void order_manager::update_from_live()
     {
         auto live = dex_.get_live_orders();
-        std::transform(live.begin(), live.end(), std::inserter(orders_, orders_.end()),
-                       [](const auto &o) {
-                           return std::make_pair(o.id, o);
-                       });
-    }
-
-    st_order_id order_manager::place_order(const orders::order_level &ol)
-    {
-        auto &order = dex_.place(ol);
-        auto id = order.id;
-
-        orders_.emplace(id, order);
-        add_order_to_pair_map(order);
-
-        return id;
-    }
-
-    std::unordered_set<st_order_id> order_manager::place_order(const orders::order_group &os)
-    {
-        auto order_ids = std::unordered_set<st_order_id>();
-        for (const auto &ol : os.levels) {
-            auto &order = dex_.place(ol);
-            order_ids.emplace(order.id);
+        for (const auto& order : live) {
+            add_order(order);
         }
+    }
 
+    std::optional<st_order_id> order_manager::place_order(const orders::order_level &ol, antara::pair pair)
+    {
+        auto opt_order = dex_.place(ol, pair);
+        if (opt_order) {
+            auto &order = opt_order.value();
+            add_order(order);
+            return std::make_optional<st_order_id>(order.id);
+        } else {
+            return std::nullopt;
+        }
+    }
+
+    std::unordered_set<st_order_id> order_manager::place_order(const orders::order_group &og)
+    {
+        auto pair = og.pair;
+        auto order_ids = std::unordered_set<st_order_id>();
+        for (const auto &ol : og.levels) {
+            auto id = place_order(ol, pair);
+            if (id) {
+                order_ids.emplace(id.value());
+            }
+        }
         return order_ids;
     }
 
     std::unordered_set<st_order_id> order_manager::cancel_orders(antara::pair pair)
     {
         auto ids = orders_by_pair_.at(pair);
+
         std::unordered_set<st_order_id> cancelled_orders;
         for (const auto &id : ids) {
             auto result = dex_.cancel(id);
             if (result) {
                 cancelled_orders.emplace(id);
+                auto &order = orders_.at(id);
+                remove_order(order);
             }
-        }
-
-        for (const auto &id : cancelled_orders) {
-            ids.erase(id);
-            auto &order = orders_.at(id);
-            auto ex_ids = order.execution_ids;
-            for (auto &&current_id : ex_ids) {
-                executions_.erase(current_id);
-            }
-            orders_.erase(order.id);
         }
 
         return cancelled_orders;

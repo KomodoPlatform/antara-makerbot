@@ -178,16 +178,16 @@ namespace antara::mmbot::mm2
     void from_json(const nlohmann::json &j, buy_answer &cfg)
     {
         if (j.find("error") == j.end()) {
-            cfg.result_buy = buy_result{};
-            cfg.result_buy.value().rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
-            cfg.result_buy.value().base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
-            j.at("result").at("action").get_to(cfg.result_buy.value().action);
-            j.at("result").at("uuid").get_to(cfg.result_buy.value().uuid);
-            j.at("result").at("method").get_to(cfg.result_buy.value().method);
-            j.at("result").at("rel_amount").get_to(cfg.result_buy.value().rel_amount);
-            j.at("result").at("base_amount").get_to(cfg.result_buy.value().base_amount);
-            j.at("result").at("dest_pub_key").get_to(cfg.result_buy.value().dest_pub_key);
-            j.at("result").at("sender_pubkey").get_to(cfg.result_buy.value().sender_pub_key);
+            cfg.result_trade = buy_result{};
+            cfg.result_trade.value().rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
+            cfg.result_trade.value().base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
+            j.at("result").at("action").get_to(cfg.result_trade.value().action);
+            j.at("result").at("uuid").get_to(cfg.result_trade.value().uuid);
+            j.at("result").at("method").get_to(cfg.result_trade.value().method);
+            j.at("result").at("rel_amount").get_to(cfg.result_trade.value().rel_amount);
+            j.at("result").at("base_amount").get_to(cfg.result_trade.value().base_amount);
+            j.at("result").at("dest_pub_key").get_to(cfg.result_trade.value().dest_pub_key);
+            j.at("result").at("sender_pubkey").get_to(cfg.result_trade.value().sender_pub_key);
         } else {
             cfg.error = j.at("error").get<std::string>();
         }
@@ -221,6 +221,7 @@ namespace antara::mmbot::mm2
         }
     }
 }
+
 namespace antara::mmbot
 {
     mm2_client::mm2_client(bool should_enable_coins)
@@ -353,6 +354,11 @@ namespace antara::mmbot
         return rpc_process_call<mm2::buy_answer>(resp);
     }
 
+    mm2::sell_answer mm2_client::rpc_sell(mm2::sell_request &&request)
+    {
+        return mm2::sell_answer{std::nullopt, std::nullopt, "", 0};
+    }
+
     mm2::cancel_all_orders_answer mm2_client::rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
@@ -361,5 +367,25 @@ namespace antara::mmbot
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::cancel_all_orders_answer>(resp);
+    }
+
+    mm2::my_orders_answer mm2_client::rpc_my_orders()
+    {
+        return {};
+    }
+
+    mm2::order_status mm2_client::rpc_order_status(st_order_id id)
+    {
+        return {};
+    }
+
+    mm2::my_recent_swaps_answer mm2_client::rpc_my_recent_swaps()
+    {
+        return {};
+    }
+
+    mm2::my_swap_status_answer mm2_client::rpc_my_swap_status(st_execution_id id)
+    {
+        return {};
     }
 }
