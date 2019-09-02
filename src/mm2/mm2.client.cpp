@@ -221,6 +221,7 @@ namespace antara::mmbot::mm2
         }
     }
 }
+
 namespace antara::mmbot
 {
     mm2_client::mm2_client(bool should_enable_coins)

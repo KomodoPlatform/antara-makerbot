@@ -96,8 +96,38 @@ namespace antara::mmbot
         return std::vector<orders::order>();
     }
 
+    orders::execution to_execution(const mm2::swap &swap)
+    {
+        auto events = swap.events;
+        if (events.empty()) {
+
+            auto event = events[0].event;
+            if (event.type != "Started") {
+                // throw?
+            }
+
+            auto data = event.data;
+
+            auto id = data.uuid;
+            auto pair = antara::pair::of(data.maker_coin, data.taker_coin);
+
+            auto maker_amount = std::stod(data.maker_amount);
+            auto taker_amount = std::stod(data.taker_amount);
+            auto price = st_price{ absl::uint128( maker_amount / taker_amount ) };
+
+            auto quantity = st_quantity{std::stod(data.maker_amount)};
+
+            // TODO
+            auto side = antara::side::buy;
+            antara::maker maker = swap.type == mm2::swap_type::maker ? true : false ;
+
+            return orders::execution{ id, pair, price, quantity, side, maker };
+        }
+    }
+
     std::vector<orders::execution> to_executions(const mm2::my_recent_swaps_answer &answer)
     {
+        // TODO
         return std::vector<orders::execution>();
     }
 }

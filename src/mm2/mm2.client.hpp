@@ -304,7 +304,8 @@ namespace antara::mmbot
         void from_json(const nlohmann::json &j, cancel_all_orders_request &cfg);
         void from_json(const nlohmann::json &j, cancel_all_orders_answer &cfg);
 
-        struct order {
+        struct order
+        {
             std::string id;
             std::string base;
             std::string rel;
@@ -328,9 +329,45 @@ namespace antara::mmbot
             order o;
         };
 
+        struct event_data {
+            std::string uuid;
+
+            std::string maker_coin;
+            std::string taker_coin;
+
+            std::string maker_amount;
+            std::string taker_amount;
+        };
+
+        using event_type = std::string;
+
+        struct event
+        {
+            event_data data;
+            event_type type;
+        };
+
+        struct event_ts
+        {
+            antara::mmbot::mm2::event event;
+            std::string timestamp;
+        };
+
+        enum swap_type
+        {
+            maker, taker
+        };
+
+        struct swap
+        {
+            std::vector<std::string> error_events;
+            std::vector<event_ts> events;
+            swap_type type;
+        };
+
         struct my_recent_swaps_answer
         {
-            
+            std::vector<swap> swaps;
         };
     }
 
