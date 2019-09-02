@@ -329,6 +329,8 @@ namespace antara::mmbot
         {
             antara::maker maker;
             order o;
+
+            std::vector<std::string> swaps;
         };
 
         struct event_data {
@@ -371,6 +373,16 @@ namespace antara::mmbot
         {
             std::vector<swap> swaps;
         };
+
+        struct my_swap_status_result
+        {
+            swap s;
+        };
+
+        struct my_swap_status_answer
+        {
+            my_swap_status_result result;
+        };
     }
 
 
@@ -401,6 +413,8 @@ namespace antara::mmbot
         mm2::order_status rpc_order_status(st_order_id id);
 
         mm2::my_recent_swaps_answer rpc_my_recent_swaps();
+
+        mm2::my_swap_status_answer rpc_my_swap_status(st_execution_id id);
 
         mm2::version_answer rpc_version();
 

@@ -383,4 +383,9 @@ namespace antara::mmbot
     {
         return {};
     }
+
+    mm2::my_swap_status_answer mm2_client::rpc_my_swap_status(st_execution_id id)
+    {
+        return {};
+    }
 }

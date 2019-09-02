@@ -74,14 +74,29 @@ namespace antara::mmbot
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)
     {
-        // TODO
-        throw mmbot::errors::not_implemented(pretty_function);
+        std::vector<orders::execution> executions;
+
+        auto order = mm_.rpc_order_status(id);
+        for (const auto &swap_id : order.swaps) {
+            auto answer = mm_.rpc_my_swap_status(swap_id);
+            executions.push_back(to_execution(answer.result.s));
+        }
+
+        return executions;
     }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const std::unordered_set<st_order_id> &ids)
     {
-        // TODO
-        throw mmbot::errors::not_implemented(pretty_function);
+        std::vector<orders::execution> executions;
+
+        for (auto id : ids) {
+            auto exs = get_executions(id);
+            for (auto ex : exs) {
+                executions.push_back(ex);
+            }
+        }
+
+        return executions;
     }
 
     std::vector<orders::execution> dex::get_recent_executions()
