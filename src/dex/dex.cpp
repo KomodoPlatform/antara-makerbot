@@ -74,11 +74,13 @@ namespace antara::mmbot
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)
     {
+        // TODO
         throw mmbot::errors::not_implemented(pretty_function);
     }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const std::unordered_set<st_order_id> &ids)
     {
+        // TODO
         throw mmbot::errors::not_implemented(pretty_function);
     }
 
