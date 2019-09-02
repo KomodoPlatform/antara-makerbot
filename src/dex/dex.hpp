@@ -36,7 +36,6 @@ namespace antara::mmbot
         virtual std::vector<orders::order> get_live_orders() = 0;
         virtual orders::order get_order_status(const st_order_id &id) = 0;
 
-        // virtual std::vector<orders::execution> get_executions() = 0;
         virtual std::vector<orders::execution> get_executions(const st_order_id &id) = 0;
         virtual std::vector<orders::execution> get_executions(const std::unordered_set<st_order_id> &ids) = 0;
         virtual std::vector<orders::execution> get_recent_executions() = 0;
@@ -51,11 +50,8 @@ namespace antara::mmbot
         std::vector<orders::order> get_live_orders() override;
         orders::order get_order_status(const st_order_id &id) override;
 
-        // std::vector<orders::execution> get_executions() override;
         std::vector<orders::execution> get_executions(const st_order_id &id) override;
         std::vector<orders::execution> get_executions(const std::unordered_set<st_order_id> &ids) override;
         std::vector<orders::execution> get_recent_executions() override;
-
-
     };
 }
