@@ -249,7 +249,6 @@ namespace antara::mmbot
             antara::asset rel;
             std::string price;
             std::string volume;
-
         };
 
         void to_json(nlohmann::json &j, const sell_request &cfg);
@@ -306,9 +305,12 @@ namespace antara::mmbot
 
         struct order
         {
-            std::string id;
+            std::string uuid;
             std::string base;
             std::string rel;
+
+            std::string base_amount;
+            std::string price;
         };
 
         struct maker_order : order {};
@@ -316,8 +318,8 @@ namespace antara::mmbot
 
         struct my_orders_answer
         {
-            using maker_orders = std::vector<maker_order>;
-            using taker_orders = std::vector<taker_order>;
+            using maker_orders = std::map<std::string, maker_order>;
+            using taker_orders = std::map<std::string, taker_order>;
 
             maker_orders m_orders;
             taker_orders t_orders;

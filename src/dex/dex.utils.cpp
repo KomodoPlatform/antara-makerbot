@@ -73,10 +73,12 @@ namespace antara::mmbot
         return b.build();
     }
 
-    const orders::order to_order (const mm2::order &res)
+    const orders::order to_order(const mm2::order &order)
     {
-        auto pair = antara::pair::of(res.base, res.rel);
-        auto b = orders::order_builder(st_order_id{res.id}, pair);
+        auto pair = antara::pair::of(order.base, order.rel);
+        auto b = orders::order_builder(order.uuid, pair);
+        b.quantity(st_quantity{std::stod(order.base_amount)});
+        b.price(st_price{std::stoull(order.price)});
         return b.build();
     }
 
@@ -92,8 +94,17 @@ namespace antara::mmbot
 
     std::vector<orders::order> to_orders(const mm2::my_orders_answer &answer)
     {
-        // TODO
-        return std::vector<orders::order>();
+        std::vector<orders::order> orders;
+
+        for (const auto& [id, o] : answer.m_orders) {
+            orders.push_back(to_order(o));
+        }
+
+        for (const auto& [id, o] : answer.t_orders) {
+            orders.push_back(to_order(o));
+        }
+
+        return orders;
     }
 
     orders::execution to_execution(const mm2::swap &swap)
@@ -127,7 +138,11 @@ namespace antara::mmbot
 
     std::vector<orders::execution> to_executions(const mm2::my_recent_swaps_answer &answer)
     {
-        // TODO
-        return std::vector<orders::execution>();
+        std::vector<orders::execution> executions;
+        for (const auto &swap : answer.swaps) {
+            auto ex = to_execution(swap);
+            executions.push_back(ex);
+        }
+        return executions;
     }
 }
