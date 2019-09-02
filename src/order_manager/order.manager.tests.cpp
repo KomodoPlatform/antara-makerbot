@@ -241,8 +241,6 @@ namespace antara::mmbot::tests
         REQUIRE_CALL(cex, mirror(e3));
 
         om.poll();
-
-
     }
 
     TEST_CASE ("orders can be cancelled by pair")
