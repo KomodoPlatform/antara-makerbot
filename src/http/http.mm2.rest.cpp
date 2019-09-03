@@ -146,4 +146,13 @@ namespace antara::mmbot::http::rest
                 static_cast<restinio::http_status_code_t>(get_enabled_coins_answer.rpc_result_code), "");
         return req->create_response(final_status).set_body(answer_json.dump()).done();
     }
+
+    restinio::request_handling_status_t
+    mm2::enable_all_electrums_coins(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/mm2/enable_all_electrums_coins");
+        mm2_client_.enable_all_coins();
+        return get_enabled_coins(req, params);
+    }
 }

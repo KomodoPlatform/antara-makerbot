@@ -43,6 +43,9 @@ namespace antara::mmbot::http::rest
         get_enabled_coins(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
         restinio::request_handling_status_t
+        enable_all_electrums_coins(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
+
+        restinio::request_handling_status_t
         set_price(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
 
         restinio::request_handling_status_t

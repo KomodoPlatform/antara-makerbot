@@ -73,6 +73,9 @@ namespace antara::mmbot
             return this->mm2_rest_callbook_.get_enabled_coins(std::forward<decltype(params)>(params)...);
         });
 
+        http_router->http_get("/api/v1/mm2/enable_all_electrums_coins", [this](auto &&... params) {
+            return this->mm2_rest_callbook_.enable_all_electrums_coins(std::forward<decltype(params)>(params)...);
+        });
 
         http_router->non_matched_request_handler(
                 [](auto req) {
