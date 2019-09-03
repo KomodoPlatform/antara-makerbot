@@ -85,6 +85,19 @@ namespace antara::mmbot::tests
                 auto cancel_answer = mm2.rpc_cancel_order(std::move(cancel_request));
                 CHECK_EQ(200, cancel_answer.rpc_result_code);
             }
+
+
+        SUBCASE ("mm2 rpc sell") {
+            if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
+                    mm2::sell_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+                    auto answer = mm2.rpc_sell(std::move(request));
+                    REQUIRE_EQ(200, answer.rpc_result_code);
+
+                    mm2::cancel_order_request cancel_request{answer.result_trade.value().uuid};
+                    auto cancel_answer = mm2.rpc_cancel_order(std::move(cancel_request));
+                    CHECK_EQ(200, cancel_answer.rpc_result_code);
+                }
+            }
         }
 
 

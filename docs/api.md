@@ -683,6 +683,59 @@ The buy method issues a buy request and attempts to match an order from the orde
 
 **Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
 
+## mm2 sell
+
+The sell method issues a sell request and attempts to match an order from the orderbook based on the provided arguments.
+
+**URL**: `/api/v1/legacy/mm2/sell`
+
+**Method**: `POST`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+### Success Response
+
+**Code** `200 OK`
+
+**Content examples (request)**
+
+```json
+{
+  "base": "RICK",
+  "method": "sell",
+  "price": "1",
+  "rel": "MORTY",
+  "userpass": "YOUR_PASSWORD_HERE",
+  "volume": "1"
+}
+```
+
+**Content example (answer)**
+
+```json
+{
+  "result": {
+    "action": "Sell",
+    "base": "RICK",
+    "base_amount": "1",
+    "dest_pub_key": "0000000000000000000000000000000000000000000000000000000000000000",
+    "method": "request",
+    "rel": "MORTY",
+    "rel_amount": "1",
+    "sender_pubkey": "9df6d7fa49c31959fce388bb8e8065fd3d9ace5bc4bbafd0cbd4c6604492670a",
+    "uuid": "89001dbe-cec6-4be0-a030-f48e8bab2d96"
+  }
+}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
+
 ## mm2 cancel_all_orders
 
 The cancel_all_orders cancels the active orders created by the MM2 node by specified condition.
