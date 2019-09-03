@@ -111,6 +111,14 @@ namespace antara::mmbot::mm2
         j["volume"] = cfg.volume;
     }
 
+    void to_json(nlohmann::json &j, const sell_request &cfg)
+    {
+        j["rel"] = cfg.rel.symbol.value();
+        j["base"] = cfg.base.symbol.value();
+        j["price"] = cfg.price;
+        j["volume"] = cfg.volume;
+    }
+
     void from_json(const nlohmann::json &j, buy_request &cfg)
     {
         cfg.rel = antara::asset{st_symbol{j.at("rel").get<std::string>()}};
@@ -191,6 +199,32 @@ namespace antara::mmbot::mm2
         } else {
             cfg.error = j.at("error").get<std::string>();
         }
+    }
+
+    void from_json(const nlohmann::json &j, sell_answer &cfg)
+    {
+        if (j.find("error") == j.end()) {
+            cfg.result_trade = buy_result{};
+            cfg.result_trade.value().rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
+            cfg.result_trade.value().base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
+            j.at("result").at("action").get_to(cfg.result_trade.value().action);
+            j.at("result").at("uuid").get_to(cfg.result_trade.value().uuid);
+            j.at("result").at("method").get_to(cfg.result_trade.value().method);
+            j.at("result").at("rel_amount").get_to(cfg.result_trade.value().rel_amount);
+            j.at("result").at("base_amount").get_to(cfg.result_trade.value().base_amount);
+            j.at("result").at("dest_pub_key").get_to(cfg.result_trade.value().dest_pub_key);
+            j.at("result").at("sender_pubkey").get_to(cfg.result_trade.value().sender_pub_key);
+        } else {
+            cfg.error = j.at("error").get<std::string>();
+        }
+    }
+
+    void from_json(const nlohmann::json &j, sell_request &cfg)
+    {
+        cfg.rel = antara::asset{st_symbol{j.at("rel").get<std::string>()}};
+        cfg.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
+        j.at("volume").get_to(cfg.volume);
+        j.at("price").get_to(cfg.price);
     }
 
     void to_json(nlohmann::json &j, const cancel_all_orders_request &cfg)
@@ -365,9 +399,14 @@ namespace antara::mmbot
         return rpc_process_call<mm2::buy_answer>(resp);
     }
 
-    mm2::sell_answer mm2_client::rpc_sell([[maybe_unused]] mm2::sell_request &&request)
+    mm2::sell_answer mm2_client::rpc_sell(mm2::sell_request &&request)
     {
-        return mm2::sell_answer{{std::nullopt, std::nullopt, "", 0}};
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("sell");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::sell_answer>(resp);
     }
 
     mm2::cancel_all_orders_answer mm2_client::rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request)

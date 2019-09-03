@@ -129,10 +129,12 @@ namespace antara::mmbot::http::rest
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/cancel_all_orders");
-        return process_post_function<antara::mmbot::mm2::cancel_all_orders_request>(req, params, [this](auto &&request) {
-            return this->mm2_client_.rpc_cancel_all_orders(
-                    std::forward<decltype(request)>(request));
-        });
+        return process_post_function<antara::mmbot::mm2::cancel_all_orders_request>(req, params,
+                                                                                    [this](auto &&request) {
+                                                                                        return this->mm2_client_.rpc_cancel_all_orders(
+                                                                                                std::forward<decltype(request)>(
+                                                                                                        request));
+                                                                                    });
     }
 
     restinio::request_handling_status_t
@@ -148,11 +150,23 @@ namespace antara::mmbot::http::rest
     }
 
     restinio::request_handling_status_t
-    mm2::enable_all_electrums_coins(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    mm2::enable_all_electrums_coins(const restinio::request_handle_t &req,
+                                    const restinio::router::route_params_t &params)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/mm2/enable_all_electrums_coins");
         mm2_client_.enable_all_coins();
         return get_enabled_coins(req, params);
+    }
+
+    restinio::request_handling_status_t
+    mm2::sell(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/sell");
+        return process_post_function<antara::mmbot::mm2::sell_request>(req, params, [this](auto &&request) {
+            return this->mm2_client_.rpc_sell(
+                    std::forward<decltype(request)>(request));
+        });
     }
 }
