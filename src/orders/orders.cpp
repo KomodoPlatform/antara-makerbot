@@ -81,6 +81,17 @@ namespace antara::mmbot::orders
 
     // Order
 
+    bool order::operator==(const order &other) const
+    {
+        return id == other.id
+            && pair == other.pair
+            && price == other.price
+            && quantity == other.quantity
+            && filled == other.filled
+            && side == other.side
+            && status == other.status;
+    }
+
     bool order::finished() const
     {
         return (status == orders::order_status::cancelled);
