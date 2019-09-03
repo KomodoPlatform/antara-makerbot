@@ -55,6 +55,8 @@ namespace antara::mmbot
 
     const orders::order to_order (const mm2::trade_result &res)
     {
+        const auto &config = get_mmbot_config();
+
         auto side = res.side;
 
         auto id = st_order_id{res.uuid};
@@ -62,7 +64,11 @@ namespace antara::mmbot
 
         auto base_amount = std::stod(res.base_amount);
         auto rel_amount = std::stod(res.rel_amount);
-        auto price = st_price{ absl::uint128( base_amount / rel_amount ) };
+
+        auto price_str = std::to_string( rel_amount / base_amount  );
+
+        auto symbol = st_symbol{res.rel.symbol.value()};
+        auto price = generate_st_price_from_api_price(config, symbol, price_str);
 
         auto quantity = st_quantity{std::stod(res.base_amount)};
 
