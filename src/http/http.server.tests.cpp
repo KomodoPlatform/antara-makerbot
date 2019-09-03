@@ -118,6 +118,14 @@ namespace antara::mmbot::tests
         std::raise(SIGINT);
     }
 
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 get enabled coins")
+    {
+        std::this_thread::sleep_for(1s);
+        auto resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/get_enabled_coins"); //Well formed
+        CHECK_EQ(resp.code, 200);
+        std::raise(SIGINT);
+    }
+
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test get all prices")
     {
         std::this_thread::sleep_for(1s);

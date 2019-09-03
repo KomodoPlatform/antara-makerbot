@@ -112,6 +112,12 @@ namespace antara::mmbot::tests
                 CHECK_EQ(200, cancel_answer.rpc_result_code);
             }
         }
+
+        SUBCASE("mm2 get enabled coins") {
+            auto answer = mm2.rpc_get_enabled_coins();
+            REQUIRE_EQ(200, answer.rpc_result_code);
+            REQUIRE_EQ(2, answer.result_enabled_coins.size());
+        }
     }
 
     TEST_CASE ("mm2 rpc electrum")
@@ -128,5 +134,12 @@ namespace antara::mmbot::tests
                                                    {"electrum3.cipig.net:10018"}}};
         answer = mm2.rpc_electrum(std::move(bad_request));
         CHECK_EQ(500, answer.rpc_result_code);
+    }
+
+    TEST_CASE ("mm2 enable all coins")
+    {
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        antara::mmbot::mm2_client mm2;
+        CHECK(mm2.enable_all_coins() > 10);
     }
 }
