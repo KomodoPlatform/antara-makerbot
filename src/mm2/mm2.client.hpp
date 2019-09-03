@@ -59,7 +59,7 @@ namespace antara::mmbot
             antara::asset coin;
             std::string address;
             st_price price_as_integer;
-            double price;
+            std::string price;
             std::size_t num_utxos;
             double ave_volume;
             double max_volume;
@@ -300,7 +300,9 @@ namespace antara::mmbot
         };
 
         void to_json(nlohmann::json &j, const cancel_all_orders_request &cfg);
+
         void from_json(const nlohmann::json &j, cancel_all_orders_request &cfg);
+
         void from_json(const nlohmann::json &j, cancel_all_orders_answer &cfg);
 
         struct order
@@ -313,8 +315,12 @@ namespace antara::mmbot
             std::string price;
         };
 
-        struct maker_order : order {};
-        struct taker_order : order {};
+        struct maker_order : order
+        {
+        };
+        struct taker_order : order
+        {
+        };
 
         struct my_orders_answer
         {
@@ -333,7 +339,8 @@ namespace antara::mmbot
             std::vector<std::string> swaps;
         };
 
-        struct event_data {
+        struct event_data
+        {
             std::string uuid;
 
             std::string maker_coin;
@@ -383,6 +390,18 @@ namespace antara::mmbot
         {
             my_swap_status_result result;
         };
+
+
+        struct get_enabled_coins_result
+        {
+            std::string ticker;
+            std::string address;
+        };
+
+        struct get_enabled_coins_answer
+        {
+            std::vector<get_enabled_coins_result> result_enabled_coins;
+        };
     }
 
 
@@ -402,6 +421,7 @@ namespace antara::mmbot
         mm2::setprice_answer rpc_setprice(mm2::setprice_request &&request);
 
         mm2::buy_answer rpc_buy(mm2::buy_request &&request);
+
         mm2::sell_answer rpc_sell(mm2::sell_request &&request);
 
         mm2::cancel_all_orders_answer rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request);
@@ -417,6 +437,7 @@ namespace antara::mmbot
         mm2::my_swap_status_answer rpc_my_swap_status(st_execution_id id);
 
         mm2::version_answer rpc_version();
+        mm2::get_enabled_coins_answer rpc_get_enabled_coins();
 
         std::size_t enable_all_coins();
 
