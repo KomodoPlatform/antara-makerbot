@@ -130,7 +130,7 @@ namespace antara::mmbot
 
             // TODO
             auto side = antara::side::buy;
-            antara::maker maker{swap.type == mm2::swap_type::maker};
+            antara::maker maker{swap.type == "Maker"};
 
             return orders::execution{ id, pair, price, quantity, side, maker };
         }

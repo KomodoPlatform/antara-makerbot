@@ -265,6 +265,45 @@ namespace antara::mmbot::mm2
     {
         j.at("result").get_to(cfg.result_enabled_coins);
     }
+
+    void from_json(const nlohmann::json &j, event_data &cfg)
+    {
+        j.at("uuid").get_to(cfg.uuid);
+        j.at("maker_amount").get_to(cfg.maker_amount);
+        j.at("maker_coin").get_to(cfg.maker_coin);
+        j.at("taker_coin").get_to(cfg.taker_coin);
+        j.at("taker_amount").get_to(cfg.taker_amount);
+    }
+
+    void from_json(const nlohmann::json &j, event &cfg)
+    {
+        j.at("data").get_to(cfg.data);
+        j.at("type").get_to(cfg.type);
+    }
+
+    void from_json(const nlohmann::json &j, event_ts &cfg)
+    {
+        j.at("event").get_to(cfg.event);
+        j.at("timestamp").get_to(cfg.timestamp);
+    }
+
+    void from_json(const nlohmann::json &j, swap &cfg)
+    {
+        j.at("events").get_to(cfg.events);
+        j.at("error_events").get_to(cfg.error_events);
+        j.at("type").get_to(cfg.type);
+    }
+
+    void from_json(const nlohmann::json &j, my_recent_swaps_answer &cfg)
+    {
+        j.at("swaps").get_to(cfg.swaps);
+    }
+
+    void to_json(nlohmann::json &j, const my_recent_swaps_request &cfg)
+    {
+        j["from_uuid"] = cfg.from_uuid;
+        j["limit"] = cfg.limit;
+    }
 }
 
 namespace antara::mmbot
@@ -429,11 +468,6 @@ namespace antara::mmbot
         return {};
     }
 
-    mm2::my_recent_swaps_answer mm2_client::rpc_my_recent_swaps()
-    {
-        return {};
-    }
-
     mm2::my_swap_status_answer mm2_client::rpc_my_swap_status([[maybe_unused]] st_execution_id id)
     {
         return {};
@@ -475,5 +509,15 @@ namespace antara::mmbot
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::get_enabled_coins_answer>(resp);
+    }
+
+    mm2::my_recent_swaps_answer mm2_client::rpc_my_recent_swaps(mm2::my_recent_swaps_request &&request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("my_recent_swaps");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::my_recent_swaps_answer>(resp);
     }
 }

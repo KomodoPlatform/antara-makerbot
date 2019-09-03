@@ -324,6 +324,8 @@ namespace antara::mmbot
             std::string taker_amount;
         };
 
+        void from_json(const nlohmann::json &j, event_data &cfg);
+
         using event_type = std::string;
 
         struct event
@@ -332,28 +334,41 @@ namespace antara::mmbot
             event_type type;
         };
 
+        void from_json(const nlohmann::json &j, event &cfg);
+
         struct event_ts
         {
             antara::mmbot::mm2::event event;
             std::string timestamp;
         };
 
-        enum swap_type
-        {
-            maker, taker
-        };
+        void from_json(const nlohmann::json &j, event_ts &cfg);
 
         struct swap
         {
             std::vector<std::string> error_events;
             std::vector<event_ts> events;
-            swap_type type;
+            std::string type;
         };
+
+        void from_json(const nlohmann::json &j, swap &cfg);
+
+        struct my_recent_swaps_request
+        {
+            std::string from_uuid;
+            std::size_t limit{10};
+        };
+
+        void to_json(nlohmann::json &j, const my_recent_swaps_request &cfg);
 
         struct my_recent_swaps_answer
         {
             std::vector<swap> swaps;
+            std::string result;
+            int rpc_result_code;
         };
+
+        void from_json(const nlohmann::json &j, my_recent_swaps_answer &cfg);
 
         struct my_swap_status_result
         {
@@ -380,6 +395,7 @@ namespace antara::mmbot
         };
 
         void from_json(const nlohmann::json &j, get_enabled_coins_result &cfg);
+
         void from_json(const nlohmann::json &j, get_enabled_coins_answer &cfg);
     }
 
@@ -411,11 +427,12 @@ namespace antara::mmbot
 
         mm2::order_status rpc_order_status(st_order_id id);
 
-        mm2::my_recent_swaps_answer rpc_my_recent_swaps();
+        mm2::my_recent_swaps_answer rpc_my_recent_swaps(mm2::my_recent_swaps_request&& request);
 
         mm2::my_swap_status_answer rpc_my_swap_status(st_execution_id id);
 
         mm2::version_answer rpc_version();
+
         mm2::get_enabled_coins_answer rpc_get_enabled_coins();
 
         std::size_t enable_all_coins();
