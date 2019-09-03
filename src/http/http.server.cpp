@@ -57,6 +57,10 @@ namespace antara::mmbot
             return this->mm2_rest_callbook_.buy(std::forward<decltype(params)>(params)...);
         });
 
+        http_router->http_post("/api/v1/legacy/mm2/sell", [this](auto &&... params) {
+            return this->mm2_rest_callbook_.sell(std::forward<decltype(params)>(params)...);
+        });
+
         http_router->http_post("/api/v1/legacy/mm2/cancel_all_orders", [this](auto &&... params) {
             return this->mm2_rest_callbook_.cancel_all_orders(std::forward<decltype(params)>(params)...);
         });
@@ -69,6 +73,13 @@ namespace antara::mmbot
             return this->mm2_rest_callbook_.version(std::forward<decltype(params)>(params)...);
         });
 
+        http_router->http_get("/api/v1/legacy/mm2/get_enabled_coins", [this](auto &&... params) {
+            return this->mm2_rest_callbook_.get_enabled_coins(std::forward<decltype(params)>(params)...);
+        });
+
+        http_router->http_get("/api/v1/mm2/enable_all_electrums_coins", [this](auto &&... params) {
+            return this->mm2_rest_callbook_.enable_all_electrums_coins(std::forward<decltype(params)>(params)...);
+        });
 
         http_router->non_matched_request_handler(
                 [](auto req) {

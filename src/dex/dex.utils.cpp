@@ -130,10 +130,11 @@ namespace antara::mmbot
 
             // TODO
             auto side = antara::side::buy;
-            antara::maker maker = swap.type == mm2::swap_type::maker ? true : false ;
+            antara::maker maker{swap.type == mm2::swap_type::maker};
 
             return orders::execution{ id, pair, price, quantity, side, maker };
         }
+        return {};
     }
 
     std::vector<orders::execution> to_executions(const mm2::my_recent_swaps_answer &answer)

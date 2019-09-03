@@ -8,7 +8,7 @@ Below is the list of prerequisites to compile `mmbot` on your machine:
 
 -   [CMake](https://cmake.org/download/) 3.14 minimum
 -   libcurl
--   gcc-8 or clang-8 or msvc15-2017 minimum
+-   gcc-8 (Linux) or clang-8 (Linux / OSX) or msvc15-2017 (Windows) minimum
 
 ## Getting Started
 

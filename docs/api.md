@@ -353,6 +353,190 @@ Retrieve the version of mm2
 }
 ```
 
+## mm2 get enabled coins
+
+Retrieve the enabled coins of mm2
+
+**URL**: `/api/v1/legacy/mm2/get_enabled_coins`
+
+**Method**: `GET`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+
+### Success Response
+
+**Code**: `200 OK`
+
+**Content examples**
+
+```json
+{
+  "result": [
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "RICK"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "MORTY"
+    }
+  ]
+}
+```
+
+## mm2 enable all electrums coins
+
+Retrieve the enabled coins of mm2
+
+**URL**: `/api/v1/mm2/enable_all_electrums_coins`
+
+**Method**: `GET`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+
+### Success Response
+
+**Code**: `200 OK`
+
+**Content examples**
+
+```json
+{
+  "result": [
+    {
+      "address": "VeJoMXUwD1L17Q7BqBUcXa9cvJSjvNNeyd",
+      "ticker": "VTC"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "MORTY"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "ZEXO"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "ILN"
+    },
+    {
+      "address": "15JySpKUoCRo3dD36Ppz6fpmEV9mSDFjSf",
+      "ticker": "BTC"
+    },
+    {
+      "address": "QQuxZ7cByfJcUmJ4Wj9UDwcPjk6Uhec2Kv",
+      "ticker": "QTUM"
+    },
+    {
+      "address": "a52SBim71zRe7Ae96o97rx9GqrH7j5hsoZ",
+      "ticker": "XZC"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "RFOX"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "OOT"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "CHIPS"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "KMD"
+    },
+    {
+      "address": "EMTswQ9zE9ii2votuEpW6ooj18etw6VUnF",
+      "ticker": "ECA"
+    },
+    {
+      "address": "MCD8gFDtJDbbwJBNKNUvLwS6hi2vwswEED",
+      "ticker": "MONA"
+    },
+    {
+      "address": "GN9trweRn43686WL2LV6XSAf9ewcRCFbZY",
+      "ticker": "GAME"
+    },
+    {
+      "address": "t1NBaT9jcmXDPeGFw2pe7EUvgV9LrGCnyvi",
+      "ticker": "ZEC"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "KMDICE"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "HUSH"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "RICK"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "RVN"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "CCL"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "CHAIN"
+    },
+    {
+      "address": "D9T4z5G86cL5adPdpypYeRzN7ct4kGn9hQ",
+      "ticker": "DOGE"
+    },
+    {
+      "address": "EMTswQ9zE9ii2votuEpW6ooj18etw6VUnF",
+      "ticker": "EMC2"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "LABS"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "COQUI"
+    },
+    {
+      "address": "15JySpKUoCRo3dD36Ppz6fpmEV9mSDFjSf",
+      "ticker": "BCH"
+    },
+    {
+      "address": "GN9trweRn43686WL2LV6XSAf9ewcRCFbZY",
+      "ticker": "GIN"
+    },
+    {
+      "address": "XezpH4yNkuePCZocxH9CxCWZ4pjTVm34QH",
+      "ticker": "DASH"
+    },
+    {
+      "address": "LPXvi2dJsrfrJRuCGXpHNgtXShX3YctTVm",
+      "ticker": "LTC"
+    },
+    {
+      "address": "MztLeTpTiaXMaATYND9ZKByfxiYpMDsRXJ",
+      "ticker": "NMC"
+    },
+    {
+      "address": "D9T4z5G86cL5adPdpypYeRzN7ct4kGn9hQ",
+      "ticker": "DGB"
+    }
+  ]
+}
+```
+
 ## mm2 setprice
 
 The setprice method places an order on the orderbook, and it relies on this node acting as a maker, also called a Bob node.
@@ -481,6 +665,59 @@ The buy method issues a buy request and attempts to match an order from the orde
 {
   "result": {
     "action": "Buy",
+    "base": "RICK",
+    "base_amount": "1",
+    "dest_pub_key": "0000000000000000000000000000000000000000000000000000000000000000",
+    "method": "request",
+    "rel": "MORTY",
+    "rel_amount": "1",
+    "sender_pubkey": "9df6d7fa49c31959fce388bb8e8065fd3d9ace5bc4bbafd0cbd4c6604492670a",
+    "uuid": "89001dbe-cec6-4be0-a030-f48e8bab2d96"
+  }
+}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
+
+## mm2 sell
+
+The sell method issues a sell request and attempts to match an order from the orderbook based on the provided arguments.
+
+**URL**: `/api/v1/legacy/mm2/sell`
+
+**Method**: `POST`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+### Success Response
+
+**Code** `200 OK`
+
+**Content examples (request)**
+
+```json
+{
+  "base": "RICK",
+  "method": "sell",
+  "price": "1",
+  "rel": "MORTY",
+  "userpass": "YOUR_PASSWORD_HERE",
+  "volume": "1"
+}
+```
+
+**Content example (answer)**
+
+```json
+{
+  "result": {
+    "action": "Sell",
     "base": "RICK",
     "base_amount": "1",
     "dest_pub_key": "0000000000000000000000000000000000000000000000000000000000000000",
