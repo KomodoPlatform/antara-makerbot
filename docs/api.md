@@ -353,6 +353,40 @@ Retrieve the version of mm2
 }
 ```
 
+## mm2 get enabled coins
+
+Retrieve the enabled coins of mm2
+
+**URL**: `/api/v1/legacy/mm2/get_enabled_coins`
+
+**Method**: `GET`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+
+### Success Response
+
+**Code**: `200 OK`
+
+**Content examples**
+
+```json
+{
+  "result": [
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "RICK"
+    },
+    {
+      "address": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+      "ticker": "MORTY"
+    }
+  ]
+}
+```
+
 ## mm2 setprice
 
 The setprice method places an order on the orderbook, and it relies on this node acting as a maker, also called a Bob node.

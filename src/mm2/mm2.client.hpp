@@ -401,7 +401,12 @@ namespace antara::mmbot
         struct get_enabled_coins_answer
         {
             std::vector<get_enabled_coins_result> result_enabled_coins;
+            std::string result;
+            int rpc_result_code;
         };
+
+        void from_json(const nlohmann::json &j, get_enabled_coins_result &cfg);
+        void from_json(const nlohmann::json &j, get_enabled_coins_answer &cfg);
     }
 
 

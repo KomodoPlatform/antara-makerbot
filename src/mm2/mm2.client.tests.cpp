@@ -112,6 +112,12 @@ namespace antara::mmbot::tests
                 CHECK_EQ(200, cancel_answer.rpc_result_code);
             }
         }
+
+        SUBCASE("mm2 get enabled coins") {
+            auto answer = mm2.rpc_get_enabled_coins();
+            REQUIRE_EQ(200, answer.rpc_result_code);
+            REQUIRE_EQ(2, answer.result_enabled_coins.size());
+        }
     }
 
     TEST_CASE ("mm2 rpc electrum")

@@ -220,6 +220,17 @@ namespace antara::mmbot::mm2
             cfg.data.value().rel = antara::asset{st_symbol{j.at("cancel_by").at("data").at("rel").get<std::string>()}};
         }
     }
+
+    void from_json(const nlohmann::json &j, get_enabled_coins_result &cfg)
+    {
+        j.at("address").get_to(cfg.address);
+        j.at("ticker").get_to(cfg.ticker);
+    }
+
+    void from_json(const nlohmann::json &j, get_enabled_coins_answer &cfg)
+    {
+        j.at("result").get_to(cfg.result_enabled_coins);
+    }
 }
 
 namespace antara::mmbot
@@ -416,5 +427,14 @@ namespace antara::mmbot
             }
         }
         return res;
+    }
+
+    mm2::get_enabled_coins_answer mm2_client::rpc_get_enabled_coins()
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("get_enabled_coins");
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::get_enabled_coins_answer>(resp);
     }
 }
