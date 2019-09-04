@@ -301,14 +301,27 @@ namespace antara::mmbot::mm2
 
     void to_json(nlohmann::json &j, const my_recent_swaps_request &cfg)
     {
-        j["from_uuid"] = cfg.from_uuid;
+        if (cfg.from_uuid.has_value()) {
+            j["from_uuid"] = cfg.from_uuid.value();
+        }
         j["limit"] = cfg.limit;
     }
 
     void from_json(const nlohmann::json &j, my_recent_swaps_request &cfg)
     {
-        j.at("from_uuid").get_to(cfg.from_uuid);
+        if (j.find("from_uuid") != j.end()) {
+            cfg.from_uuid = j.at("from_uuid").get<std::string>();
+        }
         j.at("limit").get_to(cfg.limit);
+    }
+
+    void from_json(const nlohmann::json &j, order &cfg)
+    {
+        j.at("uuid").get_to(cfg.uuid);
+        j.at("base").get_to(cfg.base);
+        j.at("base_amount").get_to(cfg.base_amount);
+        j.at("price").get_to(cfg.price);
+        j.at("rel").get_to(cfg.rel);
     }
 }
 

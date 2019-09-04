@@ -289,6 +289,8 @@ namespace antara::mmbot
             std::string price;
         };
 
+        void from_json(const nlohmann::json &j, order &cfg);
+
         struct maker_order : order
         {
         };
@@ -307,7 +309,7 @@ namespace antara::mmbot
 
         struct order_status
         {
-            antara::maker maker;
+            std::string type; // Maker / Taker
             order o;
 
             std::vector<std::string> swaps;
@@ -355,7 +357,7 @@ namespace antara::mmbot
 
         struct my_recent_swaps_request
         {
-            std::string from_uuid;
+            std::optional<std::string> from_uuid{std::nullopt};
             std::size_t limit{10};
         };
 
