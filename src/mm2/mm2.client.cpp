@@ -304,6 +304,12 @@ namespace antara::mmbot::mm2
         j["from_uuid"] = cfg.from_uuid;
         j["limit"] = cfg.limit;
     }
+
+    void from_json(const nlohmann::json &j, my_recent_swaps_request &cfg)
+    {
+        j.at("from_uuid").get_to(cfg.from_uuid);
+        j.at("limit").get_to(cfg.limit);
+    }
 }
 
 namespace antara::mmbot

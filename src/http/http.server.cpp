@@ -61,6 +61,10 @@ namespace antara::mmbot
             return this->mm2_rest_callbook_.sell(std::forward<decltype(params)>(params)...);
         });
 
+        http_router->http_post("/api/v1/legacy/mm2/my_recent_swaps", [this](auto &&... params) {
+            return this->mm2_rest_callbook_.my_recent_swaps(std::forward<decltype(params)>(params)...);
+        });
+
         http_router->http_post("/api/v1/legacy/mm2/cancel_all_orders", [this](auto &&... params) {
             return this->mm2_rest_callbook_.cancel_all_orders(std::forward<decltype(params)>(params)...);
         });
