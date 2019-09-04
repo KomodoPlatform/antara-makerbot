@@ -116,7 +116,7 @@ namespace antara::mmbot
     orders::execution to_execution(const mm2::swap &swap)
     {
         auto events = swap.events;
-        if (events.empty()) {
+        if (!events.empty()) {
 
             auto event = events[0].event;
             if (event.type != "Started") {
@@ -130,7 +130,7 @@ namespace antara::mmbot
 
             auto maker_amount = std::stod(data.maker_amount);
             auto taker_amount = std::stod(data.taker_amount);
-            auto price = st_price{ absl::uint128( maker_amount / taker_amount ) };
+            auto price = st_price{ absl::uint128( taker_amount / maker_amount ) };
 
             auto quantity = st_quantity{std::stod(data.maker_amount)};
 

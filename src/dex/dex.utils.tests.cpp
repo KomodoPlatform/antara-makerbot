@@ -49,15 +49,10 @@ namespace antara::mmbot::tests
         auto pair = antara::pair::of("A", "BTC");
         auto symbol = st_symbol{"BTC"};
 
-        std::cout << "Okay so far" << std::endl;
-
-        additional_coin_info coin_info;
-        coin_info.nb_decimals = 5;
-
         load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         auto &cfg = get_mmbot_config();
 
-        auto price = generate_st_price_from_api_price(cfg, symbol, "2.0");
+        auto price = generate_st_price_from_api_price(cfg, symbol, "2");
 
         auto b = orders::order_builder(id, pair);
         b.price(price);
@@ -67,8 +62,99 @@ namespace antara::mmbot::tests
 
         auto actual = to_order(result);
 
-        std::cout << expected.price.value() << std::endl;
-        std::cout << actual.price.value() << std::endl;
+        CHECK_EQ(expected, actual);
+    }
+
+    TEST_CASE ("mm::order can be converted to orders::order")
+    {
+        auto uuid = "o_id";
+        auto base = "A";
+        auto rel = "BTC";
+        auto base_amount = "10";
+        auto price_str = "5";
+
+        auto mm_order = mm2::order{uuid, base, rel, base_amount, price_str};
+
+        auto b = orders::order_builder(st_order_id{uuid}, antara::pair::of(base, rel));
+        b.quantity(st_quantity{10});
+        b.price(st_price{5});
+        auto expected = b.build();
+
+        auto actual = to_order(mm_order);
+
+        CHECK_EQ(expected, actual);
+    }
+
+    TEST_CASE ("can create cancel order requests")
+    {
+        auto expected = mm2::cancel_order_request{"o_id"};
+
+        auto o_id = st_order_id{"o_id"};
+        auto actual = out(o_id);
+
+        CHECK_EQ(expected.uuid, actual.uuid);
+    }
+
+    TEST_CASE ("can parse successful cancel order answers")
+    {
+        auto expected = true;
+
+        auto answer = mm2::cancel_order_answer{"success"};
+        auto actual = in(answer);
+
+        CHECK_EQ(expected, actual);
+    }
+
+    TEST_CASE ("can parse failed cancel order answers")
+    {
+        auto expected = false;
+
+        auto answer = mm2::cancel_order_answer{"failed"};
+        auto actual = in(answer);
+
+        CHECK_EQ(expected, actual);
+    }
+
+    TEST_CASE ("can convert a mm2::swap into an execution")
+    {
+        auto uuid = "e_id";
+        auto id = st_execution_id{uuid};
+
+        auto maker_coin = "ETH";
+        auto taker_coin = "BTC";
+
+        auto pair = antara::pair::of(maker_coin, taker_coin);
+
+        auto maker_amount = "10";
+        auto taker_amount = "20";
+
+        auto quantity = st_quantity{10};
+        auto price = st_price{2};
+
+        // TODO
+        auto side = antara::side::buy;
+
+        auto maker = true;
+
+
+        auto expected = orders::execution{ id, pair, price, quantity, side, maker};
+
+        auto e_data = mm2::event_data{ uuid, maker_coin, taker_coin, maker_amount, taker_amount };
+        auto e_type = "Started";
+
+        auto event = mm2::event{e_data, e_type};
+
+        auto event_ts = mm2::event_ts{event, "timestamp"};
+
+        auto events = std::vector<mm2::event_ts>();
+        events.push_back(event_ts);
+
+        auto err_events = std::vector<std::string>();
+        auto type = mm2::swap_type::maker;
+        auto swap = mm2::swap{err_events, events, type};
+
+        auto actual = to_execution(swap);
+
         CHECK_EQ(expected, actual);
     }
 }
