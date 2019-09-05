@@ -284,28 +284,24 @@ namespace antara::mmbot
             std::string uuid;
             std::string base;
             std::string rel;
-
             std::string base_amount;
             std::string price;
         };
 
         void from_json(const nlohmann::json &j, order &cfg);
 
-        struct maker_order : order
-        {
-        };
-        struct taker_order : order
-        {
-        };
-
         struct my_orders_answer
         {
-            using maker_orders = std::map<std::string, maker_order>;
-            using taker_orders = std::map<std::string, taker_order>;
+            using maker_orders = std::map<std::string, order>;
+            using taker_orders = std::map<std::string, order>;
+            std::string result;
+            int rpc_result_code;
 
             maker_orders m_orders;
             taker_orders t_orders;
         };
+
+        void from_json(const nlohmann::json &j, my_orders_answer &cfg);
 
         struct order_status
         {

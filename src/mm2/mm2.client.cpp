@@ -268,6 +268,7 @@ namespace antara::mmbot::mm2
 
     void from_json(const nlohmann::json &j, event_data &cfg)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         j.at("uuid").get_to(cfg.uuid);
         j.at("maker_amount").get_to(cfg.maker_amount);
         j.at("maker_coin").get_to(cfg.maker_coin);
@@ -277,18 +278,21 @@ namespace antara::mmbot::mm2
 
     void from_json(const nlohmann::json &j, event &cfg)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         j.at("data").get_to(cfg.data);
         j.at("type").get_to(cfg.type);
     }
 
     void from_json(const nlohmann::json &j, event_ts &cfg)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         j.at("event").get_to(cfg.event);
         j.at("timestamp").get_to(cfg.timestamp);
     }
 
     void from_json(const nlohmann::json &j, swap &cfg)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         j.at("events").get_to(cfg.events);
         j.at("error_events").get_to(cfg.error_events);
         j.at("type").get_to(cfg.type);
@@ -296,6 +300,7 @@ namespace antara::mmbot::mm2
 
     void from_json(const nlohmann::json &j, my_recent_swaps_answer &cfg)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         j.at("result").at("swaps").get_to(cfg.swaps);
     }
 
@@ -319,11 +324,27 @@ namespace antara::mmbot::mm2
 
     void from_json(const nlohmann::json &j, order &cfg)
     {
-        j.at("uuid").get_to(cfg.uuid);
-        j.at("base").get_to(cfg.base);
-        j.at("base_amount").get_to(cfg.base_amount);
+        /*DVLOG_F(loguru::Verbosity_INFO, "current json: %s", j.dump().c_str());
+        if (j.find("available_amount") != j.end()) {
+            j.at("available_amount").get_to(cfg.base_amount);
+        } else {
+            j.at("request").at("base_amount").get_to(cfg.base_amount);
+        }
+
+        if (j.find("request") != j.end()) {
+            j.at("request").at("uuid").get_to(cfg.uuid);
+            j.at("request").at("base").get_to(cfg.base);
+        }
+        //j.at("uuid").get_to(cfg.uuid);
+        //j.at("base").get_to(cfg.base);
         j.at("price").get_to(cfg.price);
-        j.at("rel").get_to(cfg.rel);
+        j.at("rel").get_to(cfg.rel);*/
+    }
+
+    void from_json(const nlohmann::json &j, my_orders_answer &cfg)
+    {
+        j.at("result").at("maker_orders").get_to(cfg.m_orders);
+        j.at("result").at("taker_orders").get_to(cfg.t_orders);
     }
 }
 
@@ -481,7 +502,11 @@ namespace antara::mmbot
 
     mm2::my_orders_answer mm2_client::rpc_my_orders()
     {
-        return {};
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("my_orders");
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::my_orders_answer>(resp);
     }
 
     mm2::order_status mm2_client::rpc_order_status([[maybe_unused]] st_order_id id)
