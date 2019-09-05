@@ -28,10 +28,11 @@ namespace antara::mmbot
 {
     struct market_making_strategy
     {
-        antara::pair pair;
+        antara::cross pair;
         antara::st_spread spread;
         antara::st_quantity quantity;
-        antara::side side;
+        bool both;
+        // antara::side side;
         bool operator==(const market_making_strategy &other) const;
         bool operator!=(const market_making_strategy &other) const;
     };
@@ -40,13 +41,13 @@ namespace antara::mmbot
     class abstract_sm
     {
     public:
-        using registry_strategies = std::unordered_map<antara::pair, market_making_strategy>;
+        using registry_strategies = std::unordered_map<antara::cross, market_making_strategy>;
 
         virtual ~abstract_sm() = default;
 
         virtual void add_strategy(const market_making_strategy& strat) = 0;
 
-        virtual const market_making_strategy &get_strategy(antara::pair pair) const = 0;
+        virtual const market_making_strategy &get_strategy(antara::cross pair) const = 0;
         virtual const registry_strategies &get_strategies() const = 0;
 
         virtual orders::order_level make_bid(
@@ -65,7 +66,7 @@ namespace antara::mmbot
     class strategy_manager : public abstract_sm<PS>
     {
     public:
-        using registry_strategies = std::unordered_map<antara::pair, market_making_strategy>;
+        using registry_strategies = std::unordered_map<antara::cross, market_making_strategy>;
 
         strategy_manager(PS& ps, abstract_om& om): om_(om), ps_(ps)
         {
@@ -74,7 +75,7 @@ namespace antara::mmbot
 
         void add_strategy(const market_making_strategy& strat) override;
 
-        [[nodiscard]] const market_making_strategy &get_strategy(antara::pair pair) const override;
+        [[nodiscard]] const market_making_strategy &get_strategy(antara::cross pair) const override;
         [[nodiscard]] const registry_strategies &get_strategies() const override;
 
         orders::order_level make_bid(
@@ -88,7 +89,7 @@ namespace antara::mmbot
 
         orders::order_group create_order_group(const market_making_strategy &strat) override;
 
-        void refresh_orders(antara::pair pair);
+        void refresh_orders(antara::cross pair);
         void refresh_all_orders();
 
         void start();

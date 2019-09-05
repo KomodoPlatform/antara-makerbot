@@ -37,15 +37,15 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("market_making_strategy equality")
     {
-        auto pair = antara::pair::of("A", "B");
+        auto pair = antara::cross::of("A", "B");
         auto spread = st_spread{0.1};
-        auto side = antara::side::sell;
+        // auto side = antara::side::sell;
 
         auto q_10 = st_quantity{10};
         auto q_11 = st_quantity{11};
 
-        auto mms_1 = market_making_strategy{pair, spread, q_10, side};
-        auto mms_2 = market_making_strategy{pair, spread, q_11, side};
+        auto mms_1 = market_making_strategy{pair, spread, q_10};
+        auto mms_2 = market_making_strategy{pair, spread, q_11};
 
         CHECK_EQ(mms_1, mms_1);
         CHECK_NE(mms_1, mms_2);
@@ -57,13 +57,13 @@ namespace antara::mmbot::tests
         auto ps = price_service_platform_mock();
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
-        antara::pair pair = {{st_symbol{"A"}},
+        antara::cross pair = {{st_symbol{"A"}},
                              {st_symbol{"B"}}};
         st_spread spread = st_spread{0.1};
         st_quantity quantity = st_quantity{5};
-        antara::side side = antara::side::sell;
+        // antara::side side = antara::side::sell;
 
-        auto strat = market_making_strategy{pair, spread, quantity, side};
+        auto strat = market_making_strategy{pair, spread, quantity};
         CHECK_EQ(0, sm.get_strategies().size());
 
         sm.add_strategy(strat);
@@ -84,7 +84,7 @@ namespace antara::mmbot::tests
         auto ps = price_service_platform_mock();
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
-        auto expected = orders::order_level{bid_price, quantity, antara::side::buy};
+        auto expected = orders::order_level{bid_price, quantity};
         auto actual = sm.make_bid(mid, spread, quantity);
 
         CHECK_EQ(expected, actual);
@@ -102,7 +102,7 @@ namespace antara::mmbot::tests
         auto ps = price_service_platform_mock();
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
-        auto expected = orders::order_level{ask_price, quantity, antara::side::sell};
+        auto expected = orders::order_level{ask_price, quantity};
         auto actual = sm.make_ask(mid, spread, quantity);
 
         CHECK_EQ(expected, actual);
@@ -110,7 +110,7 @@ namespace antara::mmbot::tests
 
     TEST_CASE("orders are refreshed by cancelling them and placing new")
     {
-        auto pair = antara::pair::of("A", "B");
+        auto pair = antara::cross::of("A", "B");
         market_making_strategy strat
             = {pair, st_spread{0.1}, st_quantity{10}, antara::side::sell};
 

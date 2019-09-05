@@ -32,7 +32,7 @@ namespace antara::mmbot
 
         MAKE_MOCK1(add_strategy, void(const market_making_strategy&), override);
 
-        MAKE_CONST_MOCK1(get_strategy, market_making_strategy&(const antara::pair&), override);
+        MAKE_CONST_MOCK1(get_strategy, market_making_strategy&(const antara::cross&), override);
         MAKE_CONST_MOCK0(get_strategies, registry_strategies&(), override);
 
         MAKE_MOCK3(make_bid, orders::order_level(st_price, st_spread, st_quantity), override);

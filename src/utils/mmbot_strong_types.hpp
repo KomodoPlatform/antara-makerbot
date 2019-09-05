@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_set>
 #include <absl/numeric/int128.h>
 #include <st/type.hpp>
 #include <st/traits.hpp>
@@ -90,14 +91,33 @@ namespace antara
         }
     };
 
+    struct cross
+    {
+        asset base;
+        asset quote;
+
+        bool operator==(const cross &rhs) const
+            {
+                return (base == rhs.base && quote == rhs.quote)
+                    || (base == rhs.quote && quote == rhs.base);
+            }
+
+        bool operator!=(const cross &rhs) const
+            {
+                return !(*this == rhs);
+            }
+
+        static cross of(std::string a, std::string b);
+    };
+
     struct pair
     {
-        asset quote;
-        asset base;
+        asset bought;
+        asset sold;
 
         bool operator==(const pair &rhs) const
         {
-            return base == rhs.base && quote == rhs.quote;
+            return bought == rhs.bought && sold == rhs.sold;
         }
 
         bool operator!=(const pair &rhs) const
@@ -106,6 +126,16 @@ namespace antara
         }
 
         static pair of(std::string a, std::string b);
+
+        antara::pair flip()
+        {
+            return pair{sold, bought};
+        }
+
+        antara::cross to_cross() const
+        {
+            return { bought, sold };
+        }
     };
 
     enum side
@@ -124,8 +154,26 @@ namespace std
             using std::size_t;
             using std::hash;
 
-            std::size_t h1 = std::hash<std::string>{}(p.base.symbol.value());
-            std::size_t h2 = std::hash<std::string>{}(p.quote.symbol.value());
+            std::size_t h1 = std::hash<std::string>{}(p.bought.symbol.value());
+            std::size_t h2 = std::hash<std::string>{}(p.sold.symbol.value());
+
+            return h1 ^ (h2 << 1);
+        }
+    };
+
+    template<>
+    struct hash<antara::cross>
+    {
+        std::size_t operator()(const antara::cross &x) const
+        {
+            // using std::size_t;
+            // using std::hash;
+
+            auto big = x.base.symbol.value() > x.quote.symbol.value() ? x.base : x.quote ;
+            auto small = x.base.symbol.value() < x.quote.symbol.value() ? x.base : x.quote ;
+
+            std::size_t h1 = std::hash<std::string>{}(big.symbol.value());
+            std::size_t h2 = std::hash<std::string>{}(small.symbol.value());
 
             return h1 ^ (h2 << 1);
         }

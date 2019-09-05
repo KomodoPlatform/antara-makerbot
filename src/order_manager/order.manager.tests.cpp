@@ -38,7 +38,7 @@ namespace antara::mmbot::tests
 
         auto pair = antara::pair::of("A", "B");
 
-        REQUIRE_THROWS(om.get_orders(pair));
+        REQUIRE_THROWS(om.get_orders(pair.to_cross()));
 
         auto o_id = st_order_id{"id"};
         auto b = orders::order_builder(o_id, pair);
@@ -46,12 +46,12 @@ namespace antara::mmbot::tests
 
         om.add_order_to_pair_map(o);
 
-        auto& new_orders = om.get_orders(pair);
+        auto& new_orders = om.get_orders(pair.to_cross());
         CHECK_EQ(1, new_orders.size());
 
         om.remove_order_from_pair_map(o);
 
-        auto& remove_orders = om.get_orders(pair);
+        auto& remove_orders = om.get_orders(pair.to_cross());
         CHECK_EQ(0, remove_orders.size());
     }
 
@@ -91,7 +91,7 @@ namespace antara::mmbot::tests
         om.add_orders(os);
 
         auto &orders = om.get_all_orders();
-        auto &o_ids = om.get_orders(pair);
+        auto &o_ids = om.get_orders(pair.to_cross());
 
         CHECK_EQ(2, orders.size());
         CHECK_EQ(2, o_ids.size());
@@ -153,7 +153,7 @@ namespace antara::mmbot::tests
         auto pair = antara::pair::of("A", "B");
         st_price price = st_price(10);
         st_quantity quantity = st_quantity(10);
-        antara::side side = antara::side::buy;
+        // antara::side side = antara::side::buy;
         antara::maker maker = true;
 
         // This order is already on the book
@@ -162,7 +162,7 @@ namespace antara::mmbot::tests
         orders::order o1 = b1.build();
 
         auto e1_id = st_execution_id{"e_id_1"};
-        orders::execution e1 = { e1_id, pair, price, quantity, side, maker };
+        orders::execution e1 = { e1_id, pair, price, quantity, maker };
         o1.add_execution_id(e1_id);
 
 
@@ -173,7 +173,7 @@ namespace antara::mmbot::tests
         orders::order o2 = b2.build();
 
         auto e2_id = st_execution_id{"e_id_2"};
-        orders::execution e2 = { e2_id, pair, price, quantity, side, maker };
+        orders::execution e2 = { e2_id, pair, price, quantity, maker };
         o2.add_execution_id(e2_id);
 
 
@@ -184,7 +184,7 @@ namespace antara::mmbot::tests
         orders::order o3 = b3.build();
 
         auto e3_id = st_execution_id{"e_id_3"};
-        orders::execution e3 = { e3_id, pair, price, quantity, side, maker };
+        orders::execution e3 = { e3_id, pair, price, quantity, maker };
         o3.add_execution_id(e3_id);
 
 
@@ -249,7 +249,7 @@ namespace antara::mmbot::tests
     {
         auto pair = antara::pair::of("A", "B");
 
-        orders::order_level ol = {st_price(10), st_quantity(10), antara::side::sell};
+        orders::order_level ol = {st_price(10), st_quantity(10)};
 
         auto o_id = st_order_id{"id"};
         auto b = orders::order_builder(o_id, pair);
@@ -260,16 +260,16 @@ namespace antara::mmbot::tests
 
         auto om = order_manager(dex, cex);
 
-        ALLOW_CALL(dex, place(ol, pair))
+        ALLOW_CALL(dex, place(ol))
             .LR_RETURN(std::ref(o));
 
         REQUIRE_CALL(dex, cancel(o_id))
             .RETURN(true);
 
-        om.place_order(ol, pair);
+        om.place_order(ol);
         CHECK_EQ(1, om.get_all_orders().size());
 
-        auto ids = om.cancel_orders(pair);
+        auto ids = om.cancel_orders(pair.to_cross());
 
         CHECK_EQ(1, ids.size());
         CHECK_EQ(1, ids.count(o_id));

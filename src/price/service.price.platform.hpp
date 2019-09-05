@@ -29,14 +29,14 @@
 
 namespace antara::mmbot
 {
-    using registry_price_result = std::unordered_map<antara::pair, st_price>;
+    using registry_price_result = std::unordered_map<antara::cross, st_price>;
 
     class price_service_platform
     {
     public:
         explicit price_service_platform() noexcept;
         ~price_service_platform() noexcept;
-        st_price get_price(antara::pair currency_pair) const;
+        st_price get_price(antara::cross currency_pair) const;
         void enable_price_service_thread();
         nlohmann::json get_all_price_pairs_of_given_coin(const antara::asset &asset);
         nlohmann::json fetch_all_price();

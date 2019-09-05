@@ -51,7 +51,7 @@ namespace antara::mmbot
 
         struct orderbook_request
         {
-            antara::pair trading_pair;
+            antara::cross trading_pair;
         };
 
         struct order_contents
@@ -186,7 +186,7 @@ namespace antara::mmbot
 
         struct trade_result
         {
-            antara::side side;
+            // antara::side side;
             std::string action;
             antara::asset base;
             antara::asset rel;
@@ -221,7 +221,7 @@ namespace antara::mmbot
 
         struct buy_result : trade_result
         {
-            antara::side side = antara::side::buy;
+            // antara::side side = antara::side::buy;
         };
 
         struct buy_answer : trade_answer
@@ -244,7 +244,7 @@ namespace antara::mmbot
 
         struct sell_result : trade_result
         {
-            antara::side side{antara::side::sell};
+            // antara::side side{antara::side::sell};
         };
 
         struct sell_answer : trade_answer

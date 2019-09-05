@@ -28,7 +28,7 @@ namespace antara::mmbot
     class price_service_platform_mock
     {
     public:
-        MAKE_CONST_MOCK1(get_price, st_price(antara::pair));
+        MAKE_CONST_MOCK1(get_price, st_price(antara::cross));
         MAKE_MOCK0(enable_price_service_thread, void());
         MAKE_MOCK1(get_all_price_pairs_of_given_coin, nlohmann::json(const antara::asset &asset));
         MAKE_MOCK0(fetch_all_price, nlohmann::json());

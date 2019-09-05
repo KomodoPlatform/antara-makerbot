@@ -26,7 +26,7 @@ namespace antara::mmbot::tests
     {
         auto id = "o_id";
 
-        auto side = antara::side::sell;
+        // auto side = antara::side::sell;
         auto action = "";
         auto base = asset{st_symbol{"A"}};
         auto rel = asset{st_symbol{"BTC"}};
@@ -38,7 +38,7 @@ namespace antara::mmbot::tests
         auto uuid = id;
 
         auto result = mm2::trade_result{
-            side, action,
+            action,
             base, rel,
             base_amount, rel_amount,
             method,
@@ -57,7 +57,7 @@ namespace antara::mmbot::tests
         auto b = orders::order_builder(id, pair);
         b.price(price);
         b.quantity(st_quantity{3});
-        b.side(side);
+        // b.side(side);
         auto expected = b.build();
 
         auto actual = to_order(result);
@@ -132,12 +132,12 @@ namespace antara::mmbot::tests
         auto price = st_price{2};
 
         // TODO
-        auto side = antara::side::buy;
+        // auto side = antara::side::buy;
 
         auto maker = true;
 
 
-        auto expected = orders::execution{ id, pair, price, quantity, side, maker};
+        auto expected = orders::execution{ id, pair, price, quantity, maker};
 
         auto e_data = mm2::event_data{ uuid, maker_coin, taker_coin, maker_amount, taker_amount };
         auto e_type = "Started";

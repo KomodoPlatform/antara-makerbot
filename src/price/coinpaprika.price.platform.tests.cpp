@@ -24,7 +24,7 @@ namespace antara::mmbot::tests
     {
         load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         std::unique_ptr<abstract_price_platform> price_platform = std::make_unique<coinpaprika_price_platform>();
-        antara::pair currency_pair{{antara::st_symbol{"EUR"}}, {antara::st_symbol{"KMD"}}};
+        antara::cross currency_pair{{antara::st_symbol{"EUR"}}, {antara::st_symbol{"KMD"}}};
         CHECK_GT(price_platform->get_price(currency_pair, 0u).value(), 0);
     }
 
@@ -32,7 +32,7 @@ namespace antara::mmbot::tests
     {
         load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         std::unique_ptr<abstract_price_platform> price_platform = std::make_unique<coinpaprika_price_platform>();
-        antara::pair currency_pair{{st_symbol{"DOGE"}}, {st_symbol{"KMD"}}};
+        antara::cross currency_pair{{st_symbol{"DOGE"}}, {st_symbol{"KMD"}}};
         auto res = price_platform->get_price(currency_pair, 0u).value();
         CHECK_GT(res, 0);
     }
@@ -41,7 +41,7 @@ namespace antara::mmbot::tests
     {
         load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
         std::unique_ptr<abstract_price_platform> price_platform = std::make_unique<coinpaprika_price_platform>();
-        antara::pair currency_pair{{st_symbol{"EUR"}}, {st_symbol{"NONEXISTENTBASE"}}};
+        antara::cross currency_pair{{st_symbol{"EUR"}}, {st_symbol{"NONEXISTENTBASE"}}};
         CHECK_EQ(price_platform->get_price(currency_pair, 0u).value(), 0);
     }
 
@@ -49,7 +49,7 @@ namespace antara::mmbot::tests
     {
         load_configuration<config>(std::filesystem::current_path() / "assets", "mmbot_config.json");
         std::unique_ptr<abstract_price_platform> price_platform = std::make_unique<coinpaprika_price_platform>();
-        antara::pair currency_pair{{st_symbol{"NONEXISTENTQUOTE"}}, {st_symbol{"KMD"}}};
+        antara::cross currency_pair{{st_symbol{"NONEXISTENTQUOTE"}}, {st_symbol{"KMD"}}};
         CHECK_EQ(price_platform->get_price(currency_pair, 0u).value(), 0);
     }
 }

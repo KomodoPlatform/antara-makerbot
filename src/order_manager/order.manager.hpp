@@ -37,7 +37,7 @@ namespace antara::mmbot
 
         virtual const orders::order &get_order(const st_order_id &id) const = 0;
         virtual const orders::orders_by_id &get_all_orders() const = 0;
-        virtual const std::unordered_set<st_order_id> &get_orders(antara::pair pair) const = 0;
+        virtual const std::unordered_set<st_order_id> &get_orders(antara::cross pair) const = 0;
 
         virtual const orders::executions_by_id &get_all_executions() const = 0;
 
@@ -54,10 +54,10 @@ namespace antara::mmbot
 
         virtual void update_from_live() = 0;
 
-        virtual std::optional<st_order_id> place_order(const orders::order_level &ol, antara::pair pair) = 0;
+        virtual std::optional<st_order_id> place_order(const orders::order_level &ol) = 0;
         virtual std::unordered_set<st_order_id> place_order(const orders::order_group &os) = 0;
 
-        virtual std::unordered_set<st_order_id> cancel_orders(antara::pair pair) = 0;
+        virtual std::unordered_set<st_order_id> cancel_orders(antara::cross pair) = 0;
     };
 
     class order_manager : public abstract_om
@@ -74,7 +74,7 @@ namespace antara::mmbot
         {
             return orders_;
         }
-        const std::unordered_set<st_order_id> &get_orders(antara::pair pair) const override;
+        const std::unordered_set<st_order_id> &get_orders(antara::cross pair) const override;
 
         [[nodiscard]] const orders::executions_by_id &get_all_executions() const override
         {
@@ -94,10 +94,10 @@ namespace antara::mmbot
 
         void update_from_live() override;
 
-        std::optional<st_order_id> place_order(const orders::order_level &ol, antara::pair pair) override;
+        std::optional<st_order_id> place_order(const orders::order_level &ol) override;
         std::unordered_set<st_order_id> place_order(const orders::order_group &os) override;
 
-        std::unordered_set<st_order_id> cancel_orders(antara::pair pair) override;
+        std::unordered_set<st_order_id> cancel_orders(antara::cross pair) override;
 
     private:
         abstract_dex& dex_;
@@ -106,6 +106,6 @@ namespace antara::mmbot
         orders::orders_by_id orders_;
         orders::executions_by_id executions_;
 
-        std::unordered_map<antara::pair, std::unordered_set<st_order_id>> orders_by_pair_;
+        std::unordered_map<antara::cross, std::unordered_set<st_order_id>> orders_by_pair_;
     };
 }

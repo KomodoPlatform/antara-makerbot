@@ -45,7 +45,7 @@ namespace antara::mmbot::http::rest
             DVLOG_F(loguru::Verbosity_ERROR, "Wrong parameters, require base_asset and quote_asset parameters");
             return req->create_response(restinio::status_unprocessable_entity()).done();
         }
-        antara::pair currency_pair{asset{st_symbol{std::string(query_params["quote_currency"])}},
+        antara::cross currency_pair{asset{st_symbol{std::string(query_params["quote_currency"])}},
                                    asset{st_symbol{std::string(query_params["base_currency"])}}};
         st_price price{0ull};
         nlohmann::json answer_json;

@@ -28,7 +28,8 @@ namespace antara::mmbot
         return pair == other.pair
                && spread == other.spread
                && quantity == other.quantity
-               && side == other.side;
+               // && side == other.side
+               ;
     }
 
     bool market_making_strategy::operator!=(const market_making_strategy &other) const
@@ -39,12 +40,12 @@ namespace antara::mmbot
     template <class PS>
     void strategy_manager<PS>::add_strategy(const market_making_strategy &strat)
     {
-        antara::pair pair = strat.pair;
+        antara::cross pair = strat.pair;
         registry_strategies_.emplace(pair, strat);
     }
 
     template <class PS>
-    const market_making_strategy &strategy_manager<PS>::get_strategy(antara::pair pair) const
+    const market_making_strategy &strategy_manager<PS>::get_strategy(antara::cross pair) const
     {
         return registry_strategies_.at(pair);
     }
@@ -61,8 +62,8 @@ namespace antara::mmbot
     {
         antara::st_spread mod = antara::st_spread{1.0} - spread;
         antara::st_price price = mid * mod;
-        antara::side side = antara::side::buy;
-        orders::order_level ol{antara::st_price{price}, quantity, side};
+        // antara::side side = antara::side::buy;
+        orders::order_level ol{antara::st_price{price}, quantity};
         return ol;
     }
 
@@ -72,8 +73,8 @@ namespace antara::mmbot
     {
         antara::st_spread mod = 1.0 + spread;
         antara::st_price price = mid * mod;
-        antara::side side = antara::side::sell;
-        orders::order_level ol{price, quantity, side};
+        // antara::side side = antara::side::sell;
+        orders::order_level ol{price, quantity};
         return ol;
     }
 
@@ -83,41 +84,41 @@ namespace antara::mmbot
     {
         auto pair = strat.pair;
 
-        antara::side side = strat.side;
+        // antara::side side = strat.side;
         antara::st_spread spread = strat.spread;
         antara::st_quantity quantity = strat.quantity;
 
         orders::order_group os;
 
-        switch (side) {
+        // switch (side) {
 
-            case antara::side::buy: {
+            // case antara::side::buy: {
                 orders::order_level level = make_bid(mid, spread, quantity);
                 std::vector<orders::order_level> levels;
                 levels.push_back(level);
                 os = orders::order_group{pair, levels};
-                break;
-            }
+                // break;
+            // }
 
-            case antara::side::sell: {
-                orders::order_level level = make_ask(mid, spread, quantity);
-                std::vector<orders::order_level> levels;
-                levels.push_back(level);
-                os = orders::order_group{pair, levels};
-                break;
-            }
+            // case antara::side::sell: {
+            //     orders::order_level level = make_ask(mid, spread, quantity);
+            //     std::vector<orders::order_level> levels;
+            //     levels.push_back(level);
+            //     os = orders::order_group{pair, levels};
+            //     break;
+            // }
 
-            case antara::side::both: {
-                orders::order_level bid = make_bid(mid, spread, quantity);
-                orders::order_level ask = make_ask(mid, spread, quantity);
-                std::vector<orders::order_level> levels;
-                levels.push_back(bid);
-                levels.push_back(ask);
-                os = orders::order_group{pair, levels};
-                break;
-            }
+            // case antara::side::both: {
+            //     orders::order_level bid = make_bid(mid, spread, quantity);
+            //     orders::order_level ask = make_ask(mid, spread, quantity);
+            //     std::vector<orders::order_level> levels;
+            //     levels.push_back(bid);
+            //     levels.push_back(ask);
+            //     os = orders::order_group{pair, levels};
+            //     break;
+            // }
 
-        }
+        // }
         return os;
     }
 
@@ -130,7 +131,7 @@ namespace antara::mmbot
     }
 
     template <class PS>
-    void strategy_manager<PS>::refresh_orders(antara::pair pair)
+    void strategy_manager<PS>::refresh_orders(antara::cross pair)
     {
         // if (registry_strategies.find(pair) == registry_strategies_.end()) {
         //     throw

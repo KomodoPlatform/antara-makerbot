@@ -26,22 +26,22 @@ namespace antara::mmbot
     void order_manager::add_order_to_pair_map(const orders::order &o)
     {
         auto &id = o.id;
-        auto &pair = o.pair;
+        auto cross = o.pair.to_cross();
 
-        if (orders_by_pair_.find(pair) == orders_by_pair_.end()) {
-            orders_by_pair_.emplace(pair, std::unordered_set<st_order_id>());
+        if (orders_by_pair_.find(cross) == orders_by_pair_.end()) {
+            orders_by_pair_.emplace(cross, std::unordered_set<st_order_id>());
         }
 
-        auto &ids = orders_by_pair_.at(pair);
+        auto &ids = orders_by_pair_.at(cross);
         ids.emplace(id);
     }
 
     void order_manager::remove_order_from_pair_map(const orders::order &o)
     {
         auto id = o.id;
-        auto pair = o.pair;
+        auto cross = o.pair.to_cross();
 
-        auto& orders = orders_by_pair_.at(pair);
+        auto& orders = orders_by_pair_.at(cross);
         orders.erase(id);
     }
 
@@ -50,9 +50,9 @@ namespace antara::mmbot
         return orders_.at(id);
     }
 
-    const std::unordered_set<st_order_id> &order_manager::get_orders(antara::pair pair) const
+    const std::unordered_set<st_order_id> &order_manager::get_orders(antara::cross cross) const
     {
-        return orders_by_pair_.at(pair);
+        return orders_by_pair_.at(cross);
     }
 
     void order_manager::add_order(const orders::order &o)
@@ -164,9 +164,9 @@ namespace antara::mmbot
         }
     }
 
-    std::optional<st_order_id> order_manager::place_order(const orders::order_level &ol, antara::pair pair)
+    std::optional<st_order_id> order_manager::place_order(const orders::order_level &ol)
     {
-        auto opt_order = dex_.place(ol, pair);
+        auto opt_order = dex_.place(ol);
         if (opt_order) {
             auto &order = opt_order.value();
             add_order(order);
@@ -181,7 +181,7 @@ namespace antara::mmbot
         auto pair = og.pair;
         auto order_ids = std::unordered_set<st_order_id>();
         for (const auto &ol : og.levels) {
-            auto id = place_order(ol, pair);
+            auto id = place_order(ol);
             if (id) {
                 order_ids.emplace(id.value());
             }
@@ -189,7 +189,7 @@ namespace antara::mmbot
         return order_ids;
     }
 
-    std::unordered_set<st_order_id> order_manager::cancel_orders(antara::pair pair)
+    std::unordered_set<st_order_id> order_manager::cancel_orders(antara::cross pair)
     {
         auto ids = orders_by_pair_.at(pair);
 
