@@ -312,7 +312,9 @@ namespace antara::mmbot::mm2
         if (j.find("from_uuid") != j.end()) {
             cfg.from_uuid = j.at("from_uuid").get<std::string>();
         }
-        j.at("limit").get_to(cfg.limit);
+        if (j.find("limit") != j.end()) {
+            j.at("limit").get_to(cfg.limit);
+        }
     }
 
     void from_json(const nlohmann::json &j, order &cfg)
