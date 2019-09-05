@@ -296,7 +296,7 @@ namespace antara::mmbot::mm2
 
     void from_json(const nlohmann::json &j, my_recent_swaps_answer &cfg)
     {
-        j.at("swaps").get_to(cfg.swaps);
+        j.at("result").at("swaps").get_to(cfg.swaps);
     }
 
     void to_json(nlohmann::json &j, const my_recent_swaps_request &cfg)
