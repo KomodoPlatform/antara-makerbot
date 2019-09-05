@@ -281,9 +281,9 @@ namespace antara::mmbot
 
         struct order
         {
-            std::string uuid;
             std::string base;
             std::string rel;
+            std::string uuid;
             std::string base_amount;
             std::string price;
         };
@@ -313,13 +313,11 @@ namespace antara::mmbot
 
         struct event_data
         {
-            std::string uuid;
-
-            std::string maker_coin;
-            std::string taker_coin;
-
-            std::string maker_amount;
-            std::string taker_amount;
+            std::optional<std::string> uuid;
+            std::optional<std::string> maker_coin;
+            std::optional<std::string> taker_coin;
+            std::optional<std::string> maker_amount;
+            std::optional<std::string> taker_amount;
         };
 
         void from_json(const nlohmann::json &j, event_data &cfg);
@@ -328,7 +326,7 @@ namespace antara::mmbot
 
         struct event
         {
-            event_data data;
+            std::optional<event_data> data;
             event_type type;
         };
 
@@ -337,7 +335,7 @@ namespace antara::mmbot
         struct event_ts
         {
             antara::mmbot::mm2::event event;
-            std::string timestamp;
+            int timestamp;
         };
 
         void from_json(const nlohmann::json &j, event_ts &cfg);
@@ -358,6 +356,7 @@ namespace antara::mmbot
         };
 
         void to_json(nlohmann::json &j, const my_recent_swaps_request &cfg);
+
         void from_json(const nlohmann::json &j, my_recent_swaps_request &cfg);
 
         struct my_recent_swaps_answer
@@ -426,7 +425,7 @@ namespace antara::mmbot
 
         mm2::order_status rpc_order_status(st_order_id id);
 
-        mm2::my_recent_swaps_answer rpc_my_recent_swaps(mm2::my_recent_swaps_request&& request);
+        mm2::my_recent_swaps_answer rpc_my_recent_swaps(mm2::my_recent_swaps_request &&request);
 
         mm2::my_swap_status_answer rpc_my_swap_status(st_execution_id id);
 

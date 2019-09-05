@@ -269,17 +269,32 @@ namespace antara::mmbot::mm2
     void from_json(const nlohmann::json &j, event_data &cfg)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        j.at("uuid").get_to(cfg.uuid);
-        j.at("maker_amount").get_to(cfg.maker_amount);
-        j.at("maker_coin").get_to(cfg.maker_coin);
-        j.at("taker_coin").get_to(cfg.taker_coin);
-        j.at("taker_amount").get_to(cfg.taker_amount);
+        VLOG_F(loguru::Verbosity_INFO, "current json: %s", j.dump().c_str());
+        if (j.find("uuid") != j.end()) {
+            cfg.uuid = j.at("uuid").get<std::string>();
+        }
+        if (j.find("maker_amount") != j.end()) {
+            cfg.maker_amount = j.at("maker_amount").get<std::string>();
+        }
+        if (j.find("maker_coin") != j.end()) {
+            cfg.maker_coin = j.at("maker_coin").get<std::string>();
+        }
+
+        if (j.find("taker_coin") != j.end()) {
+            cfg.taker_coin = j.at("taker_coin").get<std::string>();
+        }
+
+        if (j.find("taker_amount") != j.end()) {
+            cfg.taker_amount = j.at("taker_amount").get<std::string>();
+        }
     }
 
     void from_json(const nlohmann::json &j, event &cfg)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        j.at("data").get_to(cfg.data);
+        if (j.find("data") != j.end()) {
+            cfg.data = j.at("data").get<event_data>();
+        }
         j.at("type").get_to(cfg.type);
     }
 
@@ -324,21 +339,8 @@ namespace antara::mmbot::mm2
 
     void from_json(const nlohmann::json &j, order &cfg)
     {
-        /*DVLOG_F(loguru::Verbosity_INFO, "current json: %s", j.dump().c_str());
-        if (j.find("available_amount") != j.end()) {
-            j.at("available_amount").get_to(cfg.base_amount);
-        } else {
-            j.at("request").at("base_amount").get_to(cfg.base_amount);
-        }
-
-        if (j.find("request") != j.end()) {
-            j.at("request").at("uuid").get_to(cfg.uuid);
-            j.at("request").at("base").get_to(cfg.base);
-        }
-        //j.at("uuid").get_to(cfg.uuid);
-        //j.at("base").get_to(cfg.base);
-        j.at("price").get_to(cfg.price);
-        j.at("rel").get_to(cfg.rel);*/
+        (void)cfg;
+        (void)j;
     }
 
     void from_json(const nlohmann::json &j, my_orders_answer &cfg)
