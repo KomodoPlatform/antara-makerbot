@@ -64,6 +64,14 @@ namespace antara::mmbot::tests
             CHECK_EQ(200, answer.rpc_result_code);
         }
 
+
+        SUBCASE("mm2 rpc recent swaps")
+        {
+            mm2::my_recent_swaps_request request;
+            auto answer = mm2.rpc_my_recent_swaps(std::move(request));
+            CHECK_EQ(200, answer.rpc_result_code);
+        }
+
         SUBCASE ("mm2 rpc setprice") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
                 mm2::setprice_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
