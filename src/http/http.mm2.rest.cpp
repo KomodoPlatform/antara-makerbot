@@ -169,4 +169,15 @@ namespace antara::mmbot::http::rest
                     std::forward<decltype(request)>(request));
         });
     }
+
+    restinio::request_handling_status_t
+    mm2::my_recent_swaps(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/my_recent_swaps");
+        return process_post_function<antara::mmbot::mm2::my_recent_swaps_request>(req, params, [this](auto &&request) {
+            return this->mm2_client_.rpc_my_recent_swaps(
+                    std::forward<decltype(request)>(request));
+        });
+    }
 }

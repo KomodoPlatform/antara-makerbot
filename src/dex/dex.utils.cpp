@@ -125,20 +125,19 @@ namespace antara::mmbot
 
             auto data = event.data;
 
-            auto id = data.uuid;
-            auto pair = antara::pair::of(data.maker_coin, data.taker_coin);
+            auto id = data.value().uuid;
+            auto pair = antara::pair::of(data.value().maker_coin.value(), data.value().taker_coin.value());
 
-            auto maker_amount = std::stod(data.maker_amount);
-            auto taker_amount = std::stod(data.taker_amount);
+            auto maker_amount = std::stod(data.value().maker_amount.value());
+            auto taker_amount = std::stod(data.value().taker_amount.value());
             auto price = st_price{ absl::uint128( taker_amount / maker_amount ) };
 
-            auto quantity = st_quantity{std::stod(data.maker_amount)};
+            auto quantity = st_quantity{std::stod(data.value().maker_amount.value())};
 
             // TODO
-            // auto side = antara::side::buy;
-            antara::maker maker{swap.type == mm2::swap_type::maker};
+            antara::maker maker{swap.type == "Maker"};
 
-            return orders::execution{ id, pair, price, quantity, maker };
+            return orders::execution{ id.value(), pair, price, quantity, maker };
         }
         return {};
     }
