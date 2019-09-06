@@ -92,16 +92,6 @@ namespace antara::mmbot
         orders_.erase(order.id);
     }
 
-    void order_manager::remove_order(const orders::order &order)
-    {
-        auto ex_ids = order.execution_ids;
-        for (auto &&current_id : ex_ids) {
-            executions_.erase(current_id);
-        }
-        remove_order_from_pair_map(order);
-        orders_.erase(order.id);
-    }
-
     void order_manager::start()
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
@@ -190,6 +180,7 @@ namespace antara::mmbot
     {
         auto pair = og.pair;
         auto order_ids = std::unordered_set<st_order_id>();
+        for (const auto &ol : og.levels) {
             auto id = place_order(ol, pair);
             if (id) {
                 order_ids.emplace(id.value());
