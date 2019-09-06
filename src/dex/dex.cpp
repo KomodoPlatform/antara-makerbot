@@ -21,38 +21,87 @@
 
 namespace antara::mmbot
 {
-    orders::order &dex::place([[maybe_unused]] const orders::order_level &o)
+    std::optional<orders::order> dex::buy(const orders::order_level &o, antara::pair pair)
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        auto answer = mm_.rpc_buy(to_buy(o, pair));
+
+        auto result = answer.result_trade;
+        if (result) {
+            return std::make_optional<orders::order>(to_order(result.value()));
+        } else {
+            return std::nullopt;
+        }
+    }
+
+    std::optional<orders::order> dex::sell(const orders::order_level &o, antara::pair pair)
+    {
+        auto answer = mm_.rpc_sell(to_sell(o, pair));
+
+        auto result = answer.result_trade;
+        if (result) {
+            return std::make_optional<orders::order>(to_order(result.value()));
+        } else {
+            return std::nullopt;
+        }
+    }
+
+    std::optional<orders::order> dex::place([[maybe_unused]] const orders::order_level &o, antara::pair pair)
+    {
+        if (o.side == antara::side::buy) {
+            return buy(o, pair);
+        } else {
+            return sell(o, pair);
+        }
     }
 
     bool dex::cancel([[maybe_unused]] st_order_id id)
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        auto answer = mm_.rpc_cancel_order(out(id));
+        return in(answer);
     }
 
     std::vector<orders::order> dex::get_live_orders()
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        auto answer = mm_.rpc_my_orders();
+        return to_orders(answer);
     }
 
     orders::order dex::get_order_status([[maybe_unused]] const st_order_id &id)
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        auto answer = mm_.rpc_order_status(id);
+        return to_order(answer.o);
     }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const st_order_id &id)
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        std::vector<orders::execution> executions;
+
+        auto order = mm_.rpc_order_status(id);
+        for (const auto &swap_id : order.swaps) {
+            auto answer = mm_.rpc_my_swap_status(swap_id);
+            executions.push_back(to_execution(answer.result.s));
+        }
+
+        return executions;
     }
 
     std::vector<orders::execution> dex::get_executions([[maybe_unused]] const std::unordered_set<st_order_id> &ids)
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        std::vector<orders::execution> executions;
+
+        for (auto id : ids) {
+            auto exs = get_executions(id);
+            for (auto ex : exs) {
+                executions.push_back(ex);
+            }
+        }
+
+        return executions;
     }
 
     std::vector<orders::execution> dex::get_recent_executions()
     {
-        throw mmbot::errors::not_implemented(pretty_function);
+        auto answer = mm_.rpc_my_recent_swaps();
+        return to_executions(answer);
     }
 }

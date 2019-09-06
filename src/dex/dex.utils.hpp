@@ -16,28 +16,30 @@
 
 #pragma once
 
-#include <doctest/doctest.h>
-#include <doctest/trompeloeil.hpp>
-#include <trompeloeil.hpp>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+#include <string>
 
+#include <absl/numeric/int128.h>
+#include <orders/orders.hpp>
 #include <utils/mmbot_strong_types.hpp>
-#include "dex.hpp"
+#include <utils/antara.utils.hpp>
+#include <mm2/mm2.client.hpp>
 
 namespace antara::mmbot
 {
-    class dex_mock : public abstract_dex
-    {
-    public:
-        dex_mock() = default;
+    mm2::buy_request to_buy (const orders::order_level &ol, antara::pair pair);
+    mm2::sell_request to_sell (const orders::order_level &ol, antara::pair pair);
 
-        MAKE_MOCK2(place, std::optional<orders::order>(const orders::order_level&, antara::pair pair), override);
-        MAKE_MOCK1(cancel, bool(st_order_id), override);
+    const orders::order to_order (const mm2::trade_result &res);
+    const orders::order to_order (const mm2::order &res);
 
-        MAKE_MOCK0(get_live_orders, std::vector<orders::order>(), override);
-        MAKE_MOCK1(get_order_status, orders::order(const st_order_id&), override);
+    mm2::cancel_order_request out(st_order_id o_id);
+    bool in(const mm2::cancel_order_answer &ans);
 
-        MAKE_MOCK1(get_executions, std::vector<orders::execution>(const st_order_id&), override);
-        MAKE_MOCK1(get_executions, std::vector<orders::execution>(const std::unordered_set<st_order_id>&), override);
-        MAKE_MOCK0(get_recent_executions, std::vector<orders::execution>(), override);
-    };
+    std::vector<orders::order> to_orders(const mm2::my_orders_answer &answer);
+
+    orders::execution to_execution(const mm2::swap &swap);
+    std::vector<orders::execution> to_executions(const mm2::my_recent_swaps_answer &answer);
 }

@@ -59,7 +59,7 @@ namespace antara::mmbot
             antara::asset coin;
             std::string address;
             st_price price_as_integer;
-            double price;
+            std::string price;
             std::size_t num_utxos;
             double ave_volume;
             double max_volume;
@@ -184,6 +184,28 @@ namespace antara::mmbot
 
         void from_json([[maybe_unused]] const nlohmann::json &j, [[maybe_unused]] cancel_order_answer &cfg);
 
+        struct trade_result
+        {
+            antara::side side;
+            std::string action;
+            antara::asset base;
+            antara::asset rel;
+            std::string base_amount;
+            std::string rel_amount;
+            std::string method;
+            std::string dest_pub_key;
+            std::string sender_pub_key;
+            std::string uuid;
+        };
+
+        struct trade_answer
+        {
+            std::optional<trade_result> result_trade;
+            std::optional<std::string> error;
+            std::string result;
+            int rpc_result_code;
+        };
+
         struct buy_request
         {
             antara::asset base;
@@ -197,28 +219,39 @@ namespace antara::mmbot
 
         void from_json(const nlohmann::json &j, buy_request &cfg);
 
-        struct buy_result
+        struct buy_result : trade_result
         {
-            std::string action;
-            antara::asset base;
-            antara::asset rel;
-            std::string base_amount;
-            std::string rel_amount;
-            std::string method;
-            std::string dest_pub_key;
-            std::string sender_pub_key;
-            std::string uuid;
+            antara::side side = antara::side::buy;
         };
 
-        struct buy_answer
+        struct buy_answer : trade_answer
         {
-            std::optional<buy_result> result_buy;
-            std::optional<std::string> error;
-            std::string result;
-            int rpc_result_code;
         };
 
         void from_json(const nlohmann::json &j, buy_answer &cfg);
+
+        struct sell_request
+        {
+            antara::asset base;
+            antara::asset rel;
+            std::string price;
+            std::string volume;
+        };
+
+        void to_json(nlohmann::json &j, const sell_request &cfg);
+
+        void from_json(const nlohmann::json &j, sell_request &cfg);
+
+        struct sell_result : trade_result
+        {
+            antara::side side{antara::side::sell};
+        };
+
+        struct sell_answer : trade_answer
+        {
+        };
+
+        void from_json(const nlohmann::json &j, sell_answer &cfg);
 
         struct cancel_all_orders_data
         {
@@ -241,8 +274,113 @@ namespace antara::mmbot
         };
 
         void to_json(nlohmann::json &j, const cancel_all_orders_request &cfg);
+
         void from_json(const nlohmann::json &j, cancel_all_orders_request &cfg);
+
         void from_json(const nlohmann::json &j, cancel_all_orders_answer &cfg);
+
+        struct order
+        {
+            std::string uuid;
+            std::string base;
+            std::string rel;
+
+            std::string base_amount;
+            std::string price;
+        };
+
+        struct maker_order : order
+        {
+        };
+        struct taker_order : order
+        {
+        };
+
+        struct my_orders_answer
+        {
+            using maker_orders = std::map<std::string, maker_order>;
+            using taker_orders = std::map<std::string, taker_order>;
+
+            maker_orders m_orders;
+            taker_orders t_orders;
+        };
+
+        struct order_status
+        {
+            antara::maker maker;
+            order o;
+
+            std::vector<std::string> swaps;
+        };
+
+        struct event_data
+        {
+            std::string uuid;
+
+            std::string maker_coin;
+            std::string taker_coin;
+
+            std::string maker_amount;
+            std::string taker_amount;
+        };
+
+        using event_type = std::string;
+
+        struct event
+        {
+            event_data data;
+            event_type type;
+        };
+
+        struct event_ts
+        {
+            antara::mmbot::mm2::event event;
+            std::string timestamp;
+        };
+
+        enum swap_type
+        {
+            maker, taker
+        };
+
+        struct swap
+        {
+            std::vector<std::string> error_events;
+            std::vector<event_ts> events;
+            swap_type type;
+        };
+
+        struct my_recent_swaps_answer
+        {
+            std::vector<swap> swaps;
+        };
+
+        struct my_swap_status_result
+        {
+            swap s;
+        };
+
+        struct my_swap_status_answer
+        {
+            my_swap_status_result result;
+        };
+
+
+        struct get_enabled_coins_result
+        {
+            std::string ticker;
+            std::string address;
+        };
+
+        struct get_enabled_coins_answer
+        {
+            std::vector<get_enabled_coins_result> result_enabled_coins;
+            std::string result;
+            int rpc_result_code;
+        };
+
+        void from_json(const nlohmann::json &j, get_enabled_coins_result &cfg);
+        void from_json(const nlohmann::json &j, get_enabled_coins_answer &cfg);
     }
 
 
@@ -263,17 +401,30 @@ namespace antara::mmbot
 
         mm2::buy_answer rpc_buy(mm2::buy_request &&request);
 
+        mm2::sell_answer rpc_sell(mm2::sell_request &&request);
+
         mm2::cancel_all_orders_answer rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request);
 
         mm2::cancel_order_answer rpc_cancel_order(mm2::cancel_order_request &&request);
 
-        mm2::version_answer rpc_version();
+        mm2::my_orders_answer rpc_my_orders();
 
+        mm2::order_status rpc_order_status(st_order_id id);
+
+        mm2::my_recent_swaps_answer rpc_my_recent_swaps();
+
+        mm2::my_swap_status_answer rpc_my_swap_status(st_execution_id id);
+
+        mm2::version_answer rpc_version();
+        mm2::get_enabled_coins_answer rpc_get_enabled_coins();
+
+        std::size_t enable_all_coins();
 
     private:
         nlohmann::json template_request(std::string method_name) noexcept;
 
         bool enable_tests_coins();
+
 
         template<typename RpcReturnType>
         RpcReturnType rpc_process_call(const RestClient::Response &resp)

@@ -40,10 +40,19 @@ namespace antara::mmbot::http::rest
         version(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
         restinio::request_handling_status_t
+        get_enabled_coins(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
+        restinio::request_handling_status_t
+        enable_all_electrums_coins(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
+
+        restinio::request_handling_status_t
         set_price(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
 
         restinio::request_handling_status_t
         buy(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
+
+        restinio::request_handling_status_t
+        sell(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
 
         restinio::request_handling_status_t
         cancel_all_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);

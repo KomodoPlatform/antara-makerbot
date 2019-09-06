@@ -54,6 +54,9 @@ namespace antara
 
     std::string format_str_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
     {
+        if (price_str.find('.') == std::string::npos) {
+            price_str += ".0";
+        }
         auto nb_decimal = static_cast<int>(cfg.registry_additional_coin_infos.at(symbol.value()).nb_decimals);
         auto after_decimal_str = price_str.substr(price_str.find('.') + 1, price_str.size());
         if (static_cast<int>(after_decimal_str.size()) > nb_decimal) {

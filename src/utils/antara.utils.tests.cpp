@@ -24,6 +24,8 @@ namespace antara::tests
     {
         mmbot::load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         const auto& cfg = antara::mmbot::get_mmbot_config();
+
+
         auto formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "1.15000000");
         CHECK_EQ("115000000", formatted_price);
         CHECK_EQ("1.15000000", unformat_str_to_representation_price(cfg, st_symbol{"BTC"}, st_symbol{"BTC"}, formatted_price));
@@ -34,6 +36,13 @@ namespace antara::tests
         formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "100000.15");
         CHECK_EQ("10000015000000", formatted_price);
         CHECK_EQ("100000.15000000", unformat_str_to_representation_price(cfg, st_symbol{"BTC"}, st_symbol{"BTC"}, formatted_price));
+
+
+        formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "2");
+        CHECK_EQ("200000000", formatted_price);
+
+        formatted_price = format_str_api_price(cfg, st_symbol{"BTC"}, "2.0");
+        CHECK_EQ("200000000", formatted_price);
     }
 
     TEST_CASE("antara price format bitcoin erc coin normal price")

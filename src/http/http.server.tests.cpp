@@ -118,6 +118,14 @@ namespace antara::mmbot::tests
         std::raise(SIGINT);
     }
 
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 get enabled coins")
+    {
+        std::this_thread::sleep_for(1s);
+        auto resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/get_enabled_coins"); //Well formed
+        CHECK_EQ(resp.code, 200);
+        std::raise(SIGINT);
+    }
+
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test get all prices")
     {
         std::this_thread::sleep_for(1s);
@@ -157,7 +165,26 @@ namespace antara::mmbot::tests
         nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
         mm2::buy_answer answer;
         mm2::from_json(resp_answer, answer);
-        mm2::cancel_order_request cancel_request{answer.result_buy.value().uuid};
+        mm2::cancel_order_request cancel_request{answer.result_trade.value().uuid};
+        json_request.clear();
+        mm2::to_json(json_request, cancel_request);
+        resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json", json_request.dump());
+        CHECK_EQ(resp.code, 200);
+        std::raise(SIGINT);
+    }
+
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 sell")
+    {
+        std::this_thread::sleep_for(1s);
+        mm2::sell_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+        nlohmann::json json_request;
+        mm2::to_json(json_request, request);
+        auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/sell", "application/json", json_request.dump());
+        CHECK_EQ(resp.code, 200);
+        nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
+        mm2::sell_answer answer;
+        mm2::from_json(resp_answer, answer);
+        mm2::cancel_order_request cancel_request{answer.result_trade.value().uuid};
         json_request.clear();
         mm2::to_json(json_request, cancel_request);
         resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json", json_request.dump());
