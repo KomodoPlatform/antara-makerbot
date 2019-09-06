@@ -169,8 +169,8 @@ namespace std
             // using std::size_t;
             // using std::hash;
 
-            auto big = x.base.symbol.value() > x.quote.symbol.value() ? x.base : x.quote ;
-            auto small = x.base.symbol.value() < x.quote.symbol.value() ? x.base : x.quote ;
+            decltype(x.base) big = x.base.symbol.value() > x.quote.symbol.value() ? x.base : x.quote ;
+            decltype(x.base) small = x.base.symbol.value() < x.quote.symbol.value() ? x.base : x.quote ;
 
             std::size_t h1 = std::hash<std::string>{}(big.symbol.value());
             std::size_t h2 = std::hash<std::string>{}(small.symbol.value());
