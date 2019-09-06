@@ -101,7 +101,8 @@ namespace antara::mmbot
 
     std::vector<orders::execution> dex::get_recent_executions()
     {
-        auto answer = mm_.rpc_my_recent_swaps();
-        return to_executions(answer);
+        //auto answer = mm_.rpc_my_recent_swaps();
+        //return to_executions(answer);
+        return {};
     }
 }
