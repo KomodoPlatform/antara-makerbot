@@ -378,7 +378,6 @@ namespace antara::mmbot
             my_swap_status_result result;
         };
 
-
         struct get_enabled_coins_result
         {
             std::string ticker;
@@ -414,7 +413,6 @@ namespace antara::mmbot
         mm2::setprice_answer rpc_setprice(mm2::setprice_request &&request);
 
         mm2::buy_answer rpc_buy(mm2::buy_request &&request);
-
         mm2::sell_answer rpc_sell(mm2::sell_request &&request);
 
         mm2::cancel_all_orders_answer rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request);
