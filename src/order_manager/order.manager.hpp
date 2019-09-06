@@ -14,8 +14,10 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#pragma onc
 
+#include <thread>
+#include <atomic>
 #include <vector>
 #include <unordered_map>
 #include <loguru.hpp>
