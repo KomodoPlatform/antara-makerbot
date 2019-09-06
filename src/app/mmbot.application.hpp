@@ -17,9 +17,10 @@
 #pragma once
 
 #include <http/http.server.hpp>
-#include <order_manager/order.manager.hpp>
 #include "cex/cex.hpp"
 #include "dex/dex.hpp"
+#include "order_manager/order.manager.hpp"
+#include "strategy_manager/strategy.manager.hpp"
 
 namespace antara::mmbot
 {
@@ -35,6 +36,7 @@ namespace antara::mmbot
         mmbot::dex dex_{mm2_client_};
         mmbot::cex cex_{};
         mmbot::order_manager om_{dex_, cex_};
+        mmbot::real_strategy_manager sm_{price_service_, om_};
         antara::mmbot::http_server server_{price_service_, mm2_client_};
     };
 }
