@@ -22,6 +22,7 @@ namespace antara::mmbot
     int application::run()
     {
         this->price_service_.enable_price_service_thread();
+        this->om_.enable_om_service_thread();
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         VLOG_SCOPE_F(loguru::Verbosity_INFO, "launching antara-mmbot version: %s", version());
         try {
