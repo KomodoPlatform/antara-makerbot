@@ -19,10 +19,10 @@
 #include <vector>
 #include <unordered_map>
 
-#include <utils/mmbot_strong_types.hpp>
-#include <orders/orders.hpp>
-#include <order_manager/order.manager.hpp>
-#include <price/service.price.platform.hpp>
+#include "utils/mmbot_strong_types.hpp"
+#include "orders/orders.hpp"
+#include "order_manager/order.manager.hpp"
+#include "price/service.price.platform.hpp"
 
 namespace antara::mmbot
 {
@@ -32,8 +32,17 @@ namespace antara::mmbot
         antara::st_spread spread;
         antara::st_quantity quantity;
         antara::side side;
-        bool operator==(const market_making_strategy &other) const;
-        bool operator!=(const market_making_strategy &other) const;
+        bool operator==(const market_making_strategy &other) const
+        {
+            return pair == other.pair
+                   && spread == other.spread
+                   && quantity == other.quantity
+                   && side == other.side;
+        }
+        bool operator!=(const market_making_strategy &other) const
+        {
+            return !(*this == other);
+        }
     };
 
     template <class PS>

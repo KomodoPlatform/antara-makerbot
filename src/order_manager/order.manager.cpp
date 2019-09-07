@@ -28,11 +28,13 @@ namespace antara::mmbot
         auto &id = o.id;
         auto &pair = o.pair;
 
+        this->orders_by_pair_mutex_.lock();
         if (orders_by_pair_.find(pair) == orders_by_pair_.end()) {
             orders_by_pair_.emplace(pair, std::unordered_set<st_order_id>());
         }
 
         auto &ids = orders_by_pair_.at(pair);
+        this->orders_by_pair_mutex_.unlock();
         ids.emplace(id);
     }
 
@@ -41,7 +43,8 @@ namespace antara::mmbot
         auto id = o.id;
         auto pair = o.pair;
 
-        auto& orders = orders_by_pair_.at(pair);
+        std::scoped_lock locker(this->orders_by_pair_mutex_);
+        auto &orders = orders_by_pair_.at(pair);
         orders.erase(id);
     }
 
@@ -57,7 +60,9 @@ namespace antara::mmbot
 
     void order_manager::add_order(const orders::order &o)
     {
+        this->orders_mutex_.lock();
         orders_.emplace(o.id, o);
+        this->orders_mutex_.unlock();
         add_order_to_pair_map(o);
         // Should we be adding the executions too?
         // I think not, so that we can track new executions outside of this function
@@ -65,6 +70,7 @@ namespace antara::mmbot
 
     void order_manager::add_orders(const std::vector<orders::order> &orders)
     {
+        //! Locked by subcall
         for (const auto &o : orders) {
             add_order(o);
         }
@@ -72,11 +78,13 @@ namespace antara::mmbot
 
     void order_manager::add_execution(const orders::execution &e)
     {
+        std::scoped_lock locker(this->executions_mutex_);
         executions_.emplace(e.id, e);
     }
 
     void order_manager::add_executions(const std::vector<orders::execution> &executions)
     {
+        //! Locked by subcall.
         for (const auto &e : executions) {
             add_execution(e);
         }
@@ -85,10 +93,14 @@ namespace antara::mmbot
     void order_manager::remove_order(const orders::order &order)
     {
         auto ex_ids = order.execution_ids;
-        for (auto &&current_id : ex_ids) {
-            executions_.erase(current_id);
+        {
+            std::scoped_lock execution_locker(this->executions_mutex_);
+            for (auto &&current_id : ex_ids) {
+                executions_.erase(current_id);
+            }
         }
         remove_order_from_pair_map(order);
+        std::scoped_lock locker(this->orders_mutex_);
         orders_.erase(order.id);
     }
 
@@ -115,7 +127,6 @@ namespace antara::mmbot
             // orders_.emplace(id, order);
             add_order(order);
         }
-
         // add new orders
         update_from_live();
 
@@ -137,7 +148,7 @@ namespace antara::mmbot
             all_executions.emplace(e.id, e);
         }
 
-        for (const auto& [id, ex] : all_executions) {
+        for (const auto&[id, ex] : all_executions) {
             if (executions_.find(id) == executions_.end()) {
                 // can't find the exection, it's new
                 // for any that aren't in the ex object
@@ -159,7 +170,7 @@ namespace antara::mmbot
     void order_manager::update_from_live()
     {
         auto live = dex_.get_live_orders();
-        for (const auto& order : live) {
+        for (const auto &order : live) {
             add_order(order);
         }
     }
@@ -204,5 +215,28 @@ namespace antara::mmbot
         }
 
         return cancelled_orders;
+    }
+
+    void order_manager::enable_om_service_thread()
+    {
+        using namespace std::literals;
+        this->om_thread_ = std::thread([this]() {
+            loguru::set_thread_name("om thread");
+            VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+            while (this->keep_thread_alive_) {
+                DVLOG_F(loguru::Verbosity_INFO, "%s", "polling started");
+                this->poll();
+                DVLOG_F(loguru::Verbosity_INFO, "%s", "polling finished, waiting 10s before next polling");
+                std::this_thread::sleep_for(10s);
+            }
+        });
+    }
+
+    order_manager::~order_manager()
+    {
+        this->keep_thread_alive_ = false;
+        if (om_thread_.joinable()) {
+            om_thread_.join();
+        }
     }
 }

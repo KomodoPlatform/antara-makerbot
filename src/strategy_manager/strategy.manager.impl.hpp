@@ -14,28 +14,11 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
 #include <vector>
 #include <unordered_map>
 
-#include "strategy.manager.hpp"
-
 namespace antara::mmbot
 {
-    bool market_making_strategy::operator==(const market_making_strategy &other) const
-    {
-        return pair == other.pair
-               && spread == other.spread
-               && quantity == other.quantity
-               && side == other.side;
-    }
-
-    bool market_making_strategy::operator!=(const market_making_strategy &other) const
-    {
-        return !(*this == other);
-    }
-
     template <class PS>
     void strategy_manager<PS>::add_strategy(const market_making_strategy &strat)
     {
@@ -167,5 +150,6 @@ namespace antara::mmbot
     }
 
     template class strategy_manager<price_service_platform>;
-    template class strategy_manager<price_service_platform_mock>;
+    //template class strategy_manager<price_service_platform_mock>;
+    using real_strategy_manager = strategy_manager<price_service_platform>;
 }

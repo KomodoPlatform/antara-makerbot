@@ -39,4 +39,6 @@ namespace antara::mmbot
         MAKE_MOCK3(make_ask, orders::order_level(st_price, st_spread, st_quantity), override);
         MAKE_MOCK3(create_order_group, orders::order_group(const market_making_strategy&, st_price), override);
     };
+
+    template class strategy_manager<price_service_platform_mock>;
 }

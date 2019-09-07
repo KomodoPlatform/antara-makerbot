@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <mutex>
+#include <thread>
+#include <atomic>
 #include <vector>
 #include <unordered_map>
 #include <loguru.hpp>
@@ -65,6 +68,7 @@ namespace antara::mmbot
     public:
         order_manager(abstract_dex& dex, abstract_cex& cex) : dex_(dex), cex_(cex)
         {}
+        ~order_manager();
 
         void add_order_to_pair_map(const orders::order &o);
         void remove_order_from_pair_map(const orders::order &o);
@@ -99,12 +103,22 @@ namespace antara::mmbot
 
         std::unordered_set<st_order_id> cancel_orders(antara::pair pair) override;
 
+
+        void enable_om_service_thread();
+
     private:
         abstract_dex& dex_;
         abstract_cex& cex_;
 
         orders::orders_by_id orders_;
         orders::executions_by_id executions_;
+
+        //! Thread stuffs
+        std::thread om_thread_;
+        std::atomic_bool keep_thread_alive_{true};
+        std::mutex orders_mutex_;
+        std::mutex executions_mutex_;
+        std::mutex orders_by_pair_mutex_;
 
         std::unordered_map<antara::pair, std::unordered_set<st_order_id>> orders_by_pair_;
     };

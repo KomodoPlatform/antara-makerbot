@@ -14,16 +14,15 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "dex.hpp"
-
-#include <utils/exceptions.hpp>
+#include <utility>
 #include <utils/pretty_function.hpp>
+#include "dex.hpp"
 
 namespace antara::mmbot
 {
     std::optional<orders::order> dex::buy(const orders::order_level &o, antara::pair pair)
     {
-        auto answer = mm_.rpc_buy(to_buy(o, pair));
+        auto answer = mm_.rpc_buy(to_buy(o, std::move(pair)));
 
         auto result = answer.result_trade;
         if (result) {
