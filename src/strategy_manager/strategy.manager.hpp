@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <mutex>
+#include <thread>
+#include <atomic>
 #include <vector>
 #include <unordered_map>
 
@@ -80,7 +83,7 @@ namespace antara::mmbot
         {
             running_ = true;
         }
-        
+
         ~strategy_manager();
 
         void add_strategy(const market_making_strategy& strat) override;
