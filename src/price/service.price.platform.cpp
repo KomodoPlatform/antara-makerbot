@@ -35,7 +35,7 @@ namespace antara::mmbot
         }
     }
 
-    st_price price_service_platform::get_price(antara::cross currency_pair) const
+    st_price price_service_platform::get_price(antara::pair currency_pair) const
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         struct TransformResult
@@ -85,7 +85,7 @@ namespace antara::mmbot
         auto functor = [&asset, this, &json_data](auto &&current_coin) {
             if (current_coin != asset.symbol.value()) {
                 nlohmann::json current_data = nlohmann::json::object();
-                antara::cross current_pair{antara::asset{st_symbol{current_coin}}, asset};
+                antara::pair current_pair{antara::asset{st_symbol{current_coin}}, asset};
                 try {
                     auto current_price = this->get_price(current_pair);
                     auto current_price_str = antara::get_price_as_string_decimal(get_mmbot_config(), asset.symbol,

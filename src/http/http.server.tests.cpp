@@ -157,7 +157,7 @@ namespace antara::mmbot::tests
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 buy")
     {
         std::this_thread::sleep_for(1s);
-        mm2::buy_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+        mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
         nlohmann::json json_request;
         mm2::to_json(json_request, request);
         auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/buy", "application/json", json_request.dump());
@@ -176,7 +176,7 @@ namespace antara::mmbot::tests
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 sell")
     {
         std::this_thread::sleep_for(1s);
-        mm2::sell_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+        mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
         nlohmann::json json_request;
         mm2::to_json(json_request, request);
         auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/sell", "application/json", json_request.dump());
@@ -195,7 +195,7 @@ namespace antara::mmbot::tests
     TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 buy with cancel all orders")
     {
         std::this_thread::sleep_for(1s);
-        mm2::buy_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+        mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
         nlohmann::json json_request;
         mm2::to_json(json_request, request);
         auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/buy", "application/json", json_request.dump());

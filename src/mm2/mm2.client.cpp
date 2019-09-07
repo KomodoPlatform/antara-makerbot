@@ -103,7 +103,7 @@ namespace antara::mmbot::mm2
         j.at("result").get_to(cfg.version);
     }
 
-    void to_json(nlohmann::json &j, const buy_request &cfg)
+    void to_json(nlohmann::json &j, const trade_request &cfg)
     {
         j["rel"] = cfg.rel.symbol.value();
         j["base"] = cfg.base.symbol.value();
@@ -111,15 +111,7 @@ namespace antara::mmbot::mm2
         j["volume"] = cfg.volume;
     }
 
-    void to_json(nlohmann::json &j, const sell_request &cfg)
-    {
-        j["rel"] = cfg.rel.symbol.value();
-        j["base"] = cfg.base.symbol.value();
-        j["price"] = cfg.price;
-        j["volume"] = cfg.volume;
-    }
-
-    void from_json(const nlohmann::json &j, buy_request &cfg)
+    void from_json(const nlohmann::json &j, trade_request &cfg)
     {
         cfg.rel = antara::asset{st_symbol{j.at("rel").get<std::string>()}};
         cfg.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
@@ -217,14 +209,6 @@ namespace antara::mmbot::mm2
         } else {
             cfg.error = j.at("error").get<std::string>();
         }
-    }
-
-    void from_json(const nlohmann::json &j, sell_request &cfg)
-    {
-        cfg.rel = antara::asset{st_symbol{j.at("rel").get<std::string>()}};
-        cfg.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
-        j.at("volume").get_to(cfg.volume);
-        j.at("price").get_to(cfg.price);
     }
 
     void to_json(nlohmann::json &j, const cancel_all_orders_request &cfg)
@@ -472,7 +456,7 @@ namespace antara::mmbot
         return rpc_process_call<mm2::cancel_order_answer>(resp);
     }
 
-    mm2::buy_answer mm2_client::rpc_buy(mm2::buy_request &&request)
+    mm2::buy_answer mm2_client::rpc_buy(mm2::trade_request &&request)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto json_data = template_request("buy");
@@ -482,7 +466,7 @@ namespace antara::mmbot
         return rpc_process_call<mm2::buy_answer>(resp);
     }
 
-    mm2::sell_answer mm2_client::rpc_sell(mm2::sell_request &&request)
+    mm2::sell_answer mm2_client::rpc_sell(mm2::trade_request &&request)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto json_data = template_request("sell");

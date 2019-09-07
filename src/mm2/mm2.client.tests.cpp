@@ -85,7 +85,7 @@ namespace antara::mmbot::tests
 
         SUBCASE ("mm2 rpc buy") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
-                mm2::buy_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1",
+                mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1",
                                          "1"};
                 auto answer = mm2.rpc_buy(std::move(request));
                         REQUIRE_EQ(200, answer.rpc_result_code);
@@ -99,7 +99,7 @@ namespace antara::mmbot::tests
 
         SUBCASE ("mm2 rpc my orders") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
-                mm2::buy_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+                mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
                 auto answer = mm2.rpc_buy(std::move(request));
                         REQUIRE_EQ(200, answer.rpc_result_code);
 
@@ -115,7 +115,7 @@ namespace antara::mmbot::tests
 
         SUBCASE ("mm2 rpc sell") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
-                    mm2::sell_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+                    mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
                     auto answer = mm2.rpc_sell(std::move(request));
                     REQUIRE_EQ(200, answer.rpc_result_code);
 
@@ -128,7 +128,7 @@ namespace antara::mmbot::tests
 
         SUBCASE ("mm2 cancel_all_request by ALL") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
-                mm2::buy_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+                mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
                 auto answer = mm2.rpc_buy(std::move(request));
                 REQUIRE_EQ(200, answer.rpc_result_code);
 
@@ -140,7 +140,7 @@ namespace antara::mmbot::tests
 
         SUBCASE ("mm2 cancel_all_request by PAIR") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
-                mm2::buy_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+                mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
                 auto answer = mm2.rpc_buy(std::move(request));
                 REQUIRE_EQ(200, answer.rpc_result_code);
 

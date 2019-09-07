@@ -28,11 +28,11 @@ namespace antara::mmbot
 {
     struct market_making_strategy
     {
-        antara::cross pair;
+        antara::pair pair;
         antara::st_spread spread;
         antara::st_quantity quantity;
-        bool both;
-        // antara::side side;
+        bool both = true;
+
         bool operator==(const market_making_strategy &other) const;
         bool operator!=(const market_making_strategy &other) const;
     };
@@ -51,10 +51,10 @@ namespace antara::mmbot
         virtual const registry_strategies &get_strategies() const = 0;
 
         virtual orders::order_level make_bid(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) = 0;
+            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity, antara::pair pair) = 0;
 
         virtual orders::order_level make_ask(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) = 0;
+            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity, antara::pair pair) = 0;
 
         virtual orders::order_group create_order_group(
             const market_making_strategy &strat, antara::st_price mid) = 0;
@@ -79,17 +79,17 @@ namespace antara::mmbot
         [[nodiscard]] const registry_strategies &get_strategies() const override;
 
         orders::order_level make_bid(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) override;
+            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity, antara::pair pair) override;
 
         orders::order_level make_ask(
-            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity) override;
+            antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity, antara::pair pair) override;
 
         orders::order_group create_order_group(
             const market_making_strategy &strat, antara::st_price mid) override;
 
         orders::order_group create_order_group(const market_making_strategy &strat) override;
 
-        void refresh_orders(antara::cross pair);
+        void refresh_orders(antara::cross cross);
         void refresh_all_orders();
 
         void start();

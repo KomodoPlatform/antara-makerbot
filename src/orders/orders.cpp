@@ -39,8 +39,8 @@ namespace antara::mmbot::orders
     {
         return price.value() == other.price.value()
             && quantity == other.quantity
-            // && side == other.side
-            ;
+            && pair == other.pair
+            && sell == other.sell;
     }
 
     bool order_level::operator!=(const order_level &other) const
@@ -53,7 +53,7 @@ namespace antara::mmbot::orders
     bool order_group::operator==(const order_group &other) const
     {
         auto equal = true;
-        if (pair != other.pair) { equal = false; }
+        if (cross != other.cross) { equal = false; }
         if (levels.size() != other.levels.size()) { equal = false; }
 
         for (decltype(levels)::size_type i = 0; i < levels.size(); i++) {

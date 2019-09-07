@@ -30,7 +30,7 @@ namespace antara::mmbot::orders
         antara::st_price price;
         antara::st_quantity quantity;
         antara::pair pair;
-        // antara::side side;
+        bool sell = false;
 
         bool operator==(const order_level &other) const;
         bool operator!=(const order_level &other) const;
@@ -38,9 +38,8 @@ namespace antara::mmbot::orders
 
     struct order_group
     {
-        antara::cross pair;
+        antara::cross cross;
         std::vector<order_level> levels;
-        bool both;
 
         bool operator==(const order_group &other) const;
         bool operator!=(const order_group &other) const;

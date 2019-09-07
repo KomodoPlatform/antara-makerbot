@@ -26,7 +26,7 @@ namespace antara::mmbot::tests
             load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
             price_service_platform price_service{};
             WHEN("give a valid asset pair") {
-                antara::cross currency_pair{{st_symbol{"EUR"}},
+                antara::pair currency_pair{{st_symbol{"EUR"}},
                                            {st_symbol{"KMD"}}};
                 THEN("i ask for the price of this valid pair") {
                     auto price = price_service.get_price(currency_pair).value();
@@ -36,7 +36,7 @@ namespace antara::mmbot::tests
                 }
             }
             AND_WHEN("give a wrong asset pair") {
-                antara::cross currency_pair{{st_symbol{"EUR"}},
+                antara::pair currency_pair{{st_symbol{"EUR"}},
                                            {st_symbol{"NONEXISTENT"}}};
                 THEN("i ask for the price of this wrong pair") {
                     AND_THEN("i'm exepecting to get an exception pair not available") {
@@ -65,7 +65,7 @@ namespace antara::mmbot::tests
             set_mmbot_config(cfg);
             price_service_platform price_service{};
             WHEN("give a valid asset pair") {
-                antara::cross currency_pair{{st_symbol{"EUR"}},
+                antara::pair currency_pair{{st_symbol{"EUR"}},
                                            {st_symbol{"KMD"}}};
                 THEN("i ask for the price of this valid pair") {
                     AND_THEN("i'm exepecting to get an exception pair not available") {
@@ -79,7 +79,7 @@ namespace antara::mmbot::tests
             set_mmbot_config(cfg);
             price_service_platform price_service{};
             WHEN("give a valid asset pair") {
-                antara::cross currency_pair{{st_symbol{"EUR"}},
+                antara::pair currency_pair{{st_symbol{"EUR"}},
                                            {st_symbol{"KMD"}}};
                 THEN("i ask for the price of this valid pair") {
                     AND_THEN("i'm exepecting to get an exception pair not available") {

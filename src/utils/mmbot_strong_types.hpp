@@ -112,12 +112,12 @@ namespace antara
 
     struct pair
     {
-        asset bought;
-        asset sold;
+        asset base;
+        asset quote;
 
         bool operator==(const pair &rhs) const
         {
-            return bought == rhs.bought && sold == rhs.sold;
+            return base == rhs.base && quote == rhs.quote;
         }
 
         bool operator!=(const pair &rhs) const
@@ -127,20 +127,15 @@ namespace antara
 
         static pair of(std::string a, std::string b);
 
-        antara::pair flip()
+        antara::pair flip() const
         {
-            return pair{sold, bought};
+            return pair{ quote, base };
         }
 
         antara::cross to_cross() const
         {
-            return { bought, sold };
+            return { base, quote };
         }
-    };
-
-    enum side
-    {
-        buy, sell, both
     };
 }
 
@@ -151,11 +146,8 @@ namespace std
     {
         std::size_t operator()(const antara::pair &p) const
         {
-            using std::size_t;
-            using std::hash;
-
-            std::size_t h1 = std::hash<std::string>{}(p.bought.symbol.value());
-            std::size_t h2 = std::hash<std::string>{}(p.sold.symbol.value());
+            std::size_t h1 = std::hash<std::string>{}(p.base.symbol.value());
+            std::size_t h2 = std::hash<std::string>{}(p.quote.symbol.value());
 
             return h1 ^ (h2 << 1);
         }
@@ -166,9 +158,6 @@ namespace std
     {
         std::size_t operator()(const antara::cross &x) const
         {
-            // using std::size_t;
-            // using std::hash;
-
             antara::asset big = x.base.symbol.value() > x.quote.symbol.value() ? x.base : x.quote ;
             antara::asset small = x.base.symbol.value() < x.quote.symbol.value() ? x.base : x.quote ;
 

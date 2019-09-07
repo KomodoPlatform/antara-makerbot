@@ -21,9 +21,15 @@
 
 namespace antara::mmbot
 {
-    std::optional<orders::order> dex::buy(const orders::order_level &o)
+    std::optional<orders::order> dex::place(const orders::order_level &o)
     {
-        auto answer = mm_.rpc_buy(to_buy(o));
+        mm2::trade_answer answer;
+
+        if (o.sell) {
+            answer = mm_.rpc_sell(to_request(o));
+        } else {
+            answer = mm_.rpc_buy(to_request(o));
+        }
 
         auto result = answer.result_trade;
         if (result) {
@@ -31,27 +37,6 @@ namespace antara::mmbot
         } else {
             return std::nullopt;
         }
-    }
-
-    std::optional<orders::order> dex::sell(const orders::order_level &o, antara::cross pair)
-    {
-        // auto answer = mm_.rpc_sell(to_sell(o, pair));
-
-        // auto result = answer.result_trade;
-        // if (result) {
-        //     return std::make_optional<orders::order>(to_order(result.value()));
-        // } else {
-            return std::nullopt;
-        // }
-    }
-
-    std::optional<orders::order> dex::place([[maybe_unused]] const orders::order_level &o)
-    {
-        // if (o.side == antara::side::buy) {
-            return buy(o);
-        // } else {
-        //     return sell(o, pair);
-        // }
     }
 
     bool dex::cancel([[maybe_unused]] st_order_id id)

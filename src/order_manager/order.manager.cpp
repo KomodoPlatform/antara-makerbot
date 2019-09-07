@@ -178,7 +178,6 @@ namespace antara::mmbot
 
     std::unordered_set<st_order_id> order_manager::place_order(const orders::order_group &og)
     {
-        auto pair = og.pair;
         auto order_ids = std::unordered_set<st_order_id>();
         for (const auto &ol : og.levels) {
             auto id = place_order(ol);

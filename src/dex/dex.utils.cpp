@@ -29,35 +29,21 @@
 
 namespace antara::mmbot
 {
-    mm2::buy_request to_buy (const orders::order_level &ol)
+    mm2::trade_request to_request (const orders::order_level &ol)
     {
         const auto& cfg = get_mmbot_config();
 
-        auto bought = ol.pair.bought;
-        auto sold = ol.pair.sold;
-        auto price = get_price_as_string_decimal(cfg, bought.symbol, bought.symbol, ol.price);
+        auto base = ol.pair.base;
+        auto quote = ol.pair.quote;
+        auto price = get_price_as_string_decimal(cfg, base.symbol, base.symbol, ol.price);
         auto quantity = std::to_string(ol.quantity.value());
 
-        return mm2::buy_request{bought, sold, price, quantity};
+        return mm2::trade_request{base, quote, price, quantity};
     }
-
-    // mm2::sell_request to_sell (const orders::order_level &ol, antara::cross pair)
-    // {
-    //     const auto& cfg = get_mmbot_config();
-
-    //     auto base = pair.base;
-    //     auto quote = pair.quote;
-    //     auto price = get_price_as_string_decimal(cfg, base.symbol, base.symbol, ol.price);
-    //     auto quantity = std::to_string(ol.quantity.value());
-
-    //     return mm2::sell_request{base, quote, price, quantity};
-    // }
 
     const orders::order to_order (const mm2::trade_result &res)
     {
         const auto &config = get_mmbot_config();
-
-        // auto side = res.side;
 
         auto id = st_order_id{res.uuid};
         auto pair = antara::pair{res.base, res.rel};
@@ -75,7 +61,6 @@ namespace antara::mmbot
         auto b = orders::order_builder(id, pair);
         b.price(price);
         b.quantity(quantity);
-        // b.side(side);
         return b.build();
     }
 

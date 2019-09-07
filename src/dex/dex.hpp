@@ -62,8 +62,5 @@ namespace antara::mmbot
 
     private:
         mm2_client &mm_;
-
-        std::optional<orders::order> buy(const orders::order_level &o);
-        std::optional<orders::order> sell(const orders::order_level &o, antara::cross pair);
     };
 }

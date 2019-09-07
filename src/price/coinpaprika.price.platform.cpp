@@ -23,7 +23,7 @@
 
 namespace antara::mmbot
 {
-    st_price coinpaprika_price_platform::get_price(antara::cross currency_pair, std::size_t nb_try_in_a_row) const
+    st_price coinpaprika_price_platform::get_price(antara::pair currency_pair, std::size_t nb_try_in_a_row) const
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         if (this->coin_id_translation_.find(currency_pair.base.symbol.value()) != this->coin_id_translation_.end() &&
