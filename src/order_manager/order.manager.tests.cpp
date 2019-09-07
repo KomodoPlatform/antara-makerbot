@@ -153,7 +153,6 @@ namespace antara::mmbot::tests
         auto pair = antara::pair::of("A", "B");
         st_price price = st_price(10);
         st_quantity quantity = st_quantity(10);
-        // antara::side side = antara::side::buy;
         antara::maker maker = true;
 
         // This order is already on the book

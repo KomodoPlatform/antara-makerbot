@@ -26,7 +26,6 @@ namespace antara::mmbot::tests
         antara::pair pair = {{st_symbol{"A"}}, {st_symbol{"B"}}};
         antara::st_price price = st_price{5};
         antara::st_quantity quantity = st_quantity{10};
-        // antara::side side = antara::side::buy;
         maker maker = true;
 
         orders::execution e1 = { st_execution_id{""}, pair, price, quantity, maker };
@@ -47,7 +46,6 @@ namespace antara::mmbot::tests
         st_price price = st_price{5};
         st_quantity quantity = st_quantity{10};
         st_quantity filled = st_quantity{1};
-        // antara::side side = antara::side::buy;
         orders::order_status status = orders::order_status::live;
 
         orders::order order = orders::order(
@@ -70,7 +68,6 @@ namespace antara::mmbot::tests
         st_price price = st_price{5};
         st_quantity quantity = st_quantity{10};
         st_quantity filled = st_quantity{0};
-        // antara::side side = antara::side::buy;
         orders::order_status status = orders::order_status::live;
 
         orders::order order = orders::order(id, pair, price, quantity, filled, status);
