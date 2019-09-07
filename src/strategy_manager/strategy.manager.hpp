@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <mutex>
+#include <thread>
+#include <atomic>
 #include <vector>
 #include <unordered_map>
 
@@ -81,6 +84,8 @@ namespace antara::mmbot
             running_ = true;
         }
 
+        ~strategy_manager();
+
         void add_strategy(const market_making_strategy& strat) override;
 
         [[nodiscard]] const market_making_strategy &get_strategy(antara::pair pair) const override;
@@ -101,12 +106,17 @@ namespace antara::mmbot
         void refresh_all_orders();
 
         void start();
+        void enable_sm_thread();
 
     private:
         registry_strategies registry_strategies_;
         abstract_om &om_;
         PS &ps_;
         bool running_;
+
+        //! Thread stuffs
+        std::thread sm_thread_;
+        std::atomic_bool keep_thread_alive_{true};
     };
 }
 

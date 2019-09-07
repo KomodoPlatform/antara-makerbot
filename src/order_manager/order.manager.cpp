@@ -202,14 +202,18 @@ namespace antara::mmbot
 
     std::unordered_set<st_order_id> order_manager::cancel_orders(antara::pair pair)
     {
+        this->orders_by_pair_mutex_.lock();
         auto ids = orders_by_pair_.at(pair);
+        this->orders_by_pair_mutex_.unlock();
 
         std::unordered_set<st_order_id> cancelled_orders;
         for (const auto &id : ids) {
             auto result = dex_.cancel(id);
             if (result) {
                 cancelled_orders.emplace(id);
+                this->orders_mutex_.lock();
                 auto &order = orders_.at(id);
+                this->orders_mutex_.unlock();
                 remove_order(order);
             }
         }

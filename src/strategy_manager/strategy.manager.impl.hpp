@@ -149,6 +149,35 @@ namespace antara::mmbot
         }
     }
 
+    template<class PS>
+    void strategy_manager<PS>::enable_sm_thread()
+    {
+        using namespace std::literals;
+        this->sm_thread_ = std::thread([this]() {
+            loguru::set_thread_name("sm thread");
+            VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+            while (this->keep_thread_alive_) {
+                DVLOG_F(loguru::Verbosity_INFO, "%s", "sm work started");
+                for (auto&& [pair, strats]: registry_strategies_) {
+                    auto og = this->create_order_group(strats);
+                    this->om_.cancel_orders(pair);
+                    this->om_.place_order(og);
+                }
+                DVLOG_F(loguru::Verbosity_INFO, "%s", "sm work finished");
+                std::this_thread::sleep_for(10s);
+            }
+        });
+    }
+
+    template<class PS>
+    strategy_manager<PS>::~strategy_manager()
+    {
+        this->keep_thread_alive_ = false;
+        if (sm_thread_.joinable()) {
+            sm_thread_.join();
+        }
+    }
+
     template class strategy_manager<price_service_platform>;
     //template class strategy_manager<price_service_platform_mock>;
     using real_strategy_manager = strategy_manager<price_service_platform>;
