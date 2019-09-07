@@ -91,7 +91,7 @@ namespace antara::mmbot::orders
                 filled(filled), side(side), status(status)
         {};
 
-        bool operator==(const order_level &other) const;
+        bool operator==(const order &other) const;
 
         [[nodiscard]] bool finished() const;
 
