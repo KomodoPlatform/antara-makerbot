@@ -16,8 +16,6 @@
 
 #include <vector>
 #include <unordered_map>
-#include "strategy.manager.hpp"
-
 
 namespace antara::mmbot
 {
