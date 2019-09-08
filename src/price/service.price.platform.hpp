@@ -29,7 +29,7 @@
 
 namespace antara::mmbot
 {
-    using registry_price_result = std::unordered_map<antara::pair, st_price>;
+    using registry_price_result = std::unordered_map<antara::cross, st_price>;
 
     class price_service_platform
     {
@@ -44,8 +44,9 @@ namespace antara::mmbot
 
     private:
         using registry_platform_price = std::unordered_map<price_platform_name, price_platform_ptr>;
-        std::unordered_set<std::string> coins_to_track_{"BTC", "BCH", "DASH", "LTC", "DOGE", "QTUM", "DGB", "RVN",
-                                                        "ETH", "USDC", "BAT", "KMD", "RFOX", "ZILLA", "VRSC"};
+        std::unordered_set<std::string> coins_to_track_{
+            "BTC", "BCH", "DASH", "LTC", "DOGE", "QTUM", "DGB", "RVN",
+            "ETH", "USDC", "BAT", "KMD", "RFOX", "ZILLA", "VRSC"};
         registry_platform_price registry_platform_price_{};
         std::thread price_service_fetcher_;
         std::atomic_bool keep_thread_alive_{true};

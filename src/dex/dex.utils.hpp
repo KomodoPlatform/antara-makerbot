@@ -29,8 +29,7 @@
 
 namespace antara::mmbot
 {
-    mm2::buy_request to_buy (const orders::order_level &ol, antara::pair pair);
-    mm2::sell_request to_sell (const orders::order_level &ol, antara::pair pair);
+    mm2::trade_request to_request (const orders::order_level &ol);
 
     const orders::order to_order (const mm2::trade_result &res);
     const orders::order to_order (const mm2::order &res);

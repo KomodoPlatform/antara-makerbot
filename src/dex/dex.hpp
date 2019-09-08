@@ -33,7 +33,7 @@ namespace antara::mmbot
     public:
         virtual ~abstract_dex() = default;
 
-        virtual std::optional<orders::order> place(const orders::order_level &ol, antara::pair pair) = 0;
+        virtual std::optional<orders::order> place(const orders::order_level &ol) = 0;
         virtual bool cancel(st_order_id id) = 0;
 
         virtual std::vector<orders::order> get_live_orders() = 0;
@@ -50,7 +50,7 @@ namespace antara::mmbot
         dex(mm2_client &mm) : mm_(mm)
         {}
 
-        std::optional<orders::order> place(const orders::order_level &ol, antara::pair pair) override;
+        std::optional<orders::order> place(const orders::order_level &ol) override;
         bool cancel(st_order_id id) override;
 
         std::vector<orders::order> get_live_orders() override;
@@ -62,8 +62,5 @@ namespace antara::mmbot
 
     private:
         mm2_client &mm_;
-
-        std::optional<orders::order> buy(const orders::order_level &o, antara::pair pair);
-        std::optional<orders::order> sell(const orders::order_level &o, antara::pair pair);
     };
 }

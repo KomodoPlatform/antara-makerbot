@@ -49,4 +49,31 @@ namespace antara::mmbot::tests
 
         CHECK_EQ(expected.value(), (price * spread).value());
     }
+
+    TEST_CASE ("cross has doesn't care about ordering")
+    {
+        auto first = "first";
+        auto second = "second";
+
+        antara::cross a = antara::cross::of(first, second);
+        antara::cross b = antara::cross::of(second, first);
+
+        auto h_a = std::hash<antara::cross>{}(a);
+        auto h_b = std::hash<antara::cross>{}(b);
+
+        CHECK_EQ(h_a, h_b);
+    }
+
+    TEST_CASE ("a cross can be created from a pair")
+    {
+        auto a = "A";
+        auto b = "B";
+
+        auto expected = antara::cross::of(a, b);
+
+        antara::pair pair = antara::pair::of(b, a);
+        auto actual = pair.to_cross();
+
+        CHECK_EQ(expected, actual);
+    }
 }

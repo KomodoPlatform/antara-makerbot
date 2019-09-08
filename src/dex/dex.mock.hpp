@@ -30,7 +30,7 @@ namespace antara::mmbot
     public:
         dex_mock() = default;
 
-        MAKE_MOCK2(place, std::optional<orders::order>(const orders::order_level&, antara::pair pair), override);
+        MAKE_MOCK1(place, std::optional<orders::order>(const orders::order_level&), override);
         MAKE_MOCK1(cancel, bool(st_order_id), override);
 
         MAKE_MOCK0(get_live_orders, std::vector<orders::order>(), override);
