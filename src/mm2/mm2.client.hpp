@@ -352,15 +352,20 @@ namespace antara::mmbot
 
         void from_json(const nlohmann::json &j, my_recent_swaps_answer &cfg);
 
-        struct my_swap_status_result
+        struct my_swap_status_request
         {
-            swap s;
+            std::string uuid;
         };
 
         struct my_swap_status_answer
         {
-            my_swap_status_result result;
+            swap s;
+            std::string result;
+            int rpc_result_code;
         };
+
+        void to_json(nlohmann::json &j, const my_swap_status_request &cfg);
+        void from_json(const nlohmann::json &j, my_swap_status_answer &cfg);
 
         struct get_enabled_coins_result
         {
@@ -409,7 +414,7 @@ namespace antara::mmbot
 
         mm2::my_recent_swaps_answer rpc_my_recent_swaps(mm2::my_recent_swaps_request &&request);
 
-        mm2::my_swap_status_answer rpc_my_swap_status(st_execution_id id);
+        mm2::my_swap_status_answer rpc_my_swap_status(mm2::my_swap_status_request&& request);
 
         mm2::version_answer rpc_version();
 
