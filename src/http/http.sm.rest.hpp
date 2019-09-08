@@ -20,6 +20,7 @@
 #include <restinio/common_types.hpp>
 #include "config/config.hpp"
 #include "strategy_manager/strategy.manager.hpp"
+#include "order_manager/order.manager.hpp"
 
 namespace antara::mmbot::http::rest
 {
@@ -66,5 +67,6 @@ namespace antara::mmbot::http::rest
 
     private:
         strategy_manager<price_service_platform> &sm_;
+        order_manager &om_;
     };
 }
