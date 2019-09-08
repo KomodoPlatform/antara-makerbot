@@ -36,6 +36,9 @@ namespace antara::mmbot::http::rest
         restinio::request_handling_status_t
         get_strategy(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
+        restinio::request_handling_status_t
+        cancel_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
         template<typename TRequest, typename Functor>
         restinio::request_handling_status_t process_post_function(
             const restinio::request_handle_t &req, const restinio::router::route_params_t &, Functor&& rpc_functor)

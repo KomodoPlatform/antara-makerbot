@@ -49,11 +49,27 @@ namespace antara::mmbot::http::rest
 
         auto json_data = nlohman::json::parse(req->body());
         auto cross = json_data.get<antara::pair>().to_cross();
-        json strat = this->sm.get_strategy(cross);
+        json strat = this->sm_.get_strategy(cross);
 
         return req->create_response(status)
             .append_header(restinio::http_field::content_type, "application/json")
             .set_body(strat.dump())
+            .done();
+    }
+
+    restinio::request_handling_status_t
+    sm::cancel_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/sm/getstrategy");
+
+        auto json_data = nlohman::json::parse(req->body());
+        auto cross = json_data.get<antara::pair>().to_cross();
+        json ids = this->om_.cancel_orders(cross);
+
+        return req->create_response(status)
+            .append_header(restinio::http_field::content_type, "application/json")
+            .set_body(ids.dump())
             .done();
     }
 }
