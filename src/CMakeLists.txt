@@ -8,6 +8,7 @@ target_sources(mmbot_shared_deps INTERFACE
         dex/dex.utils.cpp
         http/http.price.rest.cpp
         http/http.mm2.rest.cpp
+        http/http.sm.rest.cpp
         http/http.server.cpp
         order_manager/order.manager.cpp
         orders/orders.cpp
