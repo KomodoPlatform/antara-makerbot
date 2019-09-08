@@ -18,8 +18,12 @@
 
 namespace antara::mmbot
 {
-    http_server::http_server(price_service_platform &price_service, mmbot::mm2_client &mm2_client)
-            : price_rest_callbook_(price_service), mm2_rest_callbook_(mm2_client)
+    http_server::http_server(
+        price_service_platform &price_service,
+        mmbot::mm2_client &mm2_client,
+        mmbot::strategy_manager<price_service_platform> &sm,
+        mmbot::order_manager &om)
+        : price_rest_callbook_(price_service), mm2_rest_callbook_(mm2_client), sm_rest_callbook_(sm, om)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
