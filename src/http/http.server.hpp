@@ -46,5 +46,6 @@ namespace antara::mmbot
     private:
         http::rest::price price_rest_callbook_;
         http::rest::mm2 mm2_rest_callbook_;
+        http::rest::sm sm_rest_callbook_;
     };
 }
