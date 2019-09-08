@@ -62,10 +62,10 @@ namespace antara::mmbot
 
         auto order = mm_.rpc_order_status(id);
         for (const auto &swap_id : order.swaps) {
-            auto answer = mm_.rpc_my_swap_status(swap_id);
-            executions.push_back(to_execution(answer.result.s));
+            mm2::my_swap_status_request request{swap_id};
+            auto answer = mm_.rpc_my_swap_status(std::move(request));
+            executions.push_back(to_execution(answer.s));
         }
-
         return executions;
     }
 

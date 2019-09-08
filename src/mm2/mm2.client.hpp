@@ -356,6 +356,7 @@ namespace antara::mmbot
         {
             std::string uuid;
         };
+
         struct my_swap_status_answer
         {
             swap s;

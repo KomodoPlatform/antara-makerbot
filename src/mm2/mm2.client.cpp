@@ -340,7 +340,7 @@ namespace antara::mmbot::mm2
 
     void to_json(nlohmann::json &j, const my_swap_status_request &cfg)
     {
-        j.at("uuid").get_to(cfg.uuid);
+        j["uuid"] = cfg.uuid;
     }
 }
 
