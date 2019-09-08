@@ -89,7 +89,7 @@ namespace antara::mmbot
             return this->mm2_rest_callbook_.enable_all_electrums_coins(std::forward<decltype(params)>(params)...);
         });
 
-        http_router->http_get(
+        http_router->http_post(
             "/api/v1/sm/getstrategy",
             [this](auto &&... params) {
                 return this->sm_rest_callbook_.get_strategy(std::forward<decltype(params)>(params)...);

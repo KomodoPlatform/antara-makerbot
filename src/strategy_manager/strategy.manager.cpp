@@ -29,16 +29,18 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         j["base"] = p.base.symbol.value();
-        j["quote"] = p.base.symbol.value();
+        j["quote"] = p.quote.symbol.value();
     }
 
     void from_json (const nlohmann::json &j, market_making_strategy &mms)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         from_json(j.at("pair"), mms.pair);
-        //j.at("spread").get_to(mms.spread);
-        //j.at("quantity").get_to(mms.quantity);
-        //j.at("both").get_to(mms.both);
+        mms.spread = st_spread{j.at("spread").get<double>()};
+        mms.quantity = st_quantity{j.at("quantity").get<double>()};
+        if (j.find("both") != j.end()) {
+            j.at("both").get_to(mms.both);
+        }
     }
 
     void to_json (nlohmann::json &j, const market_making_strategy &mms)

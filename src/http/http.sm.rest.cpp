@@ -35,7 +35,8 @@ namespace antara::mmbot::http::rest
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/sm/addstrategy");
 
         auto json_data = nlohmann::json::parse(req->body());
-        auto strat = json_data.get<market_making_strategy>();
+        market_making_strategy strat;
+        from_json(json_data, strat);
         this->sm_.add_strategy(strat);
 
         auto status = restinio::status_ok();
@@ -50,7 +51,7 @@ namespace antara::mmbot::http::rest
 
         auto json_data = nlohmann::json::parse(req->body());
         antara::pair pr;
-        from_json(json_data, pr);
+        from_json(json_data.at("pair"), pr);
         auto cross = pr.to_cross();
         auto strat = this->sm_.get_strategy(cross);
         nlohmann::json json_strat;
