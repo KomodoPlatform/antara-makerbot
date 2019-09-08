@@ -159,18 +159,18 @@ namespace std
         std::size_t operator()(const antara::cross &x) const
         {
             antara::asset big;
-            antara::asset small;
+            antara::asset little;
 
             if (x.base.symbol.value() > x.quote.symbol.value()) {
                 big = x.base;
-                small = x.quote;
+                little = x.quote;
             } else {
                 big = x.quote;
-                small = x.base;
+                little = x.base;
             }
 
             std::size_t h1 = std::hash<std::string>{}(big.symbol.value());
-            std::size_t h2 = std::hash<std::string>{}(small.symbol.value());
+            std::size_t h2 = std::hash<std::string>{}(little.symbol.value());
 
             return h1 ^ (h2 << 1);
         }

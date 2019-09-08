@@ -93,7 +93,6 @@ namespace antara::mmbot::orders
             && price == other.price
             && quantity == other.quantity
             && filled == other.filled
-            // && side == other.side
             && status == other.status;
     }
 

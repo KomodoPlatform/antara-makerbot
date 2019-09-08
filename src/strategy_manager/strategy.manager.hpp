@@ -16,13 +16,16 @@
 
 #pragma once
 
+#include <mutex>
+#include <thread>
+#include <atomic>
 #include <vector>
 #include <unordered_map>
 
-#include <utils/mmbot_strong_types.hpp>
-#include <orders/orders.hpp>
-#include <order_manager/order.manager.hpp>
-#include <price/service.price.platform.hpp>
+#include "utils/mmbot_strong_types.hpp"
+#include "orders/orders.hpp"
+#include "order_manager/order.manager.hpp"
+#include "price/service.price.platform.hpp"
 
 namespace antara::mmbot
 {
@@ -33,8 +36,17 @@ namespace antara::mmbot
         antara::st_quantity quantity;
         bool both = true;
 
-        bool operator==(const market_making_strategy &other) const;
-        bool operator!=(const market_making_strategy &other) const;
+        bool operator==(const market_making_strategy &other) const
+        {
+            return pair == other.pair
+                   && spread == other.spread
+                   && quantity == other.quantity
+                   && both == other.both;
+        }
+        bool operator!=(const market_making_strategy &other) const
+        {
+            return !(*this == other);
+        }
     };
 
     template <class PS>
@@ -73,6 +85,8 @@ namespace antara::mmbot
             running_ = true;
         }
 
+        ~strategy_manager();
+
         void add_strategy(const market_making_strategy& strat) override;
 
         [[nodiscard]] const market_making_strategy &get_strategy(antara::cross pair) const override;
@@ -93,12 +107,17 @@ namespace antara::mmbot
         void refresh_all_orders();
 
         void start();
+        void enable_sm_thread();
 
     private:
         registry_strategies registry_strategies_;
         abstract_om &om_;
         PS &ps_;
         bool running_;
+
+        //! Thread stuffs
+        std::thread sm_thread_;
+        std::atomic_bool keep_thread_alive_{true};
     };
 }
 

@@ -14,10 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "dex.hpp"
-
-#include <utils/exceptions.hpp>
+#include <utility>
 #include <utils/pretty_function.hpp>
+#include "dex.hpp"
 
 namespace antara::mmbot
 {
