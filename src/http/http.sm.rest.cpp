@@ -14,16 +14,16 @@
  *                                                                            *
  ******************************************************************************/
 
-#include "http.mm2.rest.hpp"
+#include "http.sm.rest.hpp"
 
 namespace antara::mmbot::http::rest
 {
-    mm2::mm2(mm2_client &mm2_client) noexcept : mm2_client_(mm2_client)
+    sm::sm(strategy_manager<price_service_platform> &sm, order_manager &om) noexcept : sm_(sm), om_(om)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
 
-    mm2::~mm2() noexcept
+    sm::~sm() noexcept
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
@@ -34,10 +34,11 @@ namespace antara::mmbot::http::rest
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/sm/addstrategy");
 
-        auto json_data = nlohman::json::parse(req->body());
+        auto json_data = nlohmann::json::parse(req->body());
         auto strat = json_data.get<market_making_strategy>();
-        this->sm.add_strategy(strat);
+        this->sm_.add_strategy(strat);
 
+        auto status = restinio::status_ok();
         return req->create_response(status).done();
     }
 
@@ -47,10 +48,11 @@ namespace antara::mmbot::http::rest
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/sm/getstrategy");
 
-        auto json_data = nlohman::json::parse(req->body());
+        auto json_data = nlohmann::json::parse(req->body());
         auto cross = json_data.get<antara::pair>().to_cross();
         json strat = this->sm_.get_strategy(cross);
 
+        auto status = restinio::status_ok();
         return req->create_response(status)
             .append_header(restinio::http_field::content_type, "application/json")
             .set_body(strat.dump())
@@ -63,10 +65,11 @@ namespace antara::mmbot::http::rest
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/sm/getstrategy");
 
-        auto json_data = nlohman::json::parse(req->body());
+        auto json_data = nlohmann::json::parse(req->body());
         auto cross = json_data.get<antara::pair>().to_cross();
         json ids = this->om_.cancel_orders(cross);
 
+        auto status = restinio::status_ok();
         return req->create_response(status)
             .append_header(restinio::http_field::content_type, "application/json")
             .set_body(ids.dump())
