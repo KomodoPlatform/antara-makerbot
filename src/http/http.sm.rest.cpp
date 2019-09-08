@@ -49,13 +49,17 @@ namespace antara::mmbot::http::rest
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/sm/getstrategy");
 
         auto json_data = nlohmann::json::parse(req->body());
-        auto cross = json_data.get<antara::pair>().to_cross();
-        json strat = this->sm_.get_strategy(cross);
+        antara::pair pr;
+        from_json(json_data, pr);
+        auto cross = pr.to_cross();
+        auto strat = this->sm_.get_strategy(cross);
+        nlohmann::json json_strat;
+        to_json(json_strat, strat);
 
         auto status = restinio::status_ok();
         return req->create_response(status)
             .append_header(restinio::http_field::content_type, "application/json")
-            .set_body(strat.dump())
+            .set_body(json_strat.dump())
             .done();
     }
 
@@ -66,13 +70,17 @@ namespace antara::mmbot::http::rest
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/sm/getstrategy");
 
         auto json_data = nlohmann::json::parse(req->body());
-        auto cross = json_data.get<antara::pair>().to_cross();
-        json ids = this->om_.cancel_orders(cross);
+        antara::pair pr;
+        from_json(json_data, pr);
+        auto cross = pr.to_cross();
+        auto ids = this->om_.cancel_orders(cross);
+        nlohmann::json json_ids;
+        nlohmann::to_json(json_ids, ids);
 
         auto status = restinio::status_ok();
         return req->create_response(status)
             .append_header(restinio::http_field::content_type, "application/json")
-            .set_body(ids.dump())
+            .set_body(json_ids.dump())
             .done();
     }
 }
