@@ -25,7 +25,7 @@ namespace antara::mmbot
         p.quote = antara::asset{st_symbol{j.at("quote").get<std::string>()}};
     }
 
-    void to_json (nlohmann::json &j, const antara::pair &p)
+    void to_json(nlohmann::json &j, const antara::pair &p)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         j["base"] = p.base.symbol.value();
@@ -35,16 +35,16 @@ namespace antara::mmbot
     void from_json (const nlohmann::json &j, market_making_strategy &mms)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        j.at("pair").get_to(mms.pair);
-        j.at("spread").get_to(mms.spread);
-        j.at("quantity").get_to(mms.quantity);
-        j.at("both").get_to(mms.both);
+        from_json(j.at("pair"), mms.pair);
+        //j.at("spread").get_to(mms.spread);
+        //j.at("quantity").get_to(mms.quantity);
+        //j.at("both").get_to(mms.both);
     }
 
     void to_json (nlohmann::json &j, const market_making_strategy &mms)
     {
         nlohmann::json p;
-        j["pair"] = mms.pair;
+        to_json(j["pair"], mms.pair);
         j["spread"] = mms.spread.value();
         j["quantity"] = mms.quantity.value();
         j["both"] = mms.both;
