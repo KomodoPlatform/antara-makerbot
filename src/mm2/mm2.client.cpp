@@ -332,6 +332,16 @@ namespace antara::mmbot::mm2
         j.at("result").at("maker_orders").get_to(cfg.m_orders);
         j.at("result").at("taker_orders").get_to(cfg.t_orders);
     }
+
+    void from_json(const nlohmann::json &j, my_swap_status_answer &cfg)
+    {
+        j.at("result").get_to(cfg.s);
+    }
+
+    void to_json(nlohmann::json &j, const my_swap_status_request &cfg)
+    {
+        j.at("uuid").get_to(cfg.uuid);
+    }
 }
 
 namespace antara::mmbot
@@ -500,9 +510,14 @@ namespace antara::mmbot
         return {};
     }
 
-    mm2::my_swap_status_answer mm2_client::rpc_my_swap_status([[maybe_unused]] st_execution_id id)
+    mm2::my_swap_status_answer mm2_client::rpc_my_swap_status(mm2::my_swap_status_request&& request)
     {
-        return {};
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("my_swap_status");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::my_swap_status_answer>(resp);
     }
 
     std::size_t mm2_client::enable_all_coins()
