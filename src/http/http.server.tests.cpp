@@ -191,12 +191,29 @@ namespace antara::mmbot::tests
             j["quantity"] = 1.0;
             resp = RestClient::post("localhost:7777/api/v1/sm/addstrategy", "application/json", j.dump());
             CHECK_EQ(resp.code, 200);
+
+            j.clear();
+            j["pair"] = nlohmann::json::object();
+            j["pair"]["base"] = "BTC";
+            j["pair"]["quote"] = "ETH";
+            j["s"] = 1.0;
+            j["q"] = 1.0;
+            resp = RestClient::post("localhost:7777/api/v1/sm/addstrategy", "application/json", j.dump());
+            CHECK_EQ(resp.code, 422);
+
             j.clear();
             j["pair"] = nlohmann::json::object();
             j["pair"]["base"] = "BTC";
             j["pair"]["quote"] = "ETH";
             resp = RestClient::post("localhost:7777/api/v1/sm/getstrategy", "application/json", j.dump());
             CHECK_EQ(resp.code, 200);
+
+            j.clear();
+            j["pair"] = nlohmann::json::object();
+            j["pair"]["b"] = "BTC";
+            j["pair"]["q"] = "ETH";
+            resp = RestClient::post("localhost:7777/api/v1/sm/getstrategy", "application/json", j.dump());
+            CHECK_EQ(resp.code, 422);
         }
         //! Shutdown server
         std::raise(SIGINT);

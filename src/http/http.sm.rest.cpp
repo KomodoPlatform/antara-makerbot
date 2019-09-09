@@ -34,13 +34,18 @@ namespace antara::mmbot::http::rest
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/sm/addstrategy");
 
-        auto json_data = nlohmann::json::parse(req->body());
-        market_making_strategy strat;
-        from_json(json_data, strat);
-        this->sm_.add_strategy(strat);
-
-        auto status = restinio::status_ok();
-        return req->create_response(status).done();
+        try {
+            auto json_data = nlohmann::json::parse(req->body());
+            market_making_strategy strat;
+            from_json(json_data, strat);
+            this->sm_.add_strategy(strat);
+            auto status = restinio::status_ok();
+            return req->create_response(status).done();
+        } catch (const nlohmann::json::exception &error) {
+            return req->create_response(restinio::status_unprocessable_entity()).done();
+        } catch (const std::exception &error) {
+            return req->create_response(restinio::status_internal_server_error()).done();
+        }
     }
 
     restinio::request_handling_status_t
@@ -49,19 +54,24 @@ namespace antara::mmbot::http::rest
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/sm/getstrategy");
 
-        auto json_data = nlohmann::json::parse(req->body());
-        antara::pair pr;
-        from_json(json_data.at("pair"), pr);
-        auto cross = pr.to_cross();
-        auto strat = this->sm_.get_strategy(cross);
-        nlohmann::json json_strat;
-        to_json(json_strat, strat);
+        try {
+            auto json_data = nlohmann::json::parse(req->body());
+            antara::pair pr;
+            from_json(json_data.at("pair"), pr);
+            auto cross = pr.to_cross();
+            auto strat = this->sm_.get_strategy(cross);
+            nlohmann::json json_strat;
+            to_json(json_strat, strat);
 
-        auto status = restinio::status_ok();
-        return req->create_response(status)
-            .append_header(restinio::http_field::content_type, "application/json")
-            .set_body(json_strat.dump())
-            .done();
+            return req->create_response(restinio::status_ok())
+                .append_header(restinio::http_field::content_type, "application/json")
+                .set_body(json_strat.dump())
+                .done();
+        } catch (const nlohmann::json::exception &error) {
+            return req->create_response(restinio::status_unprocessable_entity()).done();
+        } catch (const std::exception &error) {
+            return req->create_response(restinio::status_internal_server_error()).done();
+        }
     }
 
     restinio::request_handling_status_t
