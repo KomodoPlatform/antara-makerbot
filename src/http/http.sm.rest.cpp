@@ -42,9 +42,11 @@ namespace antara::mmbot::http::rest
             auto status = restinio::status_ok();
             return req->create_response(status).done();
         } catch (const nlohmann::json::exception &error) {
-            return req->create_response(restinio::status_unprocessable_entity()).done();
+            return req->create_response(restinio::status_bad_request())
+                .set_body(error.what()).done();
         } catch (const std::exception &error) {
-            return req->create_response(restinio::status_internal_server_error()).done();
+            return req->create_response(restinio::status_internal_server_error())
+                .set_body(error.what()).done();
         }
     }
 
@@ -68,9 +70,11 @@ namespace antara::mmbot::http::rest
                 .set_body(json_strat.dump())
                 .done();
         } catch (const nlohmann::json::exception &error) {
-            return req->create_response(restinio::status_unprocessable_entity()).done();
+            return req->create_response(restinio::status_bad_request())
+                .set_body(error.what()).done();
         } catch (const std::exception &error) {
-            return req->create_response(restinio::status_internal_server_error()).done();
+            return req->create_response(restinio::status_internal_server_error())
+                .set_body(error.what()).done();
         }
     }
 

@@ -828,7 +828,7 @@ The cancel_all_orders cancels the active orders created by the MM2 node by speci
 
 **Code**: `400 Bad request` (Ill-formed request)
 
-**Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
+**Code**: `500 Internal Server Error` (`sm` return 500 error code + message)
 
 ## SM addstrategy
 
@@ -872,4 +872,4 @@ The cancel_all_orders cancels the active orders created by the MM2 node by speci
 
 **Code**: `400 Bad request` (Ill-formed request)
 
-**Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
+**Code**: `500 Internal Server Error` (`sm` return 500 error code + message)
