@@ -248,7 +248,7 @@ namespace antara::mmbot::tests
     {
         auto pair = antara::pair::of("A", "B");
 
-        orders::order_level ol = {st_price(10), st_quantity(10)};
+        orders::order_level ol = {st_price(10), st_quantity(10), antara::pair{}};
 
         auto o_id = st_order_id{"id"};
         auto b = orders::order_builder(o_id, pair);

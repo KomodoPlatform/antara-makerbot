@@ -14,43 +14,41 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <memory>
-#include <restinio/all.hpp>
-#include <config/config.hpp>
-#include "price/service.price.platform.hpp"
-#include "http.price.rest.hpp"
-#include "mm2/mm2.client.hpp"
-#include "http.mm2.rest.hpp"
-#include "http.sm.rest.hpp"
+#include "strategy.manager.hpp"
 
 namespace antara::mmbot
 {
-    struct http_server_traits : public restinio::default_single_thread_traits_t
+    void from_json (const nlohmann::json &j, antara::pair &p)
     {
-        using request_handler_t = restinio::router::express_router_t<>;
-    };
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        p.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
+        p.quote = antara::asset{st_symbol{j.at("quote").get<std::string>()}};
+    }
 
-    class http_server
+    void to_json(nlohmann::json &j, const antara::pair &p)
     {
-    public:
-        using router = std::unique_ptr<restinio::router::express_router_t<>>;
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        j["base"] = p.base.symbol.value();
+        j["quote"] = p.quote.symbol.value();
+    }
 
-        explicit http_server(
-            price_service_platform &price_service,
-            mmbot::mm2_client &mm2_client,
-            mmbot::strategy_manager<price_service_platform> &sm,
-            mmbot::order_manager &om);
+    void from_json (const nlohmann::json &j, market_making_strategy &mms)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        from_json(j.at("pair"), mms.pair);
+        mms.spread = st_spread{j.at("spread").get<double>()};
+        mms.quantity = st_quantity{j.at("quantity").get<double>()};
+        if (j.find("both") != j.end()) {
+            j.at("both").get_to(mms.both);
+        }
+    }
 
-        void run();
-
-    private:
-        router create_routes();
-
-    private:
-        http::rest::price price_rest_callbook_;
-        http::rest::mm2 mm2_rest_callbook_;
-        http::rest::sm sm_rest_callbook_;
-    };
+    void to_json (nlohmann::json &j, const market_making_strategy &mms)
+    {
+        nlohmann::json p;
+        to_json(j["pair"], mms.pair);
+        j["spread"] = mms.spread.value();
+        j["quantity"] = mms.quantity.value();
+        j["both"] = mms.both;
+    }
 }

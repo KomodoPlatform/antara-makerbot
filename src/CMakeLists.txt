@@ -8,11 +8,13 @@ target_sources(mmbot_shared_deps INTERFACE
         dex/dex.utils.cpp
         http/http.price.rest.cpp
         http/http.mm2.rest.cpp
+        http/http.sm.rest.cpp
         http/http.server.cpp
         order_manager/order.manager.cpp
         orders/orders.cpp
         price/coinpaprika.price.platform.cpp
         price/service.price.platform.cpp
+        strategy_manager/strategy.manager.cpp
         utils/antara.utils.cpp
         utils/mmbot_strong_types.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)

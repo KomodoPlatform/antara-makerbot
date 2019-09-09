@@ -16,41 +16,32 @@
 
 #pragma once
 
-#include <memory>
 #include <restinio/all.hpp>
-#include <config/config.hpp>
-#include "price/service.price.platform.hpp"
-#include "http.price.rest.hpp"
-#include "mm2/mm2.client.hpp"
-#include "http.mm2.rest.hpp"
-#include "http.sm.rest.hpp"
+#include <restinio/common_types.hpp>
+#include "config/config.hpp"
+#include "strategy_manager/strategy.manager.hpp"
+#include "order_manager/order.manager.hpp"
 
-namespace antara::mmbot
+namespace antara::mmbot::http::rest
 {
-    struct http_server_traits : public restinio::default_single_thread_traits_t
-    {
-        using request_handler_t = restinio::router::express_router_t<>;
-    };
-
-    class http_server
+    class sm
     {
     public:
-        using router = std::unique_ptr<restinio::router::express_router_t<>>;
+        sm(strategy_manager<price_service_platform> &sm, order_manager &om) noexcept;
 
-        explicit http_server(
-            price_service_platform &price_service,
-            mmbot::mm2_client &mm2_client,
-            mmbot::strategy_manager<price_service_platform> &sm,
-            mmbot::order_manager &om);
+        ~sm() noexcept;
 
-        void run();
+        restinio::request_handling_status_t
+        add_strategy(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
+        restinio::request_handling_status_t
+        get_strategy(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
+        restinio::request_handling_status_t
+        cancel_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
     private:
-        router create_routes();
-
-    private:
-        http::rest::price price_rest_callbook_;
-        http::rest::mm2 mm2_rest_callbook_;
-        http::rest::sm sm_rest_callbook_;
+        strategy_manager<price_service_platform> &sm_;
+        order_manager &om_;
     };
 }

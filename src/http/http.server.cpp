@@ -18,8 +18,12 @@
 
 namespace antara::mmbot
 {
-    http_server::http_server(price_service_platform &price_service, mmbot::mm2_client &mm2_client)
-            : price_rest_callbook_(price_service), mm2_rest_callbook_(mm2_client)
+    http_server::http_server(
+        price_service_platform &price_service,
+        mmbot::mm2_client &mm2_client,
+        mmbot::strategy_manager<price_service_platform> &sm,
+        mmbot::order_manager &om)
+        : price_rest_callbook_(price_service), mm2_rest_callbook_(mm2_client), sm_rest_callbook_(sm, om)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
     }
@@ -85,10 +89,22 @@ namespace antara::mmbot
             return this->mm2_rest_callbook_.enable_all_electrums_coins(std::forward<decltype(params)>(params)...);
         });
 
+        http_router->http_post(
+            "/api/v1/sm/getstrategy",
+            [this](auto &&... params) {
+                return this->sm_rest_callbook_.get_strategy(std::forward<decltype(params)>(params)...);
+            });
+
+        http_router->http_post(
+            "/api/v1/sm/addstrategy",
+            [this](auto &&... params) {
+                return this->sm_rest_callbook_.add_strategy(std::forward<decltype(params)>(params)...);
+            });
+
         http_router->non_matched_request_handler(
-                [](auto req) {
-                    return req->create_response(status_not_found()).set_body("Not Found").done();
-                });
+            [](auto req) {
+                return req->create_response(status_not_found()).set_body("Not Found").done();
+            });
         return http_router;
     }
 
@@ -98,7 +114,7 @@ namespace antara::mmbot
         const auto &mmbot_cfg = get_mmbot_config();
         DVLOG_F(loguru::Verbosity_INFO, "launch http server on port: %d", mmbot_cfg.http_port);
         restinio::run(
-                restinio::on_this_thread<http_server_traits>().port(mmbot_cfg.http_port).address(
-                        "localhost").request_handler(create_routes()));
+            restinio::on_this_thread<http_server_traits>().port(mmbot_cfg.http_port).address(
+                "localhost").request_handler(create_routes()));
     }
 }

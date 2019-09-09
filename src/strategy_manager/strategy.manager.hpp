@@ -21,6 +21,7 @@
 #include <atomic>
 #include <vector>
 #include <unordered_map>
+#include <nlohmann/json.hpp>
 
 #include "utils/mmbot_strong_types.hpp"
 #include "orders/orders.hpp"
@@ -43,11 +44,17 @@ namespace antara::mmbot
                    && quantity == other.quantity
                    && both == other.both;
         }
+
         bool operator!=(const market_making_strategy &other) const
         {
             return !(*this == other);
         }
     };
+
+    void from_json (const nlohmann::json &j, antara::pair &p);
+    void to_json (nlohmann::json &j, const antara::pair &p);
+    void from_json (const nlohmann::json &j, market_making_strategy &mms);
+    void to_json (nlohmann::json &j, const market_making_strategy &mms);
 
     template <class PS>
     class abstract_sm

@@ -782,3 +782,94 @@ The cancel_all_orders cancels the active orders created by the MM2 node by speci
 **Code**: `400 Bad request` (Ill-formed request)
 
 **Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
+
+## SM getstrategy
+
+The cancel_all_orders cancels the active orders created by the MM2 node by specified condition.
+
+**URL**: `/api/v1/sm/getstrategy`
+
+**Method**: `POST`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+### Success Response
+
+**Code** `200 OK`
+
+**Content examples (request)**
+
+```json
+{
+  "pair" : {
+    "base" : "BTC",
+    "quote" : "ETH"
+  }
+}
+```
+
+**Content example (answer)**
+
+```json
+{
+  "pair" : {
+    "base" : "BTC",
+    "quote" : "ETH"
+  },
+  "spread" : 0.1,
+  "quantity" : 5,
+  "both" : true
+}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `500 Internal Server Error` (`sm` return 500 error code + message)
+
+## SM addstrategy
+
+The cancel_all_orders cancels the active orders created by the MM2 node by specified condition.
+
+**URL**: `/api/v1/sm/addstrategy`
+
+**Method**: `POST`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+### Success Response
+
+**Code** `200 OK`
+
+**Content examples (request)**
+
+```json
+{
+  "pair" : {
+    "base" : "BTC",
+    "quote" : "ETH"
+  },
+  "spread" : 0.1,
+  "quantity" : 5,
+  "both" : true
+}
+```
+
+**Content example (answer)**
+
+```json
+{
+  "result": "success"
+}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `500 Internal Server Error` (`sm` return 500 error code + message)

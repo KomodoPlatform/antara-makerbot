@@ -37,6 +37,6 @@ namespace antara::mmbot
         mmbot::cex cex_{};
         mmbot::order_manager om_{dex_, cex_};
         mmbot::real_strategy_manager sm_{price_service_, om_};
-        antara::mmbot::http_server server_{price_service_, mm2_client_};
+        antara::mmbot::http_server server_{price_service_, mm2_client_, sm_, om_};
     };
 }
