@@ -56,24 +56,17 @@ namespace antara::mmbot::tests
     };
 
     using namespace std::chrono_literals;
-    TEST_CASE_FIXTURE (http_server_tests_fixture, "test run http_server")
-    {
-        std::this_thread::sleep_for(1s);
-        std::raise(SIGINT);
-    }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test welcome http_server")
+    TEST_CASE_FIXTURE(http_server_tests_fixture, "all tests")
     {
         std::this_thread::sleep_for(1s);
+
+        //! test Welcome
         auto resp = RestClient::get("localhost:7777/");
         CHECK_EQ(resp.code, 200);
-        std::raise(SIGINT);
-    }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test getprice")
-    {
-        std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:7777/api/v1/getprice");
+        //! test getprice
+        resp = RestClient::get("localhost:7777/api/v1/getprice");
         CHECK_EQ(resp.code, 400); //! Bad request
         resp = RestClient::get("localhost:7777/api/v1/getprice?wrong_option=0&wrong_option2=1");
         CHECK_EQ(resp.code, 422); //! Unprocessable entity
@@ -83,13 +76,9 @@ namespace antara::mmbot::tests
         CHECK_EQ(resp.code, 200);
         resp = RestClient::get("localhost:7777/api/v1/getprice?base_currency=KMDD&quote_currency=BTC"); //Wrong base_currency throw pair not available (internal error)
         CHECK_EQ(resp.code, 500);
-        std::raise(SIGINT);
-    }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 get orderbook")
-    {
-        std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/getorderbook");
+        //! test orderbook
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/getorderbook");
         CHECK_EQ(resp.code, 400); //! Bad request
         resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/getorderbook?wrong_option=0&wrong_option2=1");
         CHECK_EQ(resp.code, 422); //! Unprocessable entity
@@ -97,13 +86,9 @@ namespace antara::mmbot::tests
         CHECK_EQ(resp.code, 200);
         resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/getorderbook?base_currency=BTC&quote_currency=MORTY"); //Well formed but BTC not enabled.
         CHECK_EQ(resp.code, 500);
-        std::raise(SIGINT);
-    }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 my balance")
-    {
-        std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance");
+        //! test mybalance
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance");
         CHECK_EQ(resp.code, 400); //! Bad request
         resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance?wrong_option=0");
         CHECK_EQ(resp.code, 422); //! Unprocessable entity
@@ -111,107 +96,109 @@ namespace antara::mmbot::tests
         CHECK_EQ(resp.code, 200);
         resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance?currency=BTC"); //Well formed but BTC not enabled.
         CHECK_EQ(resp.code, 500);
-        std::raise(SIGINT);
-    }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 version")
-    {
-        std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/version"); //Well formed
+        //! test version
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/version"); //Well formed
         CHECK_EQ(resp.code, 200);
-        std::raise(SIGINT);
-    }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 get enabled coins")
-    {
-        std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/get_enabled_coins"); //Well formed
+        //! test get enabled coins
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/get_enabled_coins"); //Well formed
         CHECK_EQ(resp.code, 200);
-        std::raise(SIGINT);
-    }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test get all prices")
-    {
-        std::this_thread::sleep_for(1s);
-        auto resp = RestClient::get("localhost:7777/api/v1/getallprice"); //Well formed
+        //! test get all prices
+        resp = RestClient::get("localhost:7777/api/v1/getallprice"); //Well formed
         CHECK_EQ(resp.code, 200);
-        std::raise(SIGINT);
-    }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 setprice")
-    {
-        std::this_thread::sleep_for(1s);
-        mm2::setprice_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
-        nlohmann::json json_request;
-        mm2::to_json(json_request, request);
-        auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/setprice", "application/json", json_request.dump());
-        CHECK_EQ(resp.code, 200);
-        nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
-        mm2::setprice_answer answer;
-        mm2::from_json(resp_answer, answer);
-        mm2::cancel_order_request cancel_request{answer.result_setprice.uuid};
-        json_request.clear();
-        mm2::to_json(json_request, cancel_request);
-        resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json", json_request.dump());
-        CHECK_EQ(resp.code, 200);
-        std::raise(SIGINT);
-    }
+        //! test mm2 setprice
+        {
+            mm2::setprice_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1",
+                                          "1"};
+            nlohmann::json json_request;
+            mm2::to_json(json_request, request);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/setprice", "application/json",
+                                    json_request.dump());
+            CHECK_EQ(resp.code, 200);
+            nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
+            mm2::setprice_answer answer;
+            mm2::from_json(resp_answer, answer);
+            mm2::cancel_order_request cancel_request{answer.result_setprice.uuid};
+            json_request.clear();
+            mm2::to_json(json_request, cancel_request);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json",
+                                    json_request.dump());
+            CHECK_EQ(resp.code, 200);
+        }
 
+        //! test mm2 buy
+        {
+            mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1",
+                                       "1"};
+            nlohmann::json json_request;
+            mm2::to_json(json_request, request);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/buy", "application/json", json_request.dump());
+            CHECK_EQ(resp.code, 200);
+            nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
+            mm2::buy_answer answer;
+            mm2::from_json(resp_answer, answer);
+            mm2::cancel_order_request cancel_request{answer.result_trade.value().uuid};
+            json_request.clear();
+            mm2::to_json(json_request, cancel_request);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json",
+                                    json_request.dump());
+            CHECK_EQ(resp.code, 200);
+        }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 buy")
-    {
-        std::this_thread::sleep_for(1s);
-        mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
-        nlohmann::json json_request;
-        mm2::to_json(json_request, request);
-        auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/buy", "application/json", json_request.dump());
-        CHECK_EQ(resp.code, 200);
-        nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
-        mm2::buy_answer answer;
-        mm2::from_json(resp_answer, answer);
-        mm2::cancel_order_request cancel_request{answer.result_trade.value().uuid};
-        json_request.clear();
-        mm2::to_json(json_request, cancel_request);
-        resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json", json_request.dump());
-        CHECK_EQ(resp.code, 200);
-        std::raise(SIGINT);
-    }
+        //! test mm2 sell
+        {
+            mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+            nlohmann::json json_request;
+            mm2::to_json(json_request, request);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/sell", "application/json", json_request.dump());
+            CHECK_EQ(resp.code, 200);
+            nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
+            mm2::sell_answer answer;
+            mm2::from_json(resp_answer, answer);
+            mm2::cancel_order_request cancel_request{answer.result_trade.value().uuid};
+            json_request.clear();
+            mm2::to_json(json_request, cancel_request);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json", json_request.dump());
+            CHECK_EQ(resp.code, 200);
+        }
+        //! test mm2 buy with cancel all orders
+        {
+            mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
+            nlohmann::json json_request;
+            mm2::to_json(json_request, request);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/buy", "application/json", json_request.dump());
+            CHECK_EQ(resp.code, 200);
+            nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
+            mm2::buy_answer answer;
+            mm2::from_json(resp_answer, answer);
+            mm2::cancel_all_orders_request cancel_request{"All"};
+            json_request.clear();
+            mm2::to_json(json_request, cancel_request);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_all_orders", "application/json", json_request.dump());
+            CHECK_EQ(resp.code, 200);
+        }
 
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 sell")
-    {
-        std::this_thread::sleep_for(1s);
-        mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
-        nlohmann::json json_request;
-        mm2::to_json(json_request, request);
-        auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/sell", "application/json", json_request.dump());
-        CHECK_EQ(resp.code, 200);
-        nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
-        mm2::sell_answer answer;
-        mm2::from_json(resp_answer, answer);
-        mm2::cancel_order_request cancel_request{answer.result_trade.value().uuid};
-        json_request.clear();
-        mm2::to_json(json_request, cancel_request);
-        resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json", json_request.dump());
-        CHECK_EQ(resp.code, 200);
-        std::raise(SIGINT);
-    }
-
-    TEST_CASE_FIXTURE(http_server_tests_fixture, "test mm2 buy with cancel all orders")
-    {
-        std::this_thread::sleep_for(1s);
-        mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
-        nlohmann::json json_request;
-        mm2::to_json(json_request, request);
-        auto resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/buy", "application/json", json_request.dump());
-        CHECK_EQ(resp.code, 200);
-        nlohmann::json resp_answer = nlohmann::json::parse(resp.body);
-        mm2::buy_answer answer;
-        mm2::from_json(resp_answer, answer);
-        mm2::cancel_all_orders_request cancel_request{"All"};
-        json_request.clear();
-        mm2::to_json(json_request, cancel_request);
-        resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_all_orders", "application/json", json_request.dump());
-        CHECK_EQ(resp.code, 200);
+        //! test sm addstrategy and getstrategy
+        {
+            nlohmann::json j;
+            j["pair"] = nlohmann::json::object();
+            j["pair"]["base"] = "BTC";
+            j["pair"]["quote"] = "ETH";
+            j["spread"] = 1.0;
+            j["quantity"] = 1.0;
+            resp = RestClient::post("localhost:7777/api/v1/sm/addstrategy", "application/json", j.dump());
+            CHECK_EQ(resp.code, 200);
+            j.clear();
+            j["pair"] = nlohmann::json::object();
+            j["pair"]["base"] = "BTC";
+            j["pair"]["quote"] = "ETH";
+            resp = RestClient::post("localhost:7777/api/v1/sm/getstrategy", "application/json", j.dump());
+            CHECK_EQ(resp.code, 200);
+        }
+        //! Shutdown server
         std::raise(SIGINT);
     }
 }
