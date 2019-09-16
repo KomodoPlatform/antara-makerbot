@@ -22,6 +22,7 @@ namespace antara::mmbot
     template <class PS>
     void strategy_manager<PS>::add_strategy(const market_making_strategy &strat)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         antara::cross cross = strat.pair.to_cross();
         registry_strategies_.emplace(cross, strat);
     }
@@ -29,12 +30,14 @@ namespace antara::mmbot
     template <class PS>
     const market_making_strategy &strategy_manager<PS>::get_strategy(antara::cross cross) const
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         return registry_strategies_.at(cross);
     }
 
     template <class PS>
     const typename strategy_manager<PS>::registry_strategies &strategy_manager<PS>::get_strategies() const
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         return registry_strategies_;
     }
 
@@ -42,6 +45,7 @@ namespace antara::mmbot
     orders::order_level strategy_manager<PS>::make_bid(
         antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity, antara::pair pair)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         antara::st_spread mod = antara::st_spread{1.0} - spread;
         antara::st_price price = mid * mod;
         orders::order_level ol{price, quantity, pair};
@@ -52,6 +56,7 @@ namespace antara::mmbot
     orders::order_level strategy_manager<PS>::make_ask(
         antara::st_price mid, antara::st_spread spread, antara::st_quantity quantity, antara::pair pair)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         antara::st_spread mod = 1.0 + spread;
         antara::st_price price = mid * mod;
         orders::order_level ol{price, quantity, pair, true};
@@ -62,6 +67,7 @@ namespace antara::mmbot
     orders::order_group strategy_manager<PS>::create_order_group(
             const market_making_strategy &strat, antara::st_price mid)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto pair = strat.pair;
         auto spread = strat.spread;
         auto quantity = strat.quantity;
@@ -82,6 +88,7 @@ namespace antara::mmbot
     template <class PS>
     orders::order_group strategy_manager<PS>::create_order_group(const market_making_strategy &strat)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto mid = ps_.get_price(strat.pair);
         return create_order_group(strat, mid);
     }
@@ -89,6 +96,7 @@ namespace antara::mmbot
     template <class PS>
     void strategy_manager<PS>::refresh_orders(antara::cross pair)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto strat = registry_strategies_.at(pair);
         auto orders = create_order_group(strat);
 
@@ -99,6 +107,7 @@ namespace antara::mmbot
     template <class PS>
     void strategy_manager<PS>::refresh_all_orders()
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         for(const auto& [pair, strat] : registry_strategies_) {
             refresh_orders(pair);
         }
@@ -108,6 +117,7 @@ namespace antara::mmbot
     template <class PS>
     void strategy_manager<PS>::start()
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         // TODO
         // For the time being this loops with a sleep
         // But could run in response to price changes in the future
@@ -122,6 +132,7 @@ namespace antara::mmbot
     template<class PS>
     void strategy_manager<PS>::enable_sm_thread()
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         using namespace std::literals;
         this->sm_thread_ = std::thread([this]() {
             loguru::set_thread_name("sm thread");
@@ -142,6 +153,7 @@ namespace antara::mmbot
     template<class PS>
     strategy_manager<PS>::~strategy_manager()
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         this->keep_thread_alive_ = false;
         if (sm_thread_.joinable()) {
             sm_thread_.join();

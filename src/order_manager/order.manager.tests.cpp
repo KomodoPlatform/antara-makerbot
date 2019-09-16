@@ -259,6 +259,9 @@ namespace antara::mmbot::tests
 
         auto om = order_manager(dex, cex);
 
+        // Should do nothing
+        om.cancel_orders(pair.to_cross());
+
         ALLOW_CALL(dex, place(ol))
             .LR_RETURN(std::ref(o));
 
