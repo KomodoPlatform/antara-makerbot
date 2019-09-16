@@ -25,6 +25,7 @@ namespace antara::mmbot
 {
     void order_manager::add_order_to_pair_map(const orders::order &o)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto &id = o.id;
         auto cross = o.pair.to_cross();
 
@@ -40,6 +41,7 @@ namespace antara::mmbot
 
     void order_manager::remove_order_from_pair_map(const orders::order &o)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto id = o.id;
         auto cross = o.pair.to_cross();
 
@@ -50,16 +52,19 @@ namespace antara::mmbot
 
     const orders::order &order_manager::get_order(const st_order_id &id) const
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         return orders_.at(id);
     }
 
     const std::unordered_set<st_order_id> &order_manager::get_orders(antara::cross cross) const
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         return orders_by_pair_.at(cross);
     }
 
     void order_manager::add_order(const orders::order &o)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         this->orders_mutex_.lock();
         orders_.emplace(o.id, o);
         this->orders_mutex_.unlock();
@@ -70,6 +75,7 @@ namespace antara::mmbot
 
     void order_manager::add_orders(const std::vector<orders::order> &orders)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         //! Locked by subcall
         for (const auto &o : orders) {
             add_order(o);
@@ -78,12 +84,14 @@ namespace antara::mmbot
 
     void order_manager::add_execution(const orders::execution &e)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         std::scoped_lock locker(this->executions_mutex_);
         executions_.emplace(e.id, e);
     }
 
     void order_manager::add_executions(const std::vector<orders::execution> &executions)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         //! Locked by subcall.
         for (const auto &e : executions) {
             add_execution(e);
@@ -92,6 +100,7 @@ namespace antara::mmbot
 
     void order_manager::remove_order(const orders::order &order)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto ex_ids = order.execution_ids;
         {
             std::scoped_lock execution_locker(this->executions_mutex_);
@@ -121,6 +130,7 @@ namespace antara::mmbot
 
     void order_manager::poll()
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         // update the orders we know about
         for (const auto&[id, o] : orders_) {
             auto order = dex_.get_order_status(st_order_id{id});
@@ -169,6 +179,7 @@ namespace antara::mmbot
 
     void order_manager::update_from_live()
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto live = dex_.get_live_orders();
         for (const auto &order : live) {
             add_order(order);
@@ -177,6 +188,7 @@ namespace antara::mmbot
 
     std::optional<st_order_id> order_manager::place_order(const orders::order_level &ol)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto opt_order = dex_.place(ol);
         if (opt_order) {
             auto &order = opt_order.value();
@@ -189,6 +201,7 @@ namespace antara::mmbot
 
     std::unordered_set<st_order_id> order_manager::place_order(const orders::order_group &og)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto order_ids = std::unordered_set<st_order_id>();
         for (const auto &ol : og.levels) {
             auto id = place_order(ol);
@@ -201,19 +214,23 @@ namespace antara::mmbot
 
     std::unordered_set<st_order_id> order_manager::cancel_orders(antara::cross pair)
     {
-        this->orders_by_pair_mutex_.lock();
-        auto ids = orders_by_pair_.at(pair);
-        this->orders_by_pair_mutex_.unlock();
-
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         std::unordered_set<st_order_id> cancelled_orders;
-        for (const auto &id : ids) {
-            auto result = dex_.cancel(id);
-            if (result) {
-                cancelled_orders.emplace(id);
-                this->orders_mutex_.lock();
-                auto &order = orders_.at(id);
-                this->orders_mutex_.unlock();
-                remove_order(order);
+
+        if (orders_by_pair_.find(pair) != orders_by_pair_.end()) {
+            this->orders_by_pair_mutex_.lock();
+            auto ids = orders_by_pair_.at(pair);
+            this->orders_by_pair_mutex_.unlock();
+
+            for (const auto &id : ids) {
+                auto result = dex_.cancel(id);
+                if (result) {
+                    cancelled_orders.emplace(id);
+                    this->orders_mutex_.lock();
+                    auto &order = orders_.at(id);
+                    this->orders_mutex_.unlock();
+                    remove_order(order);
+                }
             }
         }
 
@@ -222,6 +239,7 @@ namespace antara::mmbot
 
     void order_manager::enable_om_service_thread()
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         using namespace std::literals;
         this->om_thread_ = std::thread([this]() {
             loguru::set_thread_name("om thread");
@@ -237,6 +255,7 @@ namespace antara::mmbot
 
     order_manager::~order_manager()
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         this->keep_thread_alive_ = false;
         if (om_thread_.joinable()) {
             om_thread_.join();
