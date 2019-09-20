@@ -66,7 +66,7 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         this->orders_mutex_.lock();
-        orders_.emplace(o.id, o);
+        orders_[o.id] = o;
         this->orders_mutex_.unlock();
         add_order_to_pair_map(o);
         // Should we be adding the executions too?
@@ -86,7 +86,7 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         std::scoped_lock locker(this->executions_mutex_);
-        executions_.emplace(e.id, e);
+        executions_[e.id] = e;
     }
 
     void order_manager::add_executions(const std::vector<orders::execution> &executions)
@@ -134,7 +134,6 @@ namespace antara::mmbot
         // update the orders we know about
         for (const auto&[id, o] : orders_) {
             auto order = dex_.get_order_status(st_order_id{id});
-            // orders_.emplace(id, order);
             add_order(order);
         }
         // add new orders
@@ -160,9 +159,7 @@ namespace antara::mmbot
 
         for (const auto&[id, ex] : all_executions) {
             if (executions_.find(id) == executions_.end()) {
-                // can't find the exection, it's new
-                // for any that aren't in the ex object
-                // make a call to cex
+                // We can't find the execution, it must be new and we mirror it in the CEX
                 cex_.mirror(ex);
                 // and add to known executions
                 add_execution(ex);

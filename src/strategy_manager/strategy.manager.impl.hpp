@@ -24,7 +24,7 @@ namespace antara::mmbot
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         antara::cross cross = strat.pair.to_cross();
-        registry_strategies_.emplace(cross, strat);
+        registry_strategies_[cross] = strat;
     }
 
     template <class PS>

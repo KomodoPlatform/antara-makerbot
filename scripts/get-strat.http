@@ -1,0 +1,7 @@
+POST http://localhost:7777/api/v1/sm/getstrategy
+{
+  "pair": {
+    "base": "BTC",
+    "quote": "KMD"
+  }
+}
