@@ -39,13 +39,12 @@ namespace antara::mmbot::tests
     {
         auto pair = antara::pair::of("A", "B");
         auto spread = st_spread{0.1};
-        auto side = antara::side::sell;
 
         auto q_10 = st_quantity{10};
         auto q_11 = st_quantity{11};
 
-        auto mms_1 = market_making_strategy{pair, spread, q_10, side};
-        auto mms_2 = market_making_strategy{pair, spread, q_11, side};
+        auto mms_1 = market_making_strategy{pair, spread, q_10, true};
+        auto mms_2 = market_making_strategy{pair, spread, q_11, true};
 
         CHECK_EQ(mms_1, mms_1);
         CHECK_NE(mms_1, mms_2);
@@ -53,25 +52,21 @@ namespace antara::mmbot::tests
 
     TEST_CASE ("strats can be added and retreived")
     {
-        dex dex;
-        cex cex;
-        order_manager_mock om(dex, cex);
+        auto om = order_manager_mock();
         auto ps = price_service_platform_mock();
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
-        antara::pair pair = {{st_symbol{"A"}},
-                             {st_symbol{"B"}}};
+        auto pair = antara::pair::of("A", "B");
         st_spread spread = st_spread{0.1};
         st_quantity quantity = st_quantity{5};
-        antara::side side = antara::side::sell;
 
-        auto strat = market_making_strategy{pair, spread, quantity, side};
+        auto strat = market_making_strategy{pair, spread, quantity, true};
         CHECK_EQ(0, sm.get_strategies().size());
 
         sm.add_strategy(strat);
         CHECK_EQ(1, sm.get_strategies().size());
 
-        const auto& other = sm.get_strategy(pair);
+        const auto& other = sm.get_strategy(pair.to_cross());
         CHECK_EQ(strat, other);
     }
 
@@ -80,16 +75,17 @@ namespace antara::mmbot::tests
         auto mid = antara::st_price{10};
         auto spread = antara::st_spread{0.1};
         auto quantity = antara::st_quantity{10.0};
+
         auto bid_price = antara::st_price{9};
 
-        dex dex;
-        cex cex;
-        auto om = order_manager(dex, cex);
+        auto pair = antara::pair::of("A", "B");
+
+        auto om = order_manager_mock();
         auto ps = price_service_platform_mock();
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
-        auto expected = orders::order_level{bid_price, quantity, antara::side::buy};
-        auto actual = sm.make_bid(mid, spread, quantity);
+        auto expected = orders::order_level{bid_price, quantity, pair};
+        auto actual = sm.make_bid(mid, spread, quantity, pair);
 
         CHECK_EQ(expected, actual);
     }
@@ -102,14 +98,14 @@ namespace antara::mmbot::tests
 
         antara::st_price ask_price = antara::st_price{11};
 
-        dex dex;
-        cex cex;
-        auto om = order_manager(dex, cex);
+        auto pair = antara::pair::of("A", "B");
+
+        auto om = order_manager_mock();
         auto ps = price_service_platform_mock();
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
-        auto expected = orders::order_level{ask_price, quantity, antara::side::sell};
-        auto actual = sm.make_ask(mid, spread, quantity);
+        auto expected = orders::order_level{ask_price, quantity, pair, true};
+        auto actual = sm.make_ask(mid, spread, quantity, pair);
 
         CHECK_EQ(expected, actual);
     }
@@ -118,18 +114,16 @@ namespace antara::mmbot::tests
     {
         auto pair = antara::pair::of("A", "B");
         market_making_strategy strat
-            = {pair, st_spread{0.1}, st_quantity{10}, antara::side::sell};
+            = {pair, st_spread{0.1}, st_quantity{10}, true};
 
-        dex dex;
-        cex cex;
-        auto om = order_manager_mock(dex, cex);
+        auto om = order_manager_mock();
         auto ps = price_service_platform_mock();
 
         auto sm = strategy_manager<price_service_platform_mock>(ps, om);
 
         sm.add_strategy(strat);
 
-        REQUIRE_CALL(om, cancel_orders(pair))
+        REQUIRE_CALL(om, cancel_orders(pair.to_cross()))
             .RETURN(std::unordered_set<st_order_id>());
 
         auto mid = st_price{1};
@@ -144,6 +138,6 @@ namespace antara::mmbot::tests
         REQUIRE_CALL(ps, get_price(pair))
             .RETURN(mid);
 
-        sm.refresh_orders(pair);
+        sm.refresh_orders(pair.to_cross());
     }
 }

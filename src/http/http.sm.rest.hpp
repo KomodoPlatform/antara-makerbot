@@ -16,29 +16,32 @@
 
 #pragma once
 
-#include <doctest/doctest.h>
-#include <doctest/trompeloeil.hpp>
-#include <trompeloeil.hpp>
+#include <restinio/all.hpp>
+#include <restinio/common_types.hpp>
+#include "config/config.hpp"
+#include "strategy_manager/strategy.manager.hpp"
+#include "order_manager/order.manager.hpp"
 
-#include <utils/mmbot_strong_types.hpp>
-#include "strategy.manager.hpp"
-
-namespace antara::mmbot
+namespace antara::mmbot::http::rest
 {
-    class strategy_manager_mock : public strategy_manager
+    class sm
     {
     public:
-        strategy_manager_mock() = default;
+        sm(strategy_manager<price_service_platform> &sm, order_manager &om) noexcept;
 
-        MAKE_MOCK1(add_strategy, void(const market_making_strategy&), override);
+        ~sm() noexcept;
 
-        MAKE_CONST_MOCK1(get_strategy, market_making_strategy&(const antara::cross&), override);
-        MAKE_CONST_MOCK0(get_strategies, registry_strategies&(), override);
+        restinio::request_handling_status_t
+        add_strategy(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
-        MAKE_MOCK3(make_bid, orders::order_level(st_price, st_spread, st_quantity), override);
-        MAKE_MOCK3(make_ask, orders::order_level(st_price, st_spread, st_quantity), override);
-        MAKE_MOCK3(create_order_group, orders::order_group(const market_making_strategy&, st_price), override);
+        restinio::request_handling_status_t
+        get_strategy(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
+        restinio::request_handling_status_t
+        cancel_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
+    private:
+        strategy_manager<price_service_platform> &sm_;
+        order_manager &om_;
     };
-
-    template class strategy_manager<price_service_platform_mock>;
 }

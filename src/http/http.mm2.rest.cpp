@@ -44,7 +44,7 @@ namespace antara::mmbot::http::rest
             return req->create_response(restinio::status_unprocessable_entity()).done();
         }
         antara::mmbot::mm2::orderbook_request orderbook_request{
-                antara::pair::of(std::string(query_params["quote_currency"]),
+                antara::cross::of(std::string(query_params["quote_currency"]),
                                  std::string(query_params["base_currency"]))};
         auto orderbook_answer = mm2_client_.rpc_orderbook(std::move(orderbook_request));
         auto answer_json = nlohmann::json::parse(orderbook_answer.result);
@@ -94,10 +94,12 @@ namespace antara::mmbot::http::rest
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/setprice");
-        return process_post_function<antara::mmbot::mm2::setprice_request>(req, params, [this](auto &&request) {
-            return this->mm2_client_.rpc_setprice(
+        return process_post_function<antara::mmbot::mm2::setprice_request>(
+            req, params,
+            [this](auto &&request) {
+                return this->mm2_client_.rpc_setprice(
                     std::forward<decltype(request)>(request));
-        });
+            });
     }
 
     restinio::request_handling_status_t
@@ -105,12 +107,13 @@ namespace antara::mmbot::http::rest
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/cancel_order");
-        return process_post_function<antara::mmbot::mm2::cancel_order_request>(req, params,
-                                                                               [this](auto &&request) {
-                                                                                   return this->mm2_client_.rpc_cancel_order(
-                                                                                           std::forward<decltype(request)>(
-                                                                                                   request));
-                                                                               });
+        return process_post_function<antara::mmbot::mm2::cancel_order_request>(
+            req, params,
+            [this](auto &&request) {
+                return this->mm2_client_.rpc_cancel_order(
+                    std::forward<decltype(request)>(
+                        request));
+            });
     }
 
     restinio::request_handling_status_t
@@ -118,10 +121,12 @@ namespace antara::mmbot::http::rest
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/buy");
-        return process_post_function<antara::mmbot::mm2::buy_request>(req, params, [this](auto &&request) {
-            return this->mm2_client_.rpc_buy(
+        return process_post_function<antara::mmbot::mm2::trade_request>(
+            req, params,
+            [this](auto &&request) {
+                return this->mm2_client_.rpc_buy(
                     std::forward<decltype(request)>(request));
-        });
+            });
     }
 
     restinio::request_handling_status_t
@@ -129,9 +134,60 @@ namespace antara::mmbot::http::rest
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/cancel_all_orders");
-        return process_post_function<antara::mmbot::mm2::cancel_all_orders_request>(req, params, [this](auto &&request) {
-            return this->mm2_client_.rpc_cancel_all_orders(
+        return process_post_function<antara::mmbot::mm2::cancel_all_orders_request>(
+            req, params,
+            [this](auto &&request) {
+                return this->mm2_client_.rpc_cancel_all_orders(
+                    std::forward<decltype(request)>(
+                        request));
+            });
+    }
+
+    restinio::request_handling_status_t
+    mm2::get_enabled_coins(const restinio::request_handle_t &req, const restinio::router::route_params_t &)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/get_enabled_coins");
+        auto get_enabled_coins_answer = mm2_client_.rpc_get_enabled_coins();
+        auto answer_json = nlohmann::json::parse(get_enabled_coins_answer.result);
+        auto final_status = restinio::http_status_line_t(
+            static_cast<restinio::http_status_code_t>(get_enabled_coins_answer.rpc_result_code), "");
+        return req->create_response(final_status).set_body(answer_json.dump()).done();
+    }
+
+    restinio::request_handling_status_t
+    mm2::enable_all_electrums_coins(
+        const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/mm2/enable_all_electrums_coins");
+        mm2_client_.enable_all_coins();
+        return get_enabled_coins(req, params);
+    }
+
+    restinio::request_handling_status_t
+    mm2::sell(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/sell");
+        return process_post_function<antara::mmbot::mm2::trade_request>(
+            req, params,
+            [this](auto &&request) {
+                return this->mm2_client_.rpc_sell(
                     std::forward<decltype(request)>(request));
-        });
+            });
+    }
+
+    restinio::request_handling_status_t
+    mm2::my_recent_swaps(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/my_recent_swaps");
+        return process_post_function<antara::mmbot::mm2::my_recent_swaps_request>(
+            req, params,
+            [this](auto &&request) {
+                return this->mm2_client_.rpc_my_recent_swaps(
+                    std::forward<decltype(request)>(request));
+            });
     }
 }

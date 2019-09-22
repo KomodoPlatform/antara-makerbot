@@ -30,8 +30,8 @@ namespace antara::mmbot
             this->coin_id_translation_.find(currency_pair.quote.symbol.value()) != this->coin_id_translation_.end()) {
             std::string path =
                     "/price-converter?base_currency_id=" +
-                    this->coin_id_translation_.at(currency_pair.base.symbol.value()) +
-                    "&quote_currency_id=" + this->coin_id_translation_.at(currency_pair.quote.symbol.value()) +
+                    this->coin_id_translation_.at(currency_pair.quote.symbol.value()) +
+                    "&quote_currency_id=" + this->coin_id_translation_.at(currency_pair.base.symbol.value()) +
                     "&amount=1";
             const auto &mmbot_config = get_mmbot_config();
             auto final_uri = mmbot_config.price_registry.at("coinpaprika").price_endpoint.value() + path;

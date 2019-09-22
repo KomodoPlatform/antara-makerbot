@@ -40,10 +40,22 @@ namespace antara::mmbot::http::rest
         version(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
         restinio::request_handling_status_t
+        get_enabled_coins(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
+        restinio::request_handling_status_t
+        my_recent_swaps(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
+
+        restinio::request_handling_status_t
+        enable_all_electrums_coins(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
+
+        restinio::request_handling_status_t
         set_price(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
 
         restinio::request_handling_status_t
         buy(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
+
+        restinio::request_handling_status_t
+        sell(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
 
         restinio::request_handling_status_t
         cancel_all_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
@@ -52,7 +64,8 @@ namespace antara::mmbot::http::rest
         cancel_order(const restinio::request_handle_t &req, const restinio::router::route_params_t &params);
 
         template<typename TRequest, typename Functor>
-        restinio::request_handling_status_t process_post_function(const restinio::request_handle_t &req, const restinio::router::route_params_t &, Functor&& rpc_functor)
+        restinio::request_handling_status_t process_post_function(
+            const restinio::request_handle_t &req, const restinio::router::route_params_t &, Functor&& rpc_functor)
         {
             nlohmann::json json_answer;
             auto status = restinio::status_ok();
@@ -69,9 +82,10 @@ namespace antara::mmbot::http::rest
                 VLOG_SCOPE_F(loguru::Verbosity_ERROR, "json error: %s", error.what());
                 return req->create_response(restinio::status_bad_request()).set_body(error.what()).done();
             }
-            return req->create_response(status).append_header(restinio::http_field::content_type,
-                                                              "application/json").set_body(
-                    json_answer.dump()).done();
+            return req->create_response(status)
+                .append_header(restinio::http_field::content_type, "application/json")
+                .set_body(json_answer.dump())
+                .done();
         }
 
     private:

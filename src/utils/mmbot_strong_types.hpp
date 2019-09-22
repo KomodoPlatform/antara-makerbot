@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_set>
 #include <absl/numeric/int128.h>
 #include <st/type.hpp>
 #include <st/traits.hpp>
@@ -90,10 +91,29 @@ namespace antara
         }
     };
 
+    struct cross
+    {
+        asset base;
+        asset quote;
+
+        bool operator==(const cross &rhs) const
+            {
+                return (base == rhs.base && quote == rhs.quote)
+                    || (base == rhs.quote && quote == rhs.base);
+            }
+
+        bool operator!=(const cross &rhs) const
+            {
+                return !(*this == rhs);
+            }
+
+        static cross of(std::string a, std::string b);
+    };
+
     struct pair
     {
-        asset quote;
         asset base;
+        asset quote;
 
         bool operator==(const pair &rhs) const
         {
@@ -106,11 +126,16 @@ namespace antara
         }
 
         static pair of(std::string a, std::string b);
-    };
 
-    enum side
-    {
-        buy, sell, both
+        antara::pair flip() const
+        {
+            return pair{ quote, base };
+        }
+
+        antara::cross to_cross() const
+        {
+            return { base, quote };
+        }
     };
 }
 
@@ -121,11 +146,31 @@ namespace std
     {
         std::size_t operator()(const antara::pair &p) const
         {
-            using std::size_t;
-            using std::hash;
-
             std::size_t h1 = std::hash<std::string>{}(p.base.symbol.value());
             std::size_t h2 = std::hash<std::string>{}(p.quote.symbol.value());
+
+            return h1 ^ (h2 << 1);
+        }
+    };
+
+    template<>
+    struct hash<antara::cross>
+    {
+        std::size_t operator()(const antara::cross &x) const
+        {
+            antara::asset big;
+            antara::asset little;
+
+            if (x.base.symbol.value() > x.quote.symbol.value()) {
+                big = x.base;
+                little = x.quote;
+            } else {
+                big = x.quote;
+                little = x.base;
+            }
+
+            std::size_t h1 = std::hash<std::string>{}(big.symbol.value());
+            std::size_t h2 = std::hash<std::string>{}(little.symbol.value());
 
             return h1 ^ (h2 << 1);
         }

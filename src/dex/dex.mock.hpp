@@ -25,16 +25,17 @@
 
 namespace antara::mmbot
 {
-    class dex_mock : public dex
+    class dex_mock : public abstract_dex
     {
     public:
-        MAKE_MOCK1(place, orders::order&(const orders::order_level&), override);
+        dex_mock() = default;
+
+        MAKE_MOCK1(place, std::optional<orders::order>(const orders::order_level&), override);
         MAKE_MOCK1(cancel, bool(st_order_id), override);
 
         MAKE_MOCK0(get_live_orders, std::vector<orders::order>(), override);
         MAKE_MOCK1(get_order_status, orders::order(const st_order_id&), override);
 
-        MAKE_MOCK0(get_executions, std::vector<orders::execution>(), override);
         MAKE_MOCK1(get_executions, std::vector<orders::execution>(const st_order_id&), override);
         MAKE_MOCK1(get_executions, std::vector<orders::execution>(const std::unordered_set<st_order_id>&), override);
         MAKE_MOCK0(get_recent_executions, std::vector<orders::execution>(), override);

@@ -16,29 +16,29 @@
 
 #pragma once
 
-#include <doctest/doctest.h>
-#include <doctest/trompeloeil.hpp>
-#include <trompeloeil.hpp>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+#include <string>
 
+#include <absl/numeric/int128.h>
+#include <orders/orders.hpp>
 #include <utils/mmbot_strong_types.hpp>
-#include "strategy.manager.hpp"
+#include <utils/antara.utils.hpp>
+#include <mm2/mm2.client.hpp>
 
 namespace antara::mmbot
 {
-    class strategy_manager_mock : public strategy_manager
-    {
-    public:
-        strategy_manager_mock() = default;
+    mm2::trade_request to_request (const orders::order_level &ol);
 
-        MAKE_MOCK1(add_strategy, void(const market_making_strategy&), override);
+    const orders::order to_order (const mm2::trade_result &res);
+    const orders::order to_order (const mm2::order &res);
 
-        MAKE_CONST_MOCK1(get_strategy, market_making_strategy&(const antara::cross&), override);
-        MAKE_CONST_MOCK0(get_strategies, registry_strategies&(), override);
+    mm2::cancel_order_request out(st_order_id o_id);
+    bool in(const mm2::cancel_order_answer &ans);
 
-        MAKE_MOCK3(make_bid, orders::order_level(st_price, st_spread, st_quantity), override);
-        MAKE_MOCK3(make_ask, orders::order_level(st_price, st_spread, st_quantity), override);
-        MAKE_MOCK3(create_order_group, orders::order_group(const market_making_strategy&, st_price), override);
-    };
+    std::vector<orders::order> to_orders(const mm2::my_orders_answer &answer);
 
-    template class strategy_manager<price_service_platform_mock>;
+    orders::execution to_execution(const mm2::swap &swap);
+    std::vector<orders::execution> to_executions(const mm2::my_recent_swaps_answer &answer);
 }

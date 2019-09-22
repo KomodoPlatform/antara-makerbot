@@ -103,7 +103,7 @@ namespace antara::mmbot::mm2
         j.at("result").get_to(cfg.version);
     }
 
-    void to_json(nlohmann::json &j, const buy_request &cfg)
+    void to_json(nlohmann::json &j, const trade_request &cfg)
     {
         j["rel"] = cfg.rel.symbol.value();
         j["base"] = cfg.base.symbol.value();
@@ -111,7 +111,7 @@ namespace antara::mmbot::mm2
         j["volume"] = cfg.volume;
     }
 
-    void from_json(const nlohmann::json &j, buy_request &cfg)
+    void from_json(const nlohmann::json &j, trade_request &cfg)
     {
         cfg.rel = antara::asset{st_symbol{j.at("rel").get<std::string>()}};
         cfg.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
@@ -178,16 +178,34 @@ namespace antara::mmbot::mm2
     void from_json(const nlohmann::json &j, buy_answer &cfg)
     {
         if (j.find("error") == j.end()) {
-            cfg.result_buy = buy_result{};
-            cfg.result_buy.value().rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
-            cfg.result_buy.value().base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
-            j.at("result").at("action").get_to(cfg.result_buy.value().action);
-            j.at("result").at("uuid").get_to(cfg.result_buy.value().uuid);
-            j.at("result").at("method").get_to(cfg.result_buy.value().method);
-            j.at("result").at("rel_amount").get_to(cfg.result_buy.value().rel_amount);
-            j.at("result").at("base_amount").get_to(cfg.result_buy.value().base_amount);
-            j.at("result").at("dest_pub_key").get_to(cfg.result_buy.value().dest_pub_key);
-            j.at("result").at("sender_pubkey").get_to(cfg.result_buy.value().sender_pub_key);
+            cfg.result_trade = buy_result{};
+            cfg.result_trade.value().rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
+            cfg.result_trade.value().base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
+            j.at("result").at("action").get_to(cfg.result_trade.value().action);
+            j.at("result").at("uuid").get_to(cfg.result_trade.value().uuid);
+            j.at("result").at("method").get_to(cfg.result_trade.value().method);
+            j.at("result").at("rel_amount").get_to(cfg.result_trade.value().rel_amount);
+            j.at("result").at("base_amount").get_to(cfg.result_trade.value().base_amount);
+            j.at("result").at("dest_pub_key").get_to(cfg.result_trade.value().dest_pub_key);
+            j.at("result").at("sender_pubkey").get_to(cfg.result_trade.value().sender_pub_key);
+        } else {
+            cfg.error = j.at("error").get<std::string>();
+        }
+    }
+
+    void from_json(const nlohmann::json &j, sell_answer &cfg)
+    {
+        if (j.find("error") == j.end()) {
+            cfg.result_trade = buy_result{};
+            cfg.result_trade.value().rel = antara::asset{st_symbol{j.at("result").at("rel").get<std::string>()}};
+            cfg.result_trade.value().base = antara::asset{st_symbol{j.at("result").at("base").get<std::string>()}};
+            j.at("result").at("action").get_to(cfg.result_trade.value().action);
+            j.at("result").at("uuid").get_to(cfg.result_trade.value().uuid);
+            j.at("result").at("method").get_to(cfg.result_trade.value().method);
+            j.at("result").at("rel_amount").get_to(cfg.result_trade.value().rel_amount);
+            j.at("result").at("base_amount").get_to(cfg.result_trade.value().base_amount);
+            j.at("result").at("dest_pub_key").get_to(cfg.result_trade.value().dest_pub_key);
+            j.at("result").at("sender_pubkey").get_to(cfg.result_trade.value().sender_pub_key);
         } else {
             cfg.error = j.at("error").get<std::string>();
         }
@@ -220,7 +238,112 @@ namespace antara::mmbot::mm2
             cfg.data.value().rel = antara::asset{st_symbol{j.at("cancel_by").at("data").at("rel").get<std::string>()}};
         }
     }
+
+    void from_json(const nlohmann::json &j, get_enabled_coins_result &cfg)
+    {
+        j.at("address").get_to(cfg.address);
+        j.at("ticker").get_to(cfg.ticker);
+    }
+
+    void from_json(const nlohmann::json &j, get_enabled_coins_answer &cfg)
+    {
+        j.at("result").get_to(cfg.result_enabled_coins);
+    }
+
+    void from_json(const nlohmann::json &j, event_data &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        VLOG_F(loguru::Verbosity_INFO, "current json: %s", j.dump().c_str());
+        if (j.find("uuid") != j.end()) {
+            cfg.uuid = j.at("uuid").get<std::string>();
+        }
+        if (j.find("maker_amount") != j.end()) {
+            cfg.maker_amount = j.at("maker_amount").get<std::string>();
+        }
+        if (j.find("maker_coin") != j.end()) {
+            cfg.maker_coin = j.at("maker_coin").get<std::string>();
+        }
+
+        if (j.find("taker_coin") != j.end()) {
+            cfg.taker_coin = j.at("taker_coin").get<std::string>();
+        }
+
+        if (j.find("taker_amount") != j.end()) {
+            cfg.taker_amount = j.at("taker_amount").get<std::string>();
+        }
+    }
+
+    void from_json(const nlohmann::json &j, event &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        if (j.find("data") != j.end()) {
+            cfg.data = j.at("data").get<event_data>();
+        }
+        j.at("type").get_to(cfg.type);
+    }
+
+    void from_json(const nlohmann::json &j, event_ts &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        j.at("event").get_to(cfg.event);
+        j.at("timestamp").get_to(cfg.timestamp);
+    }
+
+    void from_json(const nlohmann::json &j, swap &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        j.at("events").get_to(cfg.events);
+        j.at("error_events").get_to(cfg.error_events);
+        j.at("type").get_to(cfg.type);
+    }
+
+    void from_json(const nlohmann::json &j, my_recent_swaps_answer &cfg)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        j.at("result").at("swaps").get_to(cfg.swaps);
+    }
+
+    void to_json(nlohmann::json &j, const my_recent_swaps_request &cfg)
+    {
+        if (cfg.from_uuid.has_value()) {
+            j["from_uuid"] = cfg.from_uuid.value();
+        }
+        j["limit"] = cfg.limit;
+    }
+
+    void from_json(const nlohmann::json &j, my_recent_swaps_request &cfg)
+    {
+        if (j.find("from_uuid") != j.end()) {
+            cfg.from_uuid = j.at("from_uuid").get<std::string>();
+        }
+        if (j.find("limit") != j.end()) {
+            j.at("limit").get_to(cfg.limit);
+        }
+    }
+
+    void from_json(const nlohmann::json &j, order &cfg)
+    {
+        (void)cfg;
+        (void)j;
+    }
+
+    void from_json(const nlohmann::json &j, my_orders_answer &cfg)
+    {
+        j.at("result").at("maker_orders").get_to(cfg.m_orders);
+        j.at("result").at("taker_orders").get_to(cfg.t_orders);
+    }
+
+    void from_json(const nlohmann::json &j, my_swap_status_answer &cfg)
+    {
+        j.at("result").get_to(cfg.s);
+    }
+
+    void to_json(nlohmann::json &j, const my_swap_status_request &cfg)
+    {
+        j["uuid"] = cfg.uuid;
+    }
 }
+
 namespace antara::mmbot
 {
     mm2_client::mm2_client(bool should_enable_coins)
@@ -229,7 +352,7 @@ namespace antara::mmbot
         using namespace std::literals;
         std::array<std::string, 1> args = {(std::filesystem::current_path() / "assets/mm2").string()};
         auto path = (std::filesystem::current_path() / "assets/").string();
-        auto ec = background_.start(args, nullptr, path.c_str());
+        auto ec = background_.start(args, path.c_str());
         if (ec) {
             VLOG_SCOPE_F(loguru::Verbosity_ERROR, "error: %s", ec.message().c_str());
         }
@@ -343,7 +466,7 @@ namespace antara::mmbot
         return rpc_process_call<mm2::cancel_order_answer>(resp);
     }
 
-    mm2::buy_answer mm2_client::rpc_buy(mm2::buy_request &&request)
+    mm2::buy_answer mm2_client::rpc_buy(mm2::trade_request &&request)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         auto json_data = template_request("buy");
@@ -351,6 +474,16 @@ namespace antara::mmbot
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::buy_answer>(resp);
+    }
+
+    mm2::sell_answer mm2_client::rpc_sell(mm2::trade_request &&request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("sell");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::sell_answer>(resp);
     }
 
     mm2::cancel_all_orders_answer mm2_client::rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request)
@@ -361,5 +494,77 @@ namespace antara::mmbot
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::cancel_all_orders_answer>(resp);
+    }
+
+    mm2::my_orders_answer mm2_client::rpc_my_orders()
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("my_orders");
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::my_orders_answer>(resp);
+    }
+
+    mm2::order_status mm2_client::rpc_order_status([[maybe_unused]] st_order_id id)
+    {
+        return {};
+    }
+
+    mm2::my_swap_status_answer mm2_client::rpc_my_swap_status(mm2::my_swap_status_request&& request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("my_swap_status");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::my_swap_status_answer>(resp);
+    }
+
+    std::size_t mm2_client::enable_all_coins()
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        std::size_t res = 0;
+        const auto &mmbot_config = get_mmbot_config();
+        for (auto&&[current_coin, current_coin_data] : mmbot_config.registry_additional_coin_infos) {
+            if (current_coin_data.is_mm2_compatible) {
+                if (current_coin_data.is_electrum_compatible && (current_coin != "RICK" && current_coin != "MORTY")) {
+                    std::vector<electrum_server> servers;
+                    std::copy(begin(current_coin_data.servers_electrum), end(current_coin_data.servers_electrum),
+                              std::back_inserter(servers));
+                    mm2::electrum_request request{current_coin, servers};
+                    auto request_fallback = request;
+                    auto answer = rpc_electrum(std::move(request));
+                    if (answer.rpc_result_code != 200) {
+                        // Retry with ssl
+                        VLOG_SCOPE_F(loguru::Verbosity_WARNING, "%s", "Retry with ssl");
+                        for (auto &&current_srv : request_fallback.servers) {
+                            current_srv.protocol = "SSL";
+                        }
+                        answer = rpc_electrum(std::move(request_fallback));
+                    }
+                    res += (answer.rpc_result_code == 200) ? 1 : 0;
+                }
+            }
+        }
+        return res;
+    }
+
+    mm2::get_enabled_coins_answer mm2_client::rpc_get_enabled_coins()
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("get_enabled_coins");
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::get_enabled_coins_answer>(resp);
+    }
+
+    mm2::my_recent_swaps_answer mm2_client::rpc_my_recent_swaps(mm2::my_recent_swaps_request &&request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("my_recent_swaps");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::my_recent_swaps_answer>(resp);
     }
 }

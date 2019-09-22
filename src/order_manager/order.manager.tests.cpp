@@ -29,6 +29,86 @@ namespace antara::mmbot::tests
     using trompeloeil::_;
     using trompeloeil::lt;
 
+    TEST_CASE ("add order to pair map")
+    {
+        dex_mock dex;
+        cex_mock cex;
+
+        auto om = order_manager(dex, cex);
+
+        auto pair = antara::pair::of("A", "B");
+
+        REQUIRE_THROWS(om.get_orders(pair.to_cross()));
+
+        auto o_id = st_order_id{"id"};
+        auto b = orders::order_builder(o_id, pair);
+        orders::order o = b.build();
+
+        om.add_order_to_pair_map(o);
+
+        auto& new_orders = om.get_orders(pair.to_cross());
+        CHECK_EQ(1, new_orders.size());
+
+        om.remove_order_from_pair_map(o);
+
+        auto& remove_orders = om.get_orders(pair.to_cross());
+        CHECK_EQ(0, remove_orders.size());
+    }
+
+    TEST_CASE("add orders")
+    {
+        dex_mock dex;
+        cex_mock cex;
+
+        auto om = order_manager(dex, cex);
+
+        auto pair = antara::pair::of("A", "B");
+
+        auto e1_id = st_execution_id{"e1_id"};
+        auto e2_id = st_execution_id{"e2_id"};
+
+        auto o1_id = st_order_id{"o1_id"};
+        auto b1 = orders::order_builder(o1_id, pair);
+        orders::order o1 = b1.build();
+        o1.add_execution_id(e1_id);
+
+        auto o2_id = st_order_id{"o2_id"};
+        auto b2 = orders::order_builder(o2_id, pair);
+        orders::order o2 = b2.build();
+        o2.add_execution_id(e2_id);
+
+        auto e1_quantity = st_quantity{5};
+        orders::execution e1 = o1.create_execution(e1_id, e1_quantity, true);
+
+        auto e2_quantity = st_quantity{5};
+        orders::execution e2 = o2.create_execution(e2_id, e2_quantity, true);
+
+        auto os = std::vector<orders::order>();
+        os.push_back(o1);
+        os.push_back(o2);
+
+        // Act
+        om.add_orders(os);
+
+        auto &orders = om.get_all_orders();
+        auto &o_ids = om.get_orders(pair.to_cross());
+
+        CHECK_EQ(2, orders.size());
+        CHECK_EQ(2, o_ids.size());
+
+        // Act
+        om.remove_order(o1);
+
+        CHECK_EQ(1, orders.size());
+        CHECK_EQ(1, o_ids.size());
+
+        // Act
+        om.remove_order(o2);
+
+        CHECK_EQ(0, orders.size());
+        CHECK_EQ(0, o_ids.size());
+    }
+
     TEST_CASE ("on start, the OM loads existing orders")
     {
         auto o_id = st_order_id{"id"};
@@ -62,8 +142,10 @@ namespace antara::mmbot::tests
         om.start();
 
         auto orders = om.get_all_orders();
-
         CHECK_EQ(1, orders.size());
+
+        auto executions = om.get_all_executions();
+        CHECK_EQ(1, executions.size());
     }
 
     TEST_CASE ("the OM can poll the exchange for new orders and executions")
@@ -71,7 +153,6 @@ namespace antara::mmbot::tests
         auto pair = antara::pair::of("A", "B");
         st_price price = st_price(10);
         st_quantity quantity = st_quantity(10);
-        antara::side side = antara::side::buy;
         antara::maker maker = true;
 
         // This order is already on the book
@@ -80,7 +161,7 @@ namespace antara::mmbot::tests
         orders::order o1 = b1.build();
 
         auto e1_id = st_execution_id{"e_id_1"};
-        orders::execution e1 = { e1_id, pair, price, quantity, side, maker };
+        orders::execution e1 = { e1_id, pair, price, quantity, maker };
         o1.add_execution_id(e1_id);
 
 
@@ -91,7 +172,7 @@ namespace antara::mmbot::tests
         orders::order o2 = b2.build();
 
         auto e2_id = st_execution_id{"e_id_2"};
-        orders::execution e2 = { e2_id, pair, price, quantity, side, maker };
+        orders::execution e2 = { e2_id, pair, price, quantity, maker };
         o2.add_execution_id(e2_id);
 
 
@@ -102,7 +183,7 @@ namespace antara::mmbot::tests
         orders::order o3 = b3.build();
 
         auto e3_id = st_execution_id{"e_id_3"};
-        orders::execution e3 = { e3_id, pair, price, quantity, side, maker };
+        orders::execution e3 = { e3_id, pair, price, quantity, maker };
         o3.add_execution_id(e3_id);
 
 
@@ -159,13 +240,15 @@ namespace antara::mmbot::tests
         REQUIRE_CALL(cex, mirror(e3));
 
         om.poll();
+
+
     }
 
     TEST_CASE ("orders can be cancelled by pair")
     {
         auto pair = antara::pair::of("A", "B");
 
-        orders::order_level ol = {st_price(10), st_quantity(10), antara::side::sell};
+        orders::order_level ol = {st_price(10), st_quantity(10), antara::pair{}};
 
         auto o_id = st_order_id{"id"};
         auto b = orders::order_builder(o_id, pair);
@@ -176,6 +259,9 @@ namespace antara::mmbot::tests
 
         auto om = order_manager(dex, cex);
 
+        // Should do nothing
+        om.cancel_orders(pair.to_cross());
+
         ALLOW_CALL(dex, place(ol))
             .LR_RETURN(std::ref(o));
 
@@ -185,7 +271,7 @@ namespace antara::mmbot::tests
         om.place_order(ol);
         CHECK_EQ(1, om.get_all_orders().size());
 
-        auto ids = om.cancel_orders(pair);
+        auto ids = om.cancel_orders(pair.to_cross());
 
         CHECK_EQ(1, ids.size());
         CHECK_EQ(1, ids.count(o_id));

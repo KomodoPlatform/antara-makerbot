@@ -14,31 +14,41 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <doctest/doctest.h>
-#include <doctest/trompeloeil.hpp>
-#include <trompeloeil.hpp>
-
-#include <utils/mmbot_strong_types.hpp>
 #include "strategy.manager.hpp"
 
 namespace antara::mmbot
 {
-    class strategy_manager_mock : public strategy_manager
+    void from_json (const nlohmann::json &j, antara::pair &p)
     {
-    public:
-        strategy_manager_mock() = default;
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        p.base = antara::asset{st_symbol{j.at("base").get<std::string>()}};
+        p.quote = antara::asset{st_symbol{j.at("quote").get<std::string>()}};
+    }
 
-        MAKE_MOCK1(add_strategy, void(const market_making_strategy&), override);
+    void to_json(nlohmann::json &j, const antara::pair &p)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        j["base"] = p.base.symbol.value();
+        j["quote"] = p.quote.symbol.value();
+    }
 
-        MAKE_CONST_MOCK1(get_strategy, market_making_strategy&(const antara::cross&), override);
-        MAKE_CONST_MOCK0(get_strategies, registry_strategies&(), override);
+    void from_json (const nlohmann::json &j, market_making_strategy &mms)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        from_json(j.at("pair"), mms.pair);
+        mms.spread = st_spread{j.at("spread").get<double>()};
+        mms.quantity = st_quantity{j.at("quantity").get<double>()};
+        if (j.find("both") != j.end()) {
+            j.at("both").get_to(mms.both);
+        }
+    }
 
-        MAKE_MOCK3(make_bid, orders::order_level(st_price, st_spread, st_quantity), override);
-        MAKE_MOCK3(make_ask, orders::order_level(st_price, st_spread, st_quantity), override);
-        MAKE_MOCK3(create_order_group, orders::order_group(const market_making_strategy&, st_price), override);
-    };
-
-    template class strategy_manager<price_service_platform_mock>;
+    void to_json (nlohmann::json &j, const market_making_strategy &mms)
+    {
+        nlohmann::json p;
+        to_json(j["pair"], mms.pair);
+        j["spread"] = mms.spread.value();
+        j["quantity"] = mms.quantity.value();
+        j["both"] = mms.both;
+    }
 }

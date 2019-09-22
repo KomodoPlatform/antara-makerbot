@@ -23,6 +23,7 @@
 #include "http.price.rest.hpp"
 #include "mm2/mm2.client.hpp"
 #include "http.mm2.rest.hpp"
+#include "http.sm.rest.hpp"
 
 namespace antara::mmbot
 {
@@ -36,7 +37,11 @@ namespace antara::mmbot
     public:
         using router = std::unique_ptr<restinio::router::express_router_t<>>;
 
-        explicit http_server(price_service_platform& price_service, mmbot::mm2_client& mm2_client);
+        explicit http_server(
+            price_service_platform &price_service,
+            mmbot::mm2_client &mm2_client,
+            mmbot::strategy_manager<price_service_platform> &sm,
+            mmbot::order_manager &om);
 
         void run();
 
@@ -46,5 +51,6 @@ namespace antara::mmbot
     private:
         http::rest::price price_rest_callbook_;
         http::rest::mm2 mm2_rest_callbook_;
+        http::rest::sm sm_rest_callbook_;
     };
 }

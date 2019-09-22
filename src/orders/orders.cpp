@@ -20,10 +20,14 @@
 
 namespace antara
 {
-    pair pair::of (std::string a, std::string b)
+    pair pair::of(std::string a, std::string b)
     {
-        antara::pair pair = {{st_symbol{std::move(a)}}, {st_symbol{std::move(b)}}};
-        return pair;
+        return {{st_symbol{std::move(a)}}, {st_symbol{std::move(b)}}};
+    }
+
+    cross cross::of(std::string a, std::string b)
+    {
+        return {{st_symbol{std::move(a)}}, {st_symbol{std::move(b)}}};
     }
 }
 
@@ -35,7 +39,8 @@ namespace antara::mmbot::orders
     {
         return price.value() == other.price.value()
             && quantity == other.quantity
-            && side == other.side;
+            && pair == other.pair
+            && sell == other.sell;
     }
 
     bool order_level::operator!=(const order_level &other) const
@@ -48,7 +53,7 @@ namespace antara::mmbot::orders
     bool order_group::operator==(const order_group &other) const
     {
         auto equal = true;
-        if (pair != other.pair) { equal = false; }
+        if (cross != other.cross) { equal = false; }
         if (levels.size() != other.levels.size()) { equal = false; }
 
         for (decltype(levels)::size_type i = 0; i < levels.size(); i++) {
@@ -70,7 +75,7 @@ namespace antara::mmbot::orders
         return pair == other.pair
             && price.value() == other.price.value()
             && quantity == other.quantity
-            && side == other.side
+            // && side == other.side
             && maker == other.maker;
     }
 
@@ -80,6 +85,16 @@ namespace antara::mmbot::orders
     }
 
     // Order
+
+    bool order::operator==(const order &other) const
+    {
+        return id == other.id
+            && pair == other.pair
+            && price == other.price
+            && quantity == other.quantity
+            && filled == other.filled
+            && status == other.status;
+    }
 
     bool order::finished() const
     {
@@ -93,7 +108,7 @@ namespace antara::mmbot::orders
 
     execution order::create_execution(const st_execution_id &execution_id, const st_quantity &q, const maker &maker) const
     {
-        return execution{execution_id, pair, price, q, side, maker };
+        return execution{execution_id, pair, price, q, maker };
     }
 
     void order::execute(const execution &ex)
@@ -126,11 +141,11 @@ namespace antara::mmbot::orders
         return *this;
     }
 
-    order_builder& order_builder::side(const antara::side &side)
-    {
-        this->side_ = side;
-        return *this;
-    }
+    // order_builder& order_builder::side(const antara::side &side)
+    // {
+    //     this->side_ = side;
+    //     return *this;
+    // }
 
     order_builder& order_builder::status(const orders::order_status &status)
     {
@@ -140,7 +155,7 @@ namespace antara::mmbot::orders
 
     order order_builder::build()
     {
-        return order(id_, pair_, price_, quantity_, filled_, side_, status_);
+        return order(id_, pair_, price_, quantity_, filled_, status_);
     }
 
     const orders_by_price &order_book::get_bids() const
