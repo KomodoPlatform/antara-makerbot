@@ -140,9 +140,9 @@ namespace antara::mmbot::orders
     class order_book
     {
     public:
-        antara::pair pair;
+        antara::cross cross;
 
-        order_book(antara::pair pair) : pair(std::move(pair)) {};
+        order_book(antara::cross cross) : cross(std::move(cross)) {};
 
         [[nodiscard]] const orders_by_price &get_bids() const;
         [[nodiscard]] const orders_by_price &get_asks() const;

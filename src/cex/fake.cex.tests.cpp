@@ -26,21 +26,20 @@ namespace antara::mmbot::tests
     TEST_CASE ("Placing an order on the CEX will add it to the CEX's order book")
     {
         auto pair = antara::pair::of("A", "B");
+        auto cross = pair.to_cross();
         auto price = st_price{10};
 
         auto o_id = st_order_id{"o_id"};
-        auto b = orders::order_builder(o_id, pair)
-            .side(antara::buy)
-            .price(price);
-        auto o = b.build();
+        auto o = orders::order_builder(o_id, pair)
+            .price(price)
+            .build();
 
         auto o2_id = st_order_id{"o2_id"};
-        auto b2 = orders::order_builder(o2_id, pair)
-            .side(antara::buy)
-            .price(price);
-        auto o2 = b2.build();
+        auto o2 = orders::order_builder(o2_id, pair)
+            .price(price)
+            .build();
 
-        auto book = orders::order_book(pair);
+        auto book = orders::order_book(cross);
         book.add_order(o);
 
         auto cex = fake_cex();
@@ -48,7 +47,7 @@ namespace antara::mmbot::tests
 
         cex.place_order(o2);
 
-        auto &book2 = cex.get_book(pair);
+        auto &book2 = cex.get_book(cross);
         auto bids = book2.get_bids();
         // There is one price level
         CHECK_EQ(1, bids.size());

@@ -23,12 +23,12 @@ namespace antara::mmbot
 {
     const orders::order_book &fake_cex::add_book(const orders::order_book &book)
     {
-        return order_books_.emplace(book.pair, book).first->second;
+        return order_books_.emplace(book.cross, book).first->second;
     }
 
-    const orders::order_book &fake_cex::get_book(const antara::pair &pair) const
+    const orders::order_book &fake_cex::get_book(const antara::cross &cross) const
     {
-        return order_books_.at(pair);
+        return order_books_.at(cross);
     }
 
     void fake_cex::place_order([[maybe_unused]] const orders::order_level &ol)
@@ -38,14 +38,14 @@ namespace antara::mmbot
 
     void fake_cex::place_order(const orders::order &o)
     {
-        auto pair = o.pair;
+        auto cross = o.pair.to_cross();
 
-        if (order_books_.find(pair) == order_books_.end()) {
-            auto new_book = orders::order_book(pair);
-            order_books_.emplace(pair, new_book);
+        if (order_books_.find(cross) == order_books_.end()) {
+            auto new_book = orders::order_book(cross);
+            order_books_.emplace(cross, new_book);
         }
 
-        auto &book = order_books_.at(pair);
+        auto &book = order_books_.at(cross);
         book.add_order(o);
 
         return;

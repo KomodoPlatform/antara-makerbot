@@ -28,13 +28,13 @@ namespace antara::mmbot
 {
     class fake_cex : public abstract_cex
     {
-        using order_books_by_pair = std::unordered_map<antara::pair, orders::order_book>;
+        using order_books_by_cross = std::unordered_map<antara::cross, orders::order_book>;
 
     public:
         fake_cex() = default;
 
         const orders::order_book &add_book(const orders::order_book &book);
-        const orders::order_book &get_book(const antara::pair &pair) const;
+        const orders::order_book &get_book(const antara::cross &cross) const;
 
         void place_order(const orders::order_level &ol) override;
         void place_order(const orders::order &o);
@@ -42,6 +42,6 @@ namespace antara::mmbot
         void mirror(const orders::execution &ex) override;
 
     private:
-        order_books_by_pair order_books_;
+        order_books_by_cross order_books_;
     };
 }
