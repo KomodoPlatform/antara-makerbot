@@ -50,10 +50,7 @@ namespace antara::mmbot::mm2
         cfg.coin.symbol = st_symbol{coin};
         j.at("address").get_to(cfg.address);
         j.at("price").get_to(cfg.price);
-        j.at("numutxos").get_to(cfg.num_utxos);
-        j.at("avevolume").get_to(cfg.ave_volume);
         j.at("maxvolume").get_to(cfg.max_volume);
-        j.at("depth").get_to(cfg.depth);
         j.at("pubkey").get_to(cfg.pub_key);
         j.at("age").get_to(cfg.age);
         j.at("zcredits").get_to(cfg.zcredits);
