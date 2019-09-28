@@ -157,13 +157,13 @@ matrix:
             LD=ld.lld,
             AR=llvm-ar,
             RANLIB=llvm-ranlib,
-            LDFLAGS=-L/usr/local/opt/llvm/lib,
-            CPPFLAGS=-I/usr/local/opt/llvm/include,
+            LDFLAGS=-L/usr/local/opt/llvm@8/lib,
+            CPPFLAGS=-I/usr/local/opt/llvm@8/include,
             PIP=pip3,
             WILL_COMPILE_CODE=ON, DEFAULT_COMPILER=clang]
       addons:
         homebrew:
-          packages: [cmake,ninja,llvm,python3]
+          packages: [cmake,ninja,llvm@8,python3]
           update: true
     - os: osx
       osx_image: xcode10.2
@@ -175,13 +175,13 @@ matrix:
             LD=ld.lld,
             AR=llvm-ar,
             RANLIB=llvm-ranlib,
-            LDFLAGS=-L/usr/local/opt/llvm/lib,
-            CPPFLAGS=-I/usr/local/opt/llvm/include,
+            LDFLAGS=-L/usr/local/opt/llvm@8/lib,
+            CPPFLAGS=-I/usr/local/opt/llvm@8/include,
             PIP=pip3,
             WILL_COMPILE_CODE=ON, DEFAULT_COMPILER=clang]
       addons:
         homebrew:
-          packages: [cmake,ninja,llvm,python3]
+          packages: [cmake,ninja,llvm@8,python3]
           update: true
 
 
