@@ -25,7 +25,7 @@ function coverage_setup() {
 }
 
 function setup_osx() {
-    export PATH="/usr/local/opt/llvm/bin:$PATH"
+    export PATH="/usr/local/opt/llvm@8/bin:$PATH"
     sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
 }
 
