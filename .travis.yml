@@ -152,8 +152,8 @@ matrix:
       sudo: true
       env: [BUILD_TYPE=Release,
             CLANG_VERSION=clang-8,
-            CC=clang,
-            CXX=clang++,
+            CC=/usr/local/opt/llvm@8/bin/clang,
+            CXX=/usr/local/opt/llvm@8/bin/clang++,
             LD=ld.lld,
             AR=llvm-ar,
             RANLIB=llvm-ranlib,
@@ -170,8 +170,8 @@ matrix:
       sudo: true
       env: [BUILD_TYPE=Debug,
             CLANG_VERSION=clang-8,
-            CC=clang,
-            CXX=clang++,
+            CC=/usr/local/opt/llvm@8/bin/clang,
+            CXX=/usr/local/opt/llvm@8/bin/clang++,
             LD=ld.lld,
             AR=llvm-ar,
             RANLIB=llvm-ranlib,
