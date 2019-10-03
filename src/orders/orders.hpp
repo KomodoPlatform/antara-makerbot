@@ -83,6 +83,14 @@ namespace antara::mmbot::orders
 
         std::unordered_set<st_execution_id> execution_ids;
 
+        order() :
+            id(st_order_id{""}), pair(antara::pair::of("", "")),
+            price(0), quantity(0),
+            filled(0),
+            status(orders::order_status::live)
+        {
+        };
+
         order(st_order_id id, antara::pair pair, const st_price &price,
               const st_quantity &quantity, const st_quantity &filled,
               const order_status &status) :

@@ -1,8 +1,8 @@
 POST http://localhost:7777/api/v1/sm/addstrategy
 {
   "pair": {
-          "base": "BTC",
-          "quote": "ETH"
+    "base": "BTC",
+    "quote": "KMD"
   },
   "spread": 0.05,
   "quantity": 10,

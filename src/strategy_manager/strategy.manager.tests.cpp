@@ -68,6 +68,13 @@ namespace antara::mmbot::tests
 
         const auto& other = sm.get_strategy(pair.to_cross());
         CHECK_EQ(strat, other);
+
+        auto new_q = st_quantity{10};
+        auto new_strat = market_making_strategy{pair, spread, new_q, true};
+
+        // update
+        sm.add_strategy(new_strat);
+        CHECK_EQ(new_strat, sm.get_strategy(pair.to_cross()));
     }
 
     TEST_CASE ("bids can be made")
