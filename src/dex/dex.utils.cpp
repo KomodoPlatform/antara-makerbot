@@ -66,11 +66,18 @@ namespace antara::mmbot
 
     const orders::order to_order(const mm2::order &order)
     {
-        auto pair = antara::pair::of(order.base, order.rel);
-        auto b = orders::order_builder(order.uuid, pair);
-        b.quantity(st_quantity{std::stod(order.base_amount)});
-        b.price(st_price{std::stoull(order.price)});
-        return b.build();
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        try {
+            auto pair = antara::pair::of(order.base, order.rel);
+            auto b = orders::order_builder(order.uuid, pair);
+            b.quantity(st_quantity{std::stod(order.base_amount)});
+            b.price(st_price{std::stoull(order.price)});
+            return b.build();
+        }
+        catch (const std::exception& error) {
+            VLOG_F(loguru::Verbosity_ERROR, "exception catched: %s", error.what());
+            return {};
+        }
     }
 
     mm2::cancel_order_request out(st_order_id o_id)
