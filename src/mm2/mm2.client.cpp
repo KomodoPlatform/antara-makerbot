@@ -320,8 +320,22 @@ namespace antara::mmbot::mm2
 
     void from_json(const nlohmann::json &j, order &cfg)
     {
-        (void)cfg;
-        (void)j;
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        j.at("base").get_to(cfg.base);
+        j.at("rel").get_to(cfg.rel);
+
+        j.at("uuid").get_to(cfg.uuid);
+        j.at("max_base_vol").get_to(cfg.base_amount);
+        j.at("price").get_to(cfg.price);
+    }
+
+    bool order::operator==(const order &rhs) const
+    {
+        return base == rhs.base
+            && rel == rhs.rel
+            && uuid == rhs.uuid
+            && price == rhs.price
+            && base_amount == rhs.base_amount;
     }
 
     void from_json(const nlohmann::json &j, my_orders_answer &cfg)

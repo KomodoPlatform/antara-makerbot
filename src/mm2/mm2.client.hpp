@@ -270,7 +270,10 @@ namespace antara::mmbot
             std::string uuid;
             std::string base_amount;
             std::string price;
+
+            bool operator==(const order &rhs) const;
         };
+
 
         void from_json(const nlohmann::json &j, order &cfg);
 

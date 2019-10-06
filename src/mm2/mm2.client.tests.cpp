@@ -199,4 +199,27 @@ namespace antara::mmbot::tests
                 CHECK(mm2.enable_all_coins() > 10);
     }
 
+    TEST_CASE ("orders can be parsed from JSON")
+    {
+        auto base = "BTC";
+        auto rel = "ETH";
+        auto uuid = "3";
+        auto base_amount = "5";
+        auto price = "id";
+
+        nlohmann::json j = {
+            { "base", base },
+            { "rel", rel },
+            { "price", price },
+            { "max_base_vol", base_amount },
+            { "uuid", uuid }
+        };
+
+        auto expected = mm2::order{ base, rel, uuid, base_amount, price };
+
+        auto actual = mm2::order{};
+        mm2::from_json(j, actual);
+
+        CHECK_EQ(actual, expected);
+    }
 }
