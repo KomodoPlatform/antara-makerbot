@@ -54,6 +54,7 @@ namespace antara
 
     std::string format_str_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str)
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         if (price_str.find('.') == std::string::npos) {
             price_str += ".0";
         }
@@ -80,6 +81,7 @@ namespace antara
     st_price
     generate_st_price_from_api_price(const mmbot::config &cfg, const st_symbol &symbol, std::string price_str) noexcept
     {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         extract_if_scientific(price_str);
         price_str = format_str_api_price(cfg, symbol, price_str);
         if (price_str.length() < 20) {

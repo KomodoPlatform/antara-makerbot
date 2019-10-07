@@ -51,12 +51,35 @@ namespace antara::mmbot
         auto base_amount = std::stod(res.base_amount);
         auto rel_amount = std::stod(res.rel_amount);
 
-        auto price_str = std::to_string( rel_amount / base_amount  );
+        auto price_str = std::to_string( rel_amount / base_amount );
 
         auto symbol = st_symbol{res.rel.symbol.value()};
         auto price = generate_st_price_from_api_price(config, symbol, price_str);
 
         auto quantity = st_quantity{std::stod(res.base_amount)};
+
+        auto b = orders::order_builder(id, pair);
+        b.price(price);
+        b.quantity(quantity);
+        return b.build();
+    }
+
+    const orders::order to_order (const mm2::taker_order &order)
+    {
+        const auto &config = get_mmbot_config();
+
+        auto id = st_order_id{order.uuid};
+        auto pair = antara::pair{order.base, order.rel};
+
+        auto base_amount = std::stod(order.base_amount);
+        auto rel_amount = std::stod(order.rel_amount);
+
+        auto price_str = std::to_string( rel_amount / base_amount );
+
+        auto symbol = st_symbol{order.rel.symbol.value()};
+        auto price = generate_st_price_from_api_price(config, symbol, price_str);
+
+        auto quantity = st_quantity{std::stod(order.base_amount)};
 
         auto b = orders::order_builder(id, pair);
         b.price(price);
@@ -71,7 +94,12 @@ namespace antara::mmbot
             auto pair = antara::pair::of(order.base, order.rel);
             auto b = orders::order_builder(order.uuid, pair);
             b.quantity(st_quantity{std::stod(order.base_amount)});
-            b.price(st_price{std::stoull(order.price)});
+
+            load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+            auto &cfg = get_mmbot_config();
+            auto price = generate_st_price_from_api_price(cfg, st_symbol{order.rel}, order.price);
+            b.price(price);
+
             return b.build();
         }
         catch (const std::exception& error) {
