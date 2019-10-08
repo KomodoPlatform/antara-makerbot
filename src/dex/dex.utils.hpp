@@ -32,6 +32,7 @@ namespace antara::mmbot
     mm2::trade_request to_request (const orders::order_level &ol);
 
     const orders::order to_order (const mm2::trade_result &res);
+    const orders::order to_order (const mm2::taker_order &order);
     const orders::order to_order (const mm2::order &res);
 
     mm2::cancel_order_request out(st_order_id o_id);

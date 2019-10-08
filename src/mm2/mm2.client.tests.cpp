@@ -101,7 +101,6 @@ namespace antara::mmbot::tests
                 auto answer = mm2.rpc_buy(std::move(request));
                         REQUIRE_EQ(200, answer.rpc_result_code);
 
-
                 auto orders_answer = mm2.rpc_my_orders();
                         REQUIRE_EQ(200, orders_answer.rpc_result_code);
 
@@ -199,4 +198,122 @@ namespace antara::mmbot::tests
                 CHECK(mm2.enable_all_coins() > 10);
     }
 
+    TEST_CASE ("orders can be parsed from JSON")
+    {
+        auto base = "BTC";
+        auto rel = "ETH";
+        auto uuid = "3";
+        auto base_amount = "5";
+        auto price = "id";
+
+        nlohmann::json j = {
+            { "base", base },
+            { "rel", rel },
+            { "price", price },
+            { "max_base_vol", base_amount },
+            { "uuid", uuid }
+        };
+
+        auto expected = mm2::order{ base, rel, uuid, base_amount, price };
+
+        auto actual = mm2::order{};
+
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        mm2::from_json(j, actual);
+
+        CHECK_EQ(actual, expected);
+    }
+
+    TEST_CASE ("taker_order can be parsed from JSON")
+    {
+        auto base = "BTC";
+        auto rel = "ETH";
+        auto uuid = "3";
+        auto base_amount = "5";
+        auto rel_amount = "2";
+
+        nlohmann::json j = {
+            { "request",
+              {
+                  { "base", base },
+                  { "rel", rel },
+                  { "rel_amount", rel_amount },
+                  { "base_amount", base_amount },
+                  { "uuid", uuid }
+              }
+            }
+        };
+
+        auto expected = mm2::taker_order{
+            antara::asset{st_symbol{base}}, antara::asset{st_symbol{rel}},
+            base_amount, rel_amount, uuid
+        };
+
+        auto actual = mm2::taker_order{};
+
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        mm2::from_json(j, actual);
+
+        CHECK_EQ(actual, expected);
+    }
+
+    TEST_CASE ("my_orders_answer can be parsed from JSON")
+    {
+        auto base = "BTC";
+        auto rel = "ETH";
+        auto uuid = "3";
+        auto base_amount = "5";
+        auto rel_amount = "2";
+        auto price = "2.5";
+
+        nlohmann::json j = {
+            { "result", {
+                    { "maker_orders",
+                      { { "2",
+                          { { "base", base },
+                            { "rel", rel },
+                            { "price", price },
+                            { "max_base_vol", base_amount },
+                            { "uuid", uuid }
+                          } } } },
+
+                    { "taker_orders",
+                      { { "3",
+                          { { "request",
+                              { { "base", base },
+                                { "rel", rel },
+                                { "rel_amount", rel_amount },
+                                { "base_amount", base_amount },
+                                { "uuid", uuid }
+                              } } } } } }
+                }
+            }
+        };
+
+        auto maker = mm2::order{
+            base, rel, uuid, base_amount, price
+        };
+
+        auto taker = mm2::taker_order{
+            antara::asset{st_symbol{base}}, antara::asset{st_symbol{rel}},
+            base_amount, rel_amount, uuid
+        };
+
+        auto expected = mm2::my_orders_answer{};
+
+        std::map<std::string, mm2::order> m_orders;
+        m_orders.emplace("2", maker);
+        expected.m_orders = m_orders;
+
+        std::map<std::string, mm2::taker_order> t_orders;
+        t_orders.emplace("3", taker);
+        expected.t_orders = t_orders;
+
+        auto actual = mm2::my_orders_answer{};
+
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
+        mm2::from_json(j, actual);
+
+        CHECK_EQ(actual, expected);
+    }
 }

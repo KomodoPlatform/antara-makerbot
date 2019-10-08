@@ -263,6 +263,19 @@ namespace antara::mmbot
 
         void from_json(const nlohmann::json &j, cancel_all_orders_answer &cfg);
 
+        struct taker_order
+        {
+            antara::asset base;
+            antara::asset rel;
+            std::string base_amount;
+            std::string rel_amount;
+            std::string uuid;
+
+            bool operator==(const taker_order &rhs) const;
+        };
+
+        void from_json(const nlohmann::json &j, taker_order &cfg);
+
         struct order
         {
             std::string base;
@@ -270,6 +283,8 @@ namespace antara::mmbot
             std::string uuid;
             std::string base_amount;
             std::string price;
+
+            bool operator==(const order &rhs) const;
         };
 
         void from_json(const nlohmann::json &j, order &cfg);
@@ -277,12 +292,14 @@ namespace antara::mmbot
         struct my_orders_answer
         {
             using maker_orders = std::map<std::string, order>;
-            using taker_orders = std::map<std::string, order>;
+            using taker_orders = std::map<std::string, taker_order>;
             std::string result;
             int rpc_result_code;
 
             maker_orders m_orders;
             taker_orders t_orders;
+
+            bool operator==(const my_orders_answer &rhs) const;
         };
 
         void from_json(const nlohmann::json &j, my_orders_answer &cfg);
@@ -454,8 +471,9 @@ namespace antara::mmbot
         }
 
     private:
-        reproc::process background_{reproc::cleanup::terminate, reproc::milliseconds(2000), reproc::cleanup::kill,
-                                    reproc::infinite};
+        reproc::process background_{
+            reproc::cleanup::terminate, reproc::milliseconds(2000),
+            reproc::cleanup::kill, reproc::infinite};
         std::thread sink_thread_;
     };
 }
