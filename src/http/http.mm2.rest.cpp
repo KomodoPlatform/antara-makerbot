@@ -44,8 +44,7 @@ namespace antara::mmbot::http::rest
             return req->create_response(restinio::status_unprocessable_entity()).done();
         }
         antara::mmbot::mm2::orderbook_request orderbook_request{
-                antara::cross::of(std::string(query_params["quote_currency"]),
-                                 std::string(query_params["base_currency"]))};
+                antara::cross::of(std::string(query_params["base_currency"]), std::string(query_params["quote_currency"]))};
         auto orderbook_answer = mm2_client_.rpc_orderbook(std::move(orderbook_request));
         auto answer_json = nlohmann::json::parse(orderbook_answer.result);
         auto final_status = restinio::http_status_line_t(
