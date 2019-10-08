@@ -217,6 +217,8 @@ namespace antara::mmbot::tests
         auto expected = mm2::order{ base, rel, uuid, base_amount, price };
 
         auto actual = mm2::order{};
+
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         mm2::from_json(j, actual);
 
         CHECK_EQ(actual, expected);
@@ -248,6 +250,8 @@ namespace antara::mmbot::tests
         };
 
         auto actual = mm2::taker_order{};
+
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         mm2::from_json(j, actual);
 
         CHECK_EQ(actual, expected);
@@ -306,6 +310,8 @@ namespace antara::mmbot::tests
         expected.t_orders = t_orders;
 
         auto actual = mm2::my_orders_answer{};
+
+        load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
         mm2::from_json(j, actual);
 
         CHECK_EQ(actual, expected);

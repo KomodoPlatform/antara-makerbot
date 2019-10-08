@@ -95,7 +95,6 @@ namespace antara::mmbot
             auto b = orders::order_builder(order.uuid, pair);
             b.quantity(st_quantity{std::stod(order.base_amount)});
 
-            load_mmbot_config(std::filesystem::current_path() / "assets", "mmbot_config.json");
             auto &cfg = get_mmbot_config();
             auto price = generate_st_price_from_api_price(cfg, st_symbol{order.rel}, order.price);
             b.price(price);
