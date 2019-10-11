@@ -190,7 +190,7 @@ namespace antara::mmbot::http::rest
             });
     }
 
-    restinio::request_handling_status_t mm2::my_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    restinio::request_handling_status_t mm2::my_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
         DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/my_orders");
