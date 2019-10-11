@@ -189,4 +189,15 @@ namespace antara::mmbot::http::rest
                     std::forward<decltype(request)>(request));
             });
     }
+
+    restinio::request_handling_status_t mm2::my_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/my_orders");
+        auto my_orders_answer = mm2_client_.rpc_my_orders();
+        auto answer_json = nlohmann::json::parse(my_orders_answer.result);
+        auto final_status = restinio::http_status_line_t(
+                static_cast<restinio::http_status_code_t>(my_orders_answer.rpc_result_code), "");
+        return req->create_response(final_status).set_body(answer_json.dump()).done();
+    }
 }

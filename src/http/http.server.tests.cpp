@@ -87,6 +87,10 @@ namespace antara::mmbot::tests
         resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/getorderbook?base_currency=BTC&quote_currency=MORTY"); //Well formed but BTC not enabled.
         CHECK_EQ(resp.code, 500);
 
+        //! test orderbook
+        resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_orders");
+        CHECK_EQ(resp.code, 200); //! well formed
+
         //! test mybalance
         resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance");
         CHECK_EQ(resp.code, 400); //! Bad request
