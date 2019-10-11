@@ -152,6 +152,20 @@ namespace antara::mmbot::tests
             CHECK_EQ(resp.code, 200);
         }
 
+        //! test mm2 withdraw
+        {
+            resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance?currency=RICK"); //Well formed
+            CHECK_EQ(resp.code, 200);
+            auto resp_answer = nlohmann::json::parse(resp.body);
+            mm2::balance_answer balance_answer;
+            mm2::from_json(resp_answer, balance_answer);
+            mm2::withdraw_request request{"RICK", balance_answer.address, "0.001"};
+            nlohmann::json json_request;
+            mm2::to_json(json_request, request);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/withdraw", "application/json", json_request.dump());
+            CHECK_EQ(resp.code, 200);
+        }
+
         //! test mm2 sell
         {
             mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};

@@ -706,6 +706,66 @@ The buy method issues a buy request and attempts to match an order from the orde
 
 **Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
 
+## mm2 withdraw
+
+This method generates a raw transaction which should then be broadcast using send_raw_transaction.
+
+**URL**: `/api/v1/legacy/mm2/withdraw`
+
+**Method**: `POST`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+### Success Response
+
+**Code** `200 OK`
+
+**Content examples (request)**
+
+```json
+{
+  "amount": "0.001",
+  "coin": "RICK",
+  "method": "withdraw",
+  "to": "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd",
+  "userpass": "YOUR_PASSWORD_HERE"
+}
+```
+
+**Content example (answer)**
+
+```json
+{
+  "tx_hex": "0400008085202f89017b4586055138584f81eff4427180e47a7b6ade64bb12eadd60aba1975d0ba50d000000006a47304402207f747b7e853e3e6fe6f3f3c6ac994d0365b741a6c99da27e1925121cdc76313002207936392b67b49047b5c129306ecb06e82ec4b36754e5bfbed2a8da6f7123bacb0121029df6d7fa49c31959fce388bb8e8065fd3d9ace5bc4bbafd0cbd4c6604492670affffffff02a0860100000000001976a9142f46b1468c017ebffcb99043143049b16393be7488ac9052f405000000001976a9142f46b1468c017ebffcb99043143049b16393be7488ac9a75a05d000000000000000000000000000000",
+  "tx_hash": "8f7a417d45e4df17d15f04fd8072a7d340b2fb3e377ad0846679364753900eec",
+  "from": [
+    "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd"
+  ],
+  "to": [
+    "RDbAXLCmQ2EN7daEZZp7CC9xzkcN8DfAZd"
+  ],
+  "total_amount": "0.99999",
+  "spent_by_me": "0.99999",
+  "received_by_me": "0.99998",
+  "my_balance_change": "-0.00001",
+  "block_height": 0,
+  "timestamp": 1570796954,
+  "fee_details": {
+    "amount": "0.00001"
+  },
+  "coin": "RICK",
+  "internal_id": ""
+}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
+
 ## mm2 sell
 
 The sell method issues a sell request and attempts to match an order from the orderbook based on the provided arguments.
