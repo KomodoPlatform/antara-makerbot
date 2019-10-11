@@ -400,6 +400,34 @@ namespace antara::mmbot
         void from_json(const nlohmann::json &j, get_enabled_coins_result &cfg);
 
         void from_json(const nlohmann::json &j, get_enabled_coins_answer &cfg);
+
+        struct withdraw_request
+        {
+            std::string coin;
+            std::string to; ///< coins will be withdraw to this address
+            std::string amount; ///< ignored if max is true
+            bool max{false};
+        };
+
+        struct withdraw_answer
+        {
+            std::vector<std::string> from;
+            std::vector<std::string> to;
+            std::string tx_hash;
+            std::string tx_hex;
+            std::string my_balance_change;
+            std::string received_by_me;
+            std::string spent_by_me;
+            std::string total_amount;
+            int rpc_result_code;
+            std::string result;
+        };
+
+        void to_json(nlohmann::json &j, const withdraw_request &cfg);
+        void from_json(const nlohmann::json& j, withdraw_request &cfg);
+        void from_json(const nlohmann::json &j, withdraw_answer &cfg);
+
+
     }
 
 
@@ -426,6 +454,8 @@ namespace antara::mmbot
         mm2::cancel_order_answer rpc_cancel_order(mm2::cancel_order_request &&request);
 
         mm2::my_orders_answer rpc_my_orders();
+
+        mm2::withdraw_answer rpc_withdraw(mm2::withdraw_request&& request);
 
         mm2::order_status rpc_order_status(st_order_id id);
 

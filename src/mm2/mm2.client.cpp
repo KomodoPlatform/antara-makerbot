@@ -378,6 +378,41 @@ namespace antara::mmbot::mm2
     {
         j["uuid"] = cfg.uuid;
     }
+
+    void to_json(nlohmann::json &j, const withdraw_request &cfg)
+    {
+        j["coin"] = cfg.coin;
+        j["to"] = cfg.to;
+
+        if (not cfg.max) {
+            j["amount"] = cfg.amount;
+        } else {
+            j["max"] = true;
+        }
+    }
+
+    void from_json(const nlohmann::json &j, withdraw_answer &cfg)
+    {
+        j.at("from").get_to(cfg.from);
+        j.at("to").get_to(cfg.to);
+        j.at("spent_by_me").get_to(cfg.spent_by_me);
+        j.at("total_amount").get_to(cfg.total_amount);
+        j.at("my_balance_change").get_to(cfg.my_balance_change);
+        j.at("received_by_me").get_to(cfg.received_by_me);
+        j.at("tx_hash").get_to(cfg.tx_hash);
+        j.at("tx_hex").get_to(cfg.tx_hex);
+    }
+
+    void from_json(const nlohmann::json &j, withdraw_request &cfg)
+    {
+        j.at("coin").get_to(cfg.coin);
+        j.at("to").get_to(cfg.to);
+        if (j.find("max") != j.end()) {
+            j.at("max").get_to(cfg.max);
+        } else {
+            j.at("amount").get_to(cfg.amount);
+        }
+    }
 }
 
 namespace antara::mmbot
@@ -602,5 +637,15 @@ namespace antara::mmbot
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::my_recent_swaps_answer>(resp);
+    }
+
+    mm2::withdraw_answer mm2_client::rpc_withdraw(mm2::withdraw_request&& request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("withdraw");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::withdraw_answer>(resp);
     }
 }

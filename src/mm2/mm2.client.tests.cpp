@@ -169,9 +169,21 @@ namespace antara::mmbot::tests
         }
 
                 SUBCASE("mm2 get enabled coins") {
+
             auto answer = mm2.rpc_get_enabled_coins();
                     REQUIRE_EQ(200, answer.rpc_result_code);
                     REQUIRE_EQ(2, answer.result_enabled_coins.size());
+        }
+
+        SUBCASE("mm2 withdraw") {
+            if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
+                mm2::balance_request request({antara::asset{st_symbol{"RICK"}}});
+                auto answer = mm2.rpc_balance(std::move(request));
+                CHECK_EQ(200, answer.rpc_result_code);
+                mm2::withdraw_request withdraw_req{"RICK", answer.address, "0.001"};
+                auto withdraw_resp = mm2.rpc_withdraw(std::move(withdraw_req));
+                CHECK_EQ(200, withdraw_resp.rpc_result_code);
+            }
         }
     }
 
