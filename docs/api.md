@@ -353,6 +353,29 @@ Retrieve the version of mm2
 }
 ```
 
+## mm2 my_orders
+
+Retrieve the version of mm2
+
+**URL**: `/api/v1/legacy/mm2/my_orders`
+
+**Method**: `GET`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+
+### Success Response
+
+**Code**: `200 OK`
+
+**Content examples**
+
+```json
+{"result":{"maker_orders":{},"taker_orders":{}}}
+```
+
 ## mm2 get enabled coins
 
 Retrieve the enabled coins of mm2
