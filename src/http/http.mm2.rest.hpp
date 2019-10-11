@@ -34,6 +34,9 @@ namespace antara::mmbot::http::rest
         get_orderbook(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
         restinio::request_handling_status_t
+        my_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
+
+        restinio::request_handling_status_t
         my_balance(const restinio::request_handle_t &req, const restinio::router::route_params_t &);
 
         restinio::request_handling_status_t
