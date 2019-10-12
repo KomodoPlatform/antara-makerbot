@@ -414,18 +414,18 @@ namespace antara::mmbot::mm2
         }
     }
 
-    void mm2::to_json(nlohmann::json &j, const send_raw_transaction_request &cfg)
+    void to_json(nlohmann::json &j, const send_raw_transaction_request &cfg)
     {
         j["coin"] = cfg.coin;
         j["tx_hex"] = cfg.tx_hex;
     }
 
-    void mm2::from_json(const nlohmann::json &j, send_raw_transaction_answer &cfg)
+    void from_json(const nlohmann::json &j, send_raw_transaction_answer &cfg)
     {
         j.at("tx_hash").get_to(cfg.tx_hash);
     }
 
-    void mm2::from_json(const nlohmann::json &j, send_raw_transaction_request &cfg)
+    void from_json(const nlohmann::json &j, send_raw_transaction_request &cfg)
     {
         j.at("coin").get_to(cfg.coin);
         j.at("tx_hex").get_to(cfg.tx_hex);
