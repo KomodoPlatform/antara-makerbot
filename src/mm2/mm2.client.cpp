@@ -413,6 +413,23 @@ namespace antara::mmbot::mm2
             j.at("amount").get_to(cfg.amount);
         }
     }
+
+    void mm2::to_json(nlohmann::json &j, const send_raw_transaction_request &cfg)
+    {
+        j["coin"] = cfg.coin;
+        j["tx_hex"] = cfg.tx_hex;
+    }
+
+    void mm2::from_json(const nlohmann::json &j, send_raw_transaction_answer &cfg)
+    {
+        j.at("tx_hash").get_to(cfg.tx_hash);
+    }
+
+    void mm2::from_json(const nlohmann::json &j, send_raw_transaction_request &cfg)
+    {
+        j.at("coin").get_to(cfg.coin);
+        j.at("tx_hex").get_to(cfg.tx_hex);
+    }
 }
 
 namespace antara::mmbot
@@ -647,5 +664,15 @@ namespace antara::mmbot
         DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
         auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
         return rpc_process_call<mm2::withdraw_answer>(resp);
+    }
+
+    mm2::send_raw_transaction_answer mm2_client::rpc_send_raw_transaction(mm2::send_raw_transaction_request &&request)
+    {
+        VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
+        auto json_data = template_request("send_raw_transaction");
+        mm2::to_json(json_data, request);
+        DVLOG_F(loguru::Verbosity_INFO, "request: %s", json_data.dump().c_str());
+        auto resp = RestClient::post(antara::mmbot::mm2_endpoint, "application/json", json_data.dump());
+        return rpc_process_call<mm2::send_raw_transaction_answer>(resp);
     }
 }

@@ -382,6 +382,7 @@ namespace antara::mmbot
         };
 
         void to_json(nlohmann::json &j, const my_swap_status_request &cfg);
+
         void from_json(const nlohmann::json &j, my_swap_status_answer &cfg);
 
         struct get_enabled_coins_result
@@ -424,9 +425,29 @@ namespace antara::mmbot
         };
 
         void to_json(nlohmann::json &j, const withdraw_request &cfg);
-        void from_json(const nlohmann::json& j, withdraw_request &cfg);
+
+        void from_json(const nlohmann::json &j, withdraw_request &cfg);
+
         void from_json(const nlohmann::json &j, withdraw_answer &cfg);
 
+        struct send_raw_transaction_request
+        {
+            std::string coin;
+            std::string tx_hex;
+        };
+
+        struct send_raw_transaction_answer
+        {
+            std::string tx_hash;
+            std::string result;
+            int rpc_result_code;
+        };
+
+        void to_json(nlohmann::json &j, const send_raw_transaction_request &cfg);
+
+        void from_json(const nlohmann::json &j, send_raw_transaction_request &cfg);
+
+        void from_json(const nlohmann::json &j, send_raw_transaction_answer &cfg);
 
     }
 
@@ -447,6 +468,7 @@ namespace antara::mmbot
         mm2::setprice_answer rpc_setprice(mm2::setprice_request &&request);
 
         mm2::buy_answer rpc_buy(mm2::trade_request &&request);
+
         mm2::sell_answer rpc_sell(mm2::trade_request &&request);
 
         mm2::cancel_all_orders_answer rpc_cancel_all_orders(mm2::cancel_all_orders_request &&request);
@@ -455,13 +477,14 @@ namespace antara::mmbot
 
         mm2::my_orders_answer rpc_my_orders();
 
-        mm2::withdraw_answer rpc_withdraw(mm2::withdraw_request&& request);
+        mm2::withdraw_answer rpc_withdraw(mm2::withdraw_request &&request);
+        mm2::send_raw_transaction_answer rpc_send_raw_transaction(mm2::send_raw_transaction_request &&request);
 
         mm2::order_status rpc_order_status(st_order_id id);
 
         mm2::my_recent_swaps_answer rpc_my_recent_swaps(mm2::my_recent_swaps_request &&request);
 
-        mm2::my_swap_status_answer rpc_my_swap_status(mm2::my_swap_status_request&& request);
+        mm2::my_swap_status_answer rpc_my_swap_status(mm2::my_swap_status_request &&request);
 
         mm2::version_answer rpc_version();
 
@@ -502,8 +525,8 @@ namespace antara::mmbot
 
     private:
         reproc::process background_{
-            reproc::cleanup::terminate, reproc::milliseconds(2000),
-            reproc::cleanup::kill, reproc::infinite};
+                reproc::cleanup::terminate, reproc::milliseconds(2000),
+                reproc::cleanup::kill, reproc::infinite};
         std::thread sink_thread_;
     };
 }
