@@ -766,6 +766,43 @@ This method generates a raw transaction which should then be broadcast using sen
 
 **Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
 
+## mm2 send_raw_transactionn
+
+**URL**: `/api/v1/legacy/mm2/send_raw_transaction`
+
+**Method**: `POST`
+
+**Auth required**: No
+
+**Permissions required**: None
+
+### Success Response
+
+**Code** `200 OK`
+
+**Content examples (request)**
+
+```json
+{
+  "coin": "RICK",
+  "method": "send_raw_transaction",
+  "tx_hex": "0400008085202f8902b59470055506b34765ab24d21647da4287ecb9c1bc0904e76668bf86f51ab741000000006a4730440220728a3ce6245481f36c562144f6081705f13bffa51b2e22585d2269fc10b6cac202206d7510cf3d57d8e75f6ea294c36361564278b2cd7c55cb4fdc0e2fa84ad9a5b60121029df6d7fa49c31959fce388bb8e8065fd3d9ace5bc4bbafd0cbd4c6604492670affffffffb59470055506b34765ab24d21647da4287ecb9c1bc0904e76668bf86f51ab741010000006b4830450221009c1bf21bc533b91c8d7583045be1ff7361e826d020955ae19725aaa8b017408e022066b8998c518618b522ad0b05dc1954efc38b680655c7ec90eb0eb42a46d4f6670121029df6d7fa49c31959fce388bb8e8065fd3d9ace5bc4bbafd0cbd4c6604492670affffffff02a0860100000000001976a9142f46b1468c017ebffcb99043143049b16393be7488aca84ef405000000001976a9142f46b1468c017ebffcb99043143049b16393be7488ac6886a15d000000000000000000000000000000",
+  "userpass": "YOUR_PASSWORD_HERE"
+}
+```
+
+**Content example (answer)**
+
+```json
+{"tx_hash":"0a299168d2d6b056151dcb969dae47927f0daf8c9b64a7bd902e90ebda9cee92"}
+```
+
+### Error Response
+
+**Code**: `400 Bad request` (Ill-formed request)
+
+**Code**: `500 Internal Server Error` (`mm2` return 500 error code + message)
+
 ## mm2 sell
 
 The sell method issues a sell request and attempts to match an order from the orderbook based on the provided arguments.

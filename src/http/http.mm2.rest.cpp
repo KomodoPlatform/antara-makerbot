@@ -216,14 +216,15 @@ namespace antara::mmbot::http::rest
         return req->create_response(final_status).set_body(answer_json.dump()).done();
     }
 
-    restinio::request_handling_status_t mm2::my_orders(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
+    restinio::request_handling_status_t
+    mm2::send_raw_transaction(const restinio::request_handle_t &req, const restinio::router::route_params_t &params)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/my_orders");
-        auto my_orders_answer = mm2_client_.rpc_my_orders();
-        auto answer_json = nlohmann::json::parse(my_orders_answer.result);
-        auto final_status = restinio::http_status_line_t(
-                static_cast<restinio::http_status_code_t>(my_orders_answer.rpc_result_code), "");
-        return req->create_response(final_status).set_body(answer_json.dump()).done();
+        DVLOG_F(loguru::Verbosity_INFO, "http call: %s", "/api/v1/legacy/mm2/withdraw");
+        return process_post_function<antara::mmbot::mm2::send_raw_transaction_request>(
+                req, params,
+                [this](auto &&request) {
+                    return this->mm2_client_.rpc_send_raw_transaction(std::forward<decltype(request)>(request));
+                });
     }
 }

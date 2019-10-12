@@ -164,6 +164,16 @@ namespace antara::mmbot::tests
             mm2::to_json(json_request, request);
             resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/withdraw", "application/json", json_request.dump());
             CHECK_EQ(resp.code, 200);
+
+            //! Raw transaction
+            auto withdraw_resp_answer = nlohmann::json::parse(resp.body);
+            mm2::withdraw_answer withdraw_answ;
+            mm2::from_json(withdraw_resp_answer, withdraw_answ);
+            mm2::send_raw_transaction_request req{"RICK", withdraw_answ.tx_hex};
+            nlohmann::json raw_transac_req;
+            mm2::to_json(raw_transac_req, req);
+            resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/send_raw_transaction", "application/json", raw_transac_req.dump());
+            CHECK_EQ(resp.code, 200);
         }
 
         //! test mm2 sell

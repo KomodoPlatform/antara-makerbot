@@ -194,7 +194,7 @@ namespace antara::mmbot::tests
                 mm2::withdraw_request withdraw_req{"RICK", answer.address, "0.001"};
                 auto withdraw_resp = mm2.rpc_withdraw(std::move(withdraw_req));
                         CHECK_EQ(200, withdraw_resp.rpc_result_code);
-                mm2::send_raw_transaction_request transaction_request{withdraw_req.coin,withdraw_resp.tx_hex};
+                mm2::send_raw_transaction_request transaction_request{"RICK",withdraw_resp.tx_hex};
                 auto transaction_answer = mm2.rpc_send_raw_transaction(std::move(transaction_request));
                 CHECK_EQ(200, transaction_answer.rpc_result_code);
             }
