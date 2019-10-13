@@ -80,7 +80,7 @@ namespace antara::mmbot::tests
             }
         }
 
-                SUBCASE ("mm2 rpc buy") {
+           /*     SUBCASE ("mm2 rpc buy") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
                 mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1",
                                            "1"};
@@ -91,7 +91,7 @@ namespace antara::mmbot::tests
                 auto cancel_answer = mm2.rpc_cancel_order(std::move(cancel_request));
                         CHECK_EQ(200, cancel_answer.rpc_result_code);
             }
-        }
+        }*/
 
 
                 SUBCASE ("mm2 rpc my orders") {
@@ -126,7 +126,7 @@ namespace antara::mmbot::tests
             }
         }
 
-                SUBCASE ("mm2 rpc sell") {
+           /*     SUBCASE ("mm2 rpc sell") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
                 mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}},
                                            "1", "1"};
@@ -137,7 +137,7 @@ namespace antara::mmbot::tests
                 auto cancel_answer = mm2.rpc_cancel_order(std::move(cancel_request));
                         CHECK_EQ(200, cancel_answer.rpc_result_code);
             }
-        }
+        }*/
 
 
                 SUBCASE ("mm2 cancel_all_request by ALL") {
@@ -175,7 +175,7 @@ namespace antara::mmbot::tests
                     REQUIRE_EQ(2, answer.result_enabled_coins.size());
         }
 
-        SUBCASE("mm2 withdraw") {
+        /*SUBCASE("mm2 withdraw") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
                 mm2::balance_request request({antara::asset{st_symbol{"RICK"}}});
                 auto answer = mm2.rpc_balance(std::move(request));
@@ -184,9 +184,9 @@ namespace antara::mmbot::tests
                 auto withdraw_resp = mm2.rpc_withdraw(std::move(withdraw_req));
                 CHECK_EQ(200, withdraw_resp.rpc_result_code);
             }
-        }
+        }*/
 
-        SUBCASE("mm2 withdraw + send raw transaction") {
+        /*SUBCASE("mm2 withdraw + send raw transaction") {
             if (auto force_passphrase = std::getenv("FORCE_MM2_PASSPHRASE"); force_passphrase != nullptr) {
                 mm2::balance_request request({antara::asset{st_symbol{"RICK"}}});
                 auto answer = mm2.rpc_balance(std::move(request));
@@ -198,7 +198,7 @@ namespace antara::mmbot::tests
                 auto transaction_answer = mm2.rpc_send_raw_transaction(std::move(transaction_request));
                 CHECK_EQ(200, transaction_answer.rpc_result_code);
             }
-        }
+        }*/
     }
 
     TEST_CASE ("mm2 rpc electrum")

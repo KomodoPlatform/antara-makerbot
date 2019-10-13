@@ -133,7 +133,7 @@ namespace antara::mmbot::tests
             CHECK_EQ(resp.code, 200);
         }
 
-        //! test mm2 buy
+        /*//! test mm2 buy
         {
             mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1",
                                        "1"};
@@ -150,9 +150,9 @@ namespace antara::mmbot::tests
             resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_order", "application/json",
                                     json_request.dump());
             CHECK_EQ(resp.code, 200);
-        }
+        }*/
 
-        //! test mm2 withdraw
+        /*//! test mm2 withdraw
         {
             resp = RestClient::get("localhost:7777/api/v1/legacy/mm2/my_balance?currency=RICK"); //Well formed
             CHECK_EQ(resp.code, 200);
@@ -174,9 +174,9 @@ namespace antara::mmbot::tests
             mm2::to_json(raw_transac_req, req);
             resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/send_raw_transaction", "application/json", raw_transac_req.dump());
             CHECK_EQ(resp.code, 200);
-        }
+        }*/
 
-        //! test mm2 sell
+        /*//! test mm2 sell
         {
             mm2::trade_request request{{antara::asset{st_symbol{"RICK"}}}, {antara::asset{st_symbol{"MORTY"}}}, "1", "1"};
             nlohmann::json json_request;
@@ -207,7 +207,7 @@ namespace antara::mmbot::tests
             mm2::to_json(json_request, cancel_request);
             resp = RestClient::post("localhost:7777/api/v1/legacy/mm2/cancel_all_orders", "application/json", json_request.dump());
             CHECK_EQ(resp.code, 200);
-        }
+        }*/
 
         //! test sm addstrategy and getstrategy
         {
