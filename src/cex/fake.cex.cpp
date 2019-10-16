@@ -31,12 +31,12 @@ namespace antara::mmbot
         return order_books_.at(cross);
     }
 
-    void fake_cex::place_order([[maybe_unused]] const orders::order_level &ol)
+    std::optional<orders::order> fake_cex::place_order([[maybe_unused]] const orders::order_level &ol)
     {
         throw mmbot::errors::not_implemented();
     }
 
-    void fake_cex::place_order(const orders::order &o)
+    std::optional<orders::order> fake_cex::place_order(const orders::order &o)
     {
         auto cross = o.pair.to_cross();
 
@@ -48,10 +48,38 @@ namespace antara::mmbot
         auto &book = order_books_.at(cross);
         book.add_order(o);
 
-        return;
+        return std::nullopt;
     }
 
-    void fake_cex::mirror([[maybe_unused]] const orders::execution &ex)
+    bool can_match(orders::order_book &book)
+    {
+        return false;
+    }
+
+    std::optional<orders::execution> match_single(orders::order_book &book)
+    {
+        if (can_match(book)) {
+            return std::nullopt;
+        } else {
+            return std::nullopt;
+        }
+    }
+
+    std::vector<orders::execution> match_orders(orders::order_book &book)
+    {
+        std::vector<orders::execution> exs;
+
+        while (can_match(book)) {
+            auto ex = match_single(book);
+            if (ex) {
+                exs.push_back(ex.value());
+            }
+        }
+
+        return exs;
+    }
+
+    std::optional<orders::order> fake_cex::mirror([[maybe_unused]] const orders::execution &ex)
     {
         throw mmbot::errors::not_implemented();
     }

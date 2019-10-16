@@ -25,11 +25,11 @@
 
 namespace antara::mmbot
 {
-    class cex_mock : public cex
+    class cex_mock : public cex_
     {
     public:
-        MAKE_MOCK1(place_order, void(const orders::order_level&), override);
-        MAKE_MOCK1(mirror, void(const orders::execution&), override);
+        MAKE_MOCK1(place_order, std::optional<orders::order>(const orders::order_level&), override);
+        MAKE_MOCK1(mirror, std::optional<orders::order>(const orders::execution&), override);
     };
 
 }

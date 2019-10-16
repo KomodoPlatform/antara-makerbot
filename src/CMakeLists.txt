@@ -2,6 +2,7 @@ add_library(mmbot_shared_deps INTERFACE)
 target_sources(mmbot_shared_deps INTERFACE
         app/mmbot.application.cpp
         mm2/mm2.client.cpp
+        cex/binance/binance.cpp
         cex/cex.cpp
         cex/fake.cex.cpp
         config/config.cpp
@@ -20,7 +21,23 @@ target_sources(mmbot_shared_deps INTERFACE
         utils/mmbot_strong_types.cpp)
 target_compile_features(mmbot_shared_deps INTERFACE cxx_std_17)
 target_include_directories(mmbot_shared_deps INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(mmbot_shared_deps INTERFACE absl::numeric mmbot::bcmath mmbot::log mmbot::http mmbot::default_settings nlohmann_json::nlohmann_json strong_type Cpp-Taskflow mmbot::restinio reproc++
+
+find_package(OpenSSL REQUIRED)
+
+target_link_libraries(
+        mmbot_shared_deps
+        INTERFACE
+        absl::numeric
+        mmbot::bcmath
+        mmbot::log
+        mmbot::http
+        mmbot::default_settings
+        nlohmann_json::nlohmann_json
+        strong_type
+        Cpp-Taskflow
+        mmbot::restinio
+        reproc++
+        OpenSSL::Crypto
         $<$<AND:$<PLATFORM_ID:Linux>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
         $<$<PLATFORM_ID:Darwin>:c++fs>)
 target_enable_tsan(mmbot_shared_deps)
@@ -35,6 +52,7 @@ add_executable(mmbot-test)
 target_sources(mmbot-test PUBLIC
         mmbot.tests.cpp
         mm2/mm2.client.tests.cpp
+        cex/binance/binance.tests.cpp
         cex/cex.tests.cpp
         cex/fake.cex.tests.cpp
         config/config.tests.cpp

@@ -14,29 +14,47 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <doctest/doctest.h>
 
-#include <http/http.server.hpp>
-#include "cex/cex.hpp"
-#include "dex/dex.hpp"
-#include "order_manager/order.manager.hpp"
-#include "strategy_manager/strategy.manager.hpp"
+#include <orders/orders.hpp>
 
-namespace antara::mmbot
+#include "binance.hpp"
+
+namespace antara::mmbot::tests
 {
-    class application
+    namespace cex = antara::mmbot::cex;
+
+    TEST_CASE ("must flip")
     {
-    public:
-        application() noexcept;
-        ~application() noexcept;
-        int run();
-    private:
-        price_service_platform price_service_;
-        mm2_client mm2_client_;
-        mmbot::dex dex_{mm2_client_};
-        mmbot::cex_ cex_{};
-        mmbot::order_manager om_{dex_, cex_};
-        mmbot::real_strategy_manager sm_{price_service_, om_};
-        antara::mmbot::http_server server_{price_service_, mm2_client_, sm_, om_};
-    };
+        auto pair = antara::pair::of("BTC", "ETH");
+        CHECK(cex::binance::must_flip(pair));
+
+        auto pair2 = antara::pair::of("BTC", "USDT");
+        CHECK(!(cex::binance::must_flip(pair2)));
+    }
+
+    TEST_CASE ("can parse")
+    {
+        auto raw = R"foo(
+{
+  "symbol": "BTCUSDT",
+  "orderId": 28,
+  "orderListId": -1,
+  "clientOrderId": "6gCrw2kRUAF9CvJDGP16IP",
+  "transactTime": 1507725176595,
+  "price": "1.00000000",
+  "origQty": "10.00000000",
+  "executedQty": "10.00000000",
+  "cummulativeQuoteQty": "10.00000000",
+  "status": "FILLED",
+  "timeInForce": "GTC",
+  "type": "MARKET",
+  "side": "SELL"
+}
+)foo";
+
+        auto json = nlohmann::json::parse(raw);
+        cex::binance::order_result res;
+        cex::binance::from_json(json, res);
+    }
 }

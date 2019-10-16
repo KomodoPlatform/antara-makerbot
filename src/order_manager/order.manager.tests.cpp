@@ -235,9 +235,11 @@ namespace antara::mmbot::tests
             .RETURN(recent);
 
         // And there is an execution for an order we did'nt know
-        REQUIRE_CALL(cex, mirror(e2));
+        REQUIRE_CALL(cex, mirror(e2))
+            .RETURN(std::nullopt);
 
-        REQUIRE_CALL(cex, mirror(e3));
+        REQUIRE_CALL(cex, mirror(e3))
+            .RETURN(std::nullopt);
 
         om.poll();
 

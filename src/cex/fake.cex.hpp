@@ -19,7 +19,9 @@
 #include <functional>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
+#include <optional>
 
 #include <orders/orders.hpp>
 #include "cex.hpp"
@@ -36,10 +38,12 @@ namespace antara::mmbot
         const orders::order_book &add_book(const orders::order_book &book);
         const orders::order_book &get_book(const antara::cross &cross) const;
 
-        void place_order(const orders::order_level &ol) override;
-        void place_order(const orders::order &o);
+        std::optional<orders::order> place_order(const orders::order_level &ol) override;
+        std::optional<orders::order> place_order(const orders::order &o);
 
-        void mirror(const orders::execution &ex) override;
+        std::vector<orders::execution> match_orders();
+
+        std::optional<orders::order> mirror(const orders::execution &ex) override;
 
     private:
         order_books_by_cross order_books_;
