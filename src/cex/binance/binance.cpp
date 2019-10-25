@@ -14,17 +14,65 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <string>
+
 #include "binance.hpp"
 
 namespace antara::mmbot::cex
 {
+    bool binance::order_request::operator==(const binance::order_request &other) const
+    {
+        return symbol == other.symbol
+            && side == other.side
+            && type == other.type
+            && quantity == other.quantity
+            && price == other.price;
+    }
+
+    bool binance::order_request::operator!=(const binance::order_request &other) const
+    {
+        return !(*this == other);
+    }
+
+    std::string binance::order_request::to_string() const
+    {
+        std::string s;
+        s.append("\n");
+        s.append(symbol);
+        s.append("\n");
+        s.append(side);
+        s.append("\n");
+        s.append(type);
+        s.append("\n");
+        s.append(quantity);
+        s.append("\n");
+        s.append(price);
+        s.append("\n");
+        s.append(std::to_string(ts));
+        s.append("\n");
+        return s;
+    }
+
     std::string binance::hmac (std::string key, std::string data)
     {
-        auto k = key.c_str();
-        auto d = data.c_str();
-        auto digest = (char *) HMAC(EVP_sha256(), k, strlen(k), (unsigned char *) d, strlen(d), NULL, NULL);
-        std::string foo(digest);
-        return foo;
+        auto digest = (char *) HMAC(
+            EVP_sha256(),
+            key.c_str(), key.size(),
+            (unsigned char *) data.c_str(), data.size(),
+            NULL, NULL);
+
+        static const char* const lut = "0123456789ABCDEF";
+        size_t len = 32;
+
+        std::string output;
+        output.reserve(2 * len);
+        for (size_t i = 0; i < len; ++i)
+        {
+            const unsigned char c = digest[i];
+            output.push_back(lut[c >> 4]);
+            output.push_back(lut[c & 15]);
+        }
+        return output;
     }
 
     bool binance::must_flip (antara::pair p)
@@ -55,7 +103,7 @@ namespace antara::mmbot::cex
 
     std::string binance::to_symbol (antara::pair p)
     {
-        auto base = p.quote.symbol.value();
+        auto base = p.base.symbol.value();
         auto quote = p.quote.symbol.value();
         if (must_flip(p)) {
             return quote.append(base);
@@ -67,16 +115,17 @@ namespace antara::mmbot::cex
     std::optional<orders::order> binance::place_order(const orders::order_level &o)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        auto r = to_request(o);
+        auto r = to_request(o, false);
         return send_req(r);
     }
 
-    binance::order_request binance::to_request(const orders::order_level &o)
+    binance::order_request binance::to_request(const orders::order_level &o, bool mirror)
     {
         const auto& cfg = get_mmbot_config();
 
         std::string symbol = to_symbol(o.pair);
-        std::string side = must_flip(o.pair) ? "BUY" : "SELL" ;
+        // A != B is equivalent to A XOR B
+        std::string side = mirror != must_flip(o.pair) ? "SELL" : "BUY" ;
         std::string type = "LIMIT";
         std::string quantity = std::to_string(o.quantity.value());
         std::string price = get_price_as_string_decimal(
@@ -84,28 +133,24 @@ namespace antara::mmbot::cex
         long long int ts = std::time(0) * 1000;
 
         return binance::order_request{
-            symbol,
-            side,
-            type,
-            quantity,
-            price,
-            ts
+            symbol, side, type, quantity, price, ts
         };
     }
 
     std::optional<orders::order> binance::mirror(const orders::execution &e)
     {
         VLOG_SCOPE_F(loguru::Verbosity_INFO, pretty_function);
-        auto r = to_request(e);
+        auto r = to_request(e, true);
         return send_req(r);
     }
 
-    binance::order_request binance::to_request(const orders::execution &e)
+    binance::order_request binance::to_request(const orders::execution &e, bool mirror)
     {
         const auto& cfg = get_mmbot_config();
 
         std::string symbol = to_symbol(e.pair);
-        std::string side = must_flip(e.pair) ? "BUY" : "SELL" ;
+        // A != B is equivalent to A XOR B
+        std::string side = mirror != must_flip(e.pair) ? "SELL" : "BUY" ;
         std::string type = "LIMIT";
         std::string quantity = std::to_string(e.quantity.value());
         std::string price = get_price_as_string_decimal(
@@ -122,9 +167,9 @@ namespace antara::mmbot::cex
         };
     }
 
-    std::optional<orders::order> binance::send_req (binance::order_request req)
+    std::optional<orders::order> binance::send_req(const binance::order_request &req)
     {
-        auto url = "https://api.binance.com/api/v3/order/test?";
+        auto url = "https://api.binance.com";
 
         std::string data("symbol=");
         data.append(req.symbol);
@@ -141,6 +186,9 @@ namespace antara::mmbot::cex
         data.append("&price=");
         data.append(req.price);
 
+        data.append("&timeInForce=");
+        data.append("GTC");
+
         data.append("&timestamp=");
         data.append(std::to_string(req.ts));
 
@@ -148,12 +196,20 @@ namespace antara::mmbot::cex
         data.append("&signature=");
         data.append(signature);
 
-        RestClient::Connection* conn = new RestClient::Connection(url);
-        conn->AppendHeader("X-MBX-APIKEY", api_key_);
-        std::string c_type = "application/x-www-form-urlencoded";
-        conn->AppendHeader("Content-Type", c_type);
+        DVLOG_F(loguru::Verbosity_INFO, "req: %s", data.c_str());
 
-        auto resp = conn->post("/put", data);
+        RestClient::Response resp;
+        try {
+            RestClient::init();
+            RestClient::Connection* conn = new RestClient::Connection(url);
+            conn->AppendHeader("X-MBX-APIKEY", api_key_);
+            std::string c_type = "application/x-www-form-urlencoded";
+            conn->AppendHeader("Content-Type", c_type);
+            resp = conn->post("/api/v3/order/test", data);
+        } catch (const std::exception &error) {
+            DVLOG_F(loguru::Verbosity_ERROR, "Request error: %s", error.what());
+            return std::nullopt;
+        }
 
         DVLOG_F(loguru::Verbosity_INFO, "resp: %s", resp.body.c_str());
 

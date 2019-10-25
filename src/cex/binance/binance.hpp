@@ -43,7 +43,7 @@ namespace antara::mmbot::cex
 
         std::string hmac (std::string key, std::string data);
         static bool must_flip(antara::pair p);
-        std::string to_symbol (antara::pair p);
+        static std::string to_symbol (antara::pair p);
 
         std::optional<orders::order> place_order(const orders::order_level &o);
         std::optional<orders::order> mirror(const orders::execution &e);
@@ -56,6 +56,11 @@ namespace antara::mmbot::cex
             std::string quantity;
             std::string price;
             long long int ts;
+
+            bool operator==(const order_request &other) const;
+            bool operator!=(const order_request &other) const;
+
+            std::string to_string() const;
         };
 
         struct order_result
@@ -74,13 +79,13 @@ namespace antara::mmbot::cex
 
         static void from_json(const nlohmann::json &j, order_result &res);
         static orders::order to_order(const order_result &res);
-        order_request to_request(const orders::order_level &o);
-        order_request to_request(const orders::execution &e);
+        static order_request to_request(const orders::order_level &o, bool mirror);
+        static order_request to_request(const orders::execution &e, bool mirror);
 
     private:
         std::string api_key_;
         std::string sec_key_;
 
-        std::optional<orders::order> send_req (binance::order_request req);
+        std::optional<orders::order> send_req (const binance::order_request &req);
     };
 }
