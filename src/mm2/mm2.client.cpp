@@ -360,7 +360,7 @@ namespace antara::mmbot
             VLOG_SCOPE_F(loguru::Verbosity_INFO, "mm2 successfully launched");
         }
         sink_thread_ = std::thread(
-                [this]() { this->background_.drain(reproc::stream::out, reproc::sink::discard()); });
+                [this]() { this->background_.drain(reproc::sink::discard()); });
         if (should_enable_coins) {
             enable_tests_coins();
         }

@@ -51,12 +51,12 @@ namespace antara::mmbot
         return std::nullopt;
     }
 
-    bool can_match(orders::order_book &book)
+    bool can_match(const orders::order_book &book)
     {
         return false;
     }
 
-    std::optional<orders::execution> match_single(orders::order_book &book)
+    std::optional<orders::execution> match_single(const orders::order_book &book)
     {
         if (can_match(book)) {
             return std::nullopt;
@@ -65,7 +65,7 @@ namespace antara::mmbot
         }
     }
 
-    std::vector<orders::execution> match_orders(orders::order_book &book)
+    std::vector<orders::execution> match_orders(const orders::order_book &book)
     {
         std::vector<orders::execution> exs;
 
