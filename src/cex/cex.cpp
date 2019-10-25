@@ -20,12 +20,12 @@
 
 namespace antara::mmbot
 {
-    void cex::place_order([[maybe_unused]] const orders::order_level &ol)
+    std::optional<orders::order> cex_::place_order([[maybe_unused]] const orders::order_level &ol)
     {
         throw mmbot::errors::not_implemented();
     }
 
-    void cex::mirror([[maybe_unused]] const orders::execution &ex)
+    std::optional<orders::order> cex_::mirror([[maybe_unused]] const orders::execution &ex)
     {
         throw mmbot::errors::not_implemented();
     }

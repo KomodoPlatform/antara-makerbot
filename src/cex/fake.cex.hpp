@@ -16,27 +16,36 @@
 
 #pragma once
 
-#include <http/http.server.hpp>
-#include "cex/cex.hpp"
-#include "dex/dex.hpp"
-#include "order_manager/order.manager.hpp"
-#include "strategy_manager/strategy.manager.hpp"
+#include <functional>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+#include <optional>
+
+#include <orders/orders.hpp>
+#include "cex.hpp"
 
 namespace antara::mmbot
 {
-    class application
+    class fake_cex : public abstract_cex
     {
+        using order_books_by_cross = std::unordered_map<antara::cross, orders::order_book>;
+
     public:
-        application() noexcept;
-        ~application() noexcept;
-        int run();
+        fake_cex() = default;
+
+        const orders::order_book &add_book(const orders::order_book &book);
+        const orders::order_book &get_book(const antara::cross &cross) const;
+
+        std::optional<orders::order> place_order(const orders::order_level &ol) override;
+        std::optional<orders::order> place_order(const orders::order &o);
+
+        std::vector<orders::execution> match_orders();
+
+        std::optional<orders::order> mirror(const orders::execution &ex) override;
+
     private:
-        price_service_platform price_service_;
-        mm2_client mm2_client_;
-        mmbot::dex dex_{mm2_client_};
-        mmbot::cex_ cex_{};
-        mmbot::order_manager om_{dex_, cex_};
-        mmbot::real_strategy_manager sm_{price_service_, om_};
-        antara::mmbot::http_server server_{price_service_, mm2_client_, sm_, om_};
+        order_books_by_cross order_books_;
     };
 }

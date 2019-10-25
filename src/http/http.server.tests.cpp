@@ -48,8 +48,8 @@ namespace antara::mmbot::tests
         price_service_platform price_service_;
         mm2_client mm2_client_;
         dex dex_{mm2_client_};
-        cex cex_;
-        order_manager om_{dex_, cex_};
+        cex_ cex;
+        order_manager om_{dex_, cex};
         strategy_manager<price_service_platform> sm_{price_service_, om_};
         antara::mmbot::http_server server_{price_service_, mm2_client_, sm_, om_};
         std::thread server_thread_;

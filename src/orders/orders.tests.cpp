@@ -84,4 +84,27 @@ namespace antara::mmbot::tests
 
         CHECK_EQ(st_quantity{3}, order.filled);
     }
+
+    TEST_CASE ("order_book can have orders added")
+    {
+        auto pair = antara::pair::of("A", "B");
+        auto cross = pair.to_cross();
+
+        auto price = st_price{10};
+
+        auto ob = orders::order_book(cross);
+
+        auto o_id = st_order_id{"o_id"};
+        auto o = orders::order_builder(o_id, pair)
+            .price(price)
+            .build();
+
+        ob.add_order(o);
+
+        auto& bids = ob.get_bids();
+        auto& asks = ob.get_asks();
+
+        CHECK_EQ(1, bids.size());
+        CHECK_EQ(0, asks.size());
+    }
 }

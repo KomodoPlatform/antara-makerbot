@@ -59,8 +59,10 @@ FetchContent_Declare(
         URL https://bitbucket.org/sobjectizerteam/restinio/downloads/restinio-0.5.1.1-full.zip
 )
 
-FetchContent_Declare(trompeloeil
-        URL https://github.com/rollbear/trompeloeil/archive/master.zip)
+FetchContent_Declare(
+        trompeloeil
+        URL https://github.com/rollbear/trompeloeil/archive/master.zip
+)
 
 SET(JSON_MultipleHeaders ON CACHE BOOL "Override option" FORCE)
 SET(JSON_BuildTests OFF CACHE BOOL "Override option" FORCE)

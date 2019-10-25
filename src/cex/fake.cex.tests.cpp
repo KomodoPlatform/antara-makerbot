@@ -14,29 +14,46 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
+#include <doctest/doctest.h>
+#include <doctest/trompeloeil.hpp>
+#include <trompeloeil.hpp>
 
-#include <http/http.server.hpp>
-#include "cex/cex.hpp"
-#include "dex/dex.hpp"
-#include "order_manager/order.manager.hpp"
-#include "strategy_manager/strategy.manager.hpp"
+#include <utils/mmbot_strong_types.hpp>
+#include "fake.cex.hpp"
 
-namespace antara::mmbot
+namespace antara::mmbot::tests
 {
-    class application
+    TEST_CASE ("Placing an order on the CEX will add it to the CEX's order book")
     {
-    public:
-        application() noexcept;
-        ~application() noexcept;
-        int run();
-    private:
-        price_service_platform price_service_;
-        mm2_client mm2_client_;
-        mmbot::dex dex_{mm2_client_};
-        mmbot::cex_ cex_{};
-        mmbot::order_manager om_{dex_, cex_};
-        mmbot::real_strategy_manager sm_{price_service_, om_};
-        antara::mmbot::http_server server_{price_service_, mm2_client_, sm_, om_};
-    };
+        auto pair = antara::pair::of("A", "B");
+        auto cross = pair.to_cross();
+        auto price = st_price{10};
+
+        auto o_id = st_order_id{"o_id"};
+        auto o = orders::order_builder(o_id, pair)
+            .price(price)
+            .build();
+
+        auto o2_id = st_order_id{"o2_id"};
+        auto o2 = orders::order_builder(o2_id, pair)
+            .price(price)
+            .build();
+
+        auto book = orders::order_book(cross);
+        book.add_order(o);
+
+        auto cex = fake_cex();
+        cex.add_book(book);
+
+        cex.place_order(o2);
+
+        auto &book2 = cex.get_book(cross);
+        auto bids = book2.get_bids();
+        // There is one price level
+        CHECK_EQ(1, bids.size());
+
+        auto orders = bids.at(price);
+        // And there are two orders at this price
+        CHECK_EQ(2, orders.size());
+    }
 }

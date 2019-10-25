@@ -14,6 +14,7 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <stdexcept>
 #include "utils/mmbot_strong_types.hpp"
 
 #include "orders.hpp"
@@ -75,7 +76,6 @@ namespace antara::mmbot::orders
         return pair == other.pair
             && price.value() == other.price.value()
             && quantity == other.quantity
-            // && side == other.side
             && maker == other.maker;
     }
 
@@ -141,12 +141,6 @@ namespace antara::mmbot::orders
         return *this;
     }
 
-    // order_builder& order_builder::side(const antara::side &side)
-    // {
-    //     this->side_ = side;
-    //     return *this;
-    // }
-
     order_builder& order_builder::status(const orders::order_status &status)
     {
         this->status_ = status;
@@ -156,5 +150,38 @@ namespace antara::mmbot::orders
     order order_builder::build()
     {
         return order(id_, pair_, price_, quantity_, filled_, status_);
+    }
+
+    const orders_by_price &order_book::get_bids() const
+    {
+        return bids_;
+    }
+
+    const orders_by_price &order_book::get_asks() const
+    {
+        return asks_;
+    }
+
+    void order_book::add_order(const order &o)
+    {
+        auto& side = bids_;
+        if (cross.base == o.pair.base) {
+            side = bids_;
+        } else if (cross.base == o.pair.quote) {
+            side = asks_;
+        } else {
+            throw std::logic_error("Wrong pair for this orderbook");
+        }
+
+        auto price = o.price;
+
+        if (side.find(price) == side.end()) {
+            side.emplace(price, std::vector<orders::order>());
+        }
+
+        auto &orders = side.at(price);
+        orders.push_back(o);
+
+        return;
     }
 }

@@ -62,7 +62,7 @@ namespace antara::mmbot
             std::string price;
             std::size_t num_utxos;
             double ave_volume;
-            double max_volume;
+            std::string max_volume;
             double depth;
             std::string pub_key;
             int age;

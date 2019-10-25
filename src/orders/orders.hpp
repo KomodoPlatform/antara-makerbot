@@ -16,10 +16,11 @@
 
 #pragma once
 
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
-#include <unordered_set>
-#include <unordered_map>
 
 #include <utils/mmbot_strong_types.hpp>
 
@@ -125,9 +126,7 @@ namespace antara::mmbot::orders
         order build();
 
         order_builder &price(const st_price &price);
-
         order_builder &quantity(const st_quantity &quantity);
-
         order_builder &filled(const st_quantity &filled);
 
         order_builder &status(const order_status &status);
@@ -143,4 +142,23 @@ namespace antara::mmbot::orders
 
     using orders_by_id = std::unordered_map<std::string, orders::order>;
     using executions_by_id = std::unordered_map<std::string, orders::execution>;
+
+    using orders_by_price = std::map<st_price, std::vector<order>>;
+
+    class order_book
+    {
+    public:
+        antara::cross cross;
+
+        order_book(antara::cross cross) : cross(std::move(cross)) {};
+
+        [[nodiscard]] const orders_by_price &get_bids() const;
+        [[nodiscard]] const orders_by_price &get_asks() const;
+
+        void add_order(const order &o);
+
+    private:
+        std::map<st_price, std::vector<order>> bids_;
+        std::map<st_price, std::vector<order>> asks_;
+    };
 }
